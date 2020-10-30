@@ -12,7 +12,7 @@
 // 默认异步，指定同步：@Events(value = "register", async = false)
 public class RegisterListener implements EventListener {
     
-    @ovrride
+    @override
     public void onEvent(Event event) {
         System.out.println(JSON.toJsonString(event));
     }
