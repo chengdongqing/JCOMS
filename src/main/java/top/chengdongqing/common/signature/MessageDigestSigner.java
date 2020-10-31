@@ -28,8 +28,8 @@ public class MessageDigestSigner implements IDigitalSigner {
      * 执行验签
      * 无需密钥
      */
-    public static boolean validate(String content, SignatureAlgorithm algorithm, String sign) {
-        return SignerHolder.SIGNER.validate(content, null, algorithm, new BigInteger(sign, 16).toByteArray());
+    public static boolean verify(String content, SignatureAlgorithm algorithm, String sign) {
+        return SignerHolder.SIGNER.verify(content, null, algorithm, new BigInteger(sign, 16).toByteArray());
     }
 
     @Override
@@ -43,7 +43,7 @@ public class MessageDigestSigner implements IDigitalSigner {
     }
 
     @Override
-    public boolean validate(String content, byte[] key, SignatureAlgorithm algorithm, byte[] sign) {
+    public boolean verify(String content, byte[] key, SignatureAlgorithm algorithm, byte[] sign) {
         return Arrays.equals(signature(content, key, algorithm).bytes(), sign);
     }
 }

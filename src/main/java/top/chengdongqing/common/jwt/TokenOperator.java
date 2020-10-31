@@ -64,7 +64,7 @@ public class TokenOperator {
      * @param token token
      * @return 是否有效
      */
-    public boolean validate(String token) {
+    public boolean verify(String token) {
         if (StringUtils.isBlank(token)) throw new IllegalArgumentException("The token cannot be blank");
         String[] parts = token.split("\\.");
         if (parts.length != 3) throw new IllegalArgumentException("The token is wrong.");
@@ -73,8 +73,8 @@ public class TokenOperator {
         String content = parts[0] + "." + parts[1];
 
         // 验签
-        boolean validate = AsymmetricSigner.validate(content, constants.getPublicKey(), SignatureAlgorithm.EdDSA_ED25519, parts[2]);
-        if (!validate) return false;
+        boolean verify = AsymmetricSigner.verify(content, constants.getPublicKey(), SignatureAlgorithm.EdDSA_ED25519, parts[2]);
+        if (!verify) return false;
 
         // 判断是否过期
         return Instant.ofEpochMilli(Long.parseLong(toMap(parts[0]).getString("expiryTime"))).isAfter(Instant.now());

@@ -30,5 +30,5 @@ public interface IDigitalSigner {
      * @param sign      要验证的签名
      * @return 是否有效
      */
-    boolean validate(String content, byte[] key, SignatureAlgorithm algorithm, byte[] sign);
+    boolean verify(String content, byte[] key, SignatureAlgorithm algorithm, byte[] sign);
 }

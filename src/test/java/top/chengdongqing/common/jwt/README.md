@@ -15,7 +15,7 @@ public void test() {
     Token token = tokenOperator.generate(payloads);
     System.out.println(token.token());
 
-    boolean isOk = tokenOperator.validate(token.token());
+    boolean isOk = tokenOperator.verify(token.token());
     System.out.println("有效：" + isOk);
 
     JSONObject payloads = tokenOperator.getPayloads(token);

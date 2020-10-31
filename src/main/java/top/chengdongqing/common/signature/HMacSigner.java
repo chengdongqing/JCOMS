@@ -36,16 +36,16 @@ public class HMacSigner implements IDigitalSigner {
      * 执行验签
      * 这里的key和sign仅接受base64形式
      */
-    public static boolean validateForBase64(String content, String key, SignatureAlgorithm algorithm, String sign) {
-        return SignerHolder.SIGNER.validate(content, ToBytes.of(key).fromBase64(), algorithm, ToBytes.of(sign).fromBase64());
+    public static boolean verifyForBase64(String content, String key, SignatureAlgorithm algorithm, String sign) {
+        return SignerHolder.SIGNER.verify(content, ToBytes.of(key).fromBase64(), algorithm, ToBytes.of(sign).fromBase64());
     }
 
     /**
      * 执行验签
      * 这里的key和sign仅接受16进制数据
      */
-    public static boolean validateForHex(String content, String key, SignatureAlgorithm algorithm, String sign) {
-        return SignerHolder.SIGNER.validate(content, ToBytes.of(key).fromHex(), algorithm, ToBytes.of(sign).fromHex());
+    public static boolean verifyForHex(String content, String key, SignatureAlgorithm algorithm, String sign) {
+        return SignerHolder.SIGNER.verify(content, ToBytes.of(key).fromHex(), algorithm, ToBytes.of(sign).fromHex());
     }
 
     @Override
@@ -60,7 +60,7 @@ public class HMacSigner implements IDigitalSigner {
     }
 
     @Override
-    public boolean validate(String content, byte[] key, SignatureAlgorithm algorithm, byte[] sign) {
+    public boolean verify(String content, byte[] key, SignatureAlgorithm algorithm, byte[] sign) {
         return Arrays.equals(signature(content, key, algorithm).bytes(), sign);
     }
 }

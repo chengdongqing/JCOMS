@@ -24,7 +24,7 @@ public class Test {
         Bytes sign = AsymmetricSigner.signature(content, keyPair.privateKey(), algorithm);
         System.out.println("签名（16进制）：" + sign.toHex());
         System.out.println("签名（base64形式）：" + sign.toBase64());
-        boolean isOk = AsymmetricSigner.validate(content, keyPair.publicKey(), algorithm, sign.toBase64());
+        boolean isOk = AsymmetricSigner.verify(content, keyPair.publicKey(), algorithm, sign.toBase64());
         System.out.println("签名有效：" + isOk);
     }
 
@@ -36,7 +36,7 @@ public class Test {
         Bytes sign = HMacSigner.signatureForHex(content, key.toHex(), algorithm);
         System.out.println("签名（16进制）：" + sign.toHex());
         System.out.println("签名（base64形式）：" + sign.toBase64());
-        boolean isOk = HMacSigner.validateForHex(content, key.toHex(), algorithm, sign.toHex());
+        boolean isOk = HMacSigner.verifyForHex(content, key.toHex(), algorithm, sign.toHex());
         System.out.println("签名有效：" + isOk);
     }
 
@@ -45,7 +45,7 @@ public class Test {
         Bytes sign = MessageDigestSigner.signature(content, algorithm);
         System.out.println("签名（16进制）：" + sign.toHex());
         System.out.println("签名（base64形式）：" + sign.toBase64());
-        boolean isOk = MessageDigestSigner.validate(content, algorithm, sign.toHex());
+        boolean isOk = MessageDigestSigner.verify(content, algorithm, sign.toHex());
         System.out.println("签名有效：" + isOk);
     }
 }

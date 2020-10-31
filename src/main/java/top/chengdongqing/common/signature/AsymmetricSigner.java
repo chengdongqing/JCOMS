@@ -31,8 +31,8 @@ public class AsymmetricSigner implements IDigitalSigner {
      * 执行验签
      * 这里的key和sign仅接受base64形式
      */
-    public static boolean validate(String content, String key, SignatureAlgorithm algorithm, String sign) {
-        return SignerHolder.SIGNER.validate(content, ToBytes.of(key).fromBase64(), algorithm, ToBytes.of(sign).fromBase64());
+    public static boolean verify(String content, String key, SignatureAlgorithm algorithm, String sign) {
+        return SignerHolder.SIGNER.verify(content, ToBytes.of(key).fromBase64(), algorithm, ToBytes.of(sign).fromBase64());
     }
 
     /**
@@ -68,7 +68,7 @@ public class AsymmetricSigner implements IDigitalSigner {
      * @return 签名是否正确
      */
     @Override
-    public boolean validate(String content, byte[] key, SignatureAlgorithm algorithm, byte[] sign) {
+    public boolean verify(String content, byte[] key, SignatureAlgorithm algorithm, byte[] sign) {
         try {
             Signature signature = Signature.getInstance(algorithm.getAlgorithm());
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamilyName());
