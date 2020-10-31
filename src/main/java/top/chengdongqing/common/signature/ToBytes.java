@@ -8,13 +8,13 @@ import java.util.Base64;
  *
  * @author Luyao
  */
-public record ToByteArray(String str) {
+public record ToBytes(String str) {
 
     /**
      * 静态工厂方法
      */
-    public static ToByteArray of(String str) {
-        return new ToByteArray(str);
+    public static ToBytes of(String str) {
+        return new ToBytes(str);
     }
 
     /**

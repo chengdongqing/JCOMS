@@ -8,13 +8,13 @@ import java.util.Base64;
  *
  * @author Luyao
  */
-public record ByteArray(byte[] bytes) {
+public record Bytes(byte[] bytes) {
 
     /**
      * 静态工厂方法
      */
-    public static ByteArray of(byte[] bytes) {
-        return new ByteArray(bytes);
+    public static Bytes of(byte[] bytes) {
+        return new Bytes(bytes);
     }
 
     /**

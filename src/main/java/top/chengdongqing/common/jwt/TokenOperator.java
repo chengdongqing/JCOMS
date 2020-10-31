@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
-import top.chengdongqing.common.signature.SignAlgorithm;
-import top.chengdongqing.common.signature.asymmetric.AsymmetricSigner;
+import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.signature.AsymmetricSigner;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -42,7 +42,7 @@ public class TokenOperator {
         // 头部
         JSONObject headers = new JSONObject();
         // 签名算法
-        headers.put("algorithm", SignAlgorithm.EdDSA_ED25519.getAlgorithm());
+        headers.put("algorithm", SignatureAlgorithm.EdDSA_ED25519.getAlgorithm());
         Instant now = Instant.now();
         // 签发时间
         headers.put("issueTime", now.toEpochMilli() + "");
@@ -53,7 +53,7 @@ public class TokenOperator {
         Base64.Encoder encoder = Base64.getUrlEncoder();
         String content = encoder.encodeToString(JSON.toJSONBytes(headers)) + "." + encoder.encodeToString(JSON.toJSONBytes(payloads));
         // 执行签名
-        String signature = AsymmetricSigner.signature(content, constants.getPrivateKey(), SignAlgorithm.EdDSA_ED25519).toBase64();
+        String signature = AsymmetricSigner.signature(content, constants.getPrivateKey(), SignatureAlgorithm.EdDSA_ED25519).toBase64();
         content += "." + signature;
         return new Token(content, LocalDateTime.ofInstant(expiryTime, ZoneId.systemDefault()));
     }
@@ -73,7 +73,7 @@ public class TokenOperator {
         String content = parts[0] + "." + parts[1];
 
         // 验签
-        boolean validate = AsymmetricSigner.validate(content, constants.getPublicKey(), SignAlgorithm.EdDSA_ED25519, parts[2]);
+        boolean validate = AsymmetricSigner.validate(content, constants.getPublicKey(), SignatureAlgorithm.EdDSA_ED25519, parts[2]);
         if (!validate) return false;
 
         // 判断是否过期

@@ -21,7 +21,7 @@ import java.util.Map;
 public class POIExcelProcessor implements IExcelProcessor {
 
     private static class ExcelProcessorHolder {
-        private static final POIExcelProcessor ME = new POIExcelProcessor();
+        private static final IExcelProcessor ME = new POIExcelProcessor();
     }
 
     public static IExcelProcessor me() {

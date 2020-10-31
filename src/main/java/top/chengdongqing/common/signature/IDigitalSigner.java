@@ -1,9 +1,12 @@
 package top.chengdongqing.common.signature;
 
 /**
- * 数字签名器顶层接口
+ * 数字签名器
  *
  * @author Luyao
+ * @see AsymmetricSigner
+ * @see HMacSigner
+ * @see MessageDigestSigner
  */
 public interface IDigitalSigner {
 
@@ -16,7 +19,7 @@ public interface IDigitalSigner {
      * @param algorithm 签名算法
      * @return 签名
      */
-    ByteArray signature(String content, byte[] key, SignAlgorithm algorithm);
+    Bytes signature(String content, byte[] key, SignatureAlgorithm algorithm);
 
     /**
      * 验证签名是否有效
@@ -27,5 +30,5 @@ public interface IDigitalSigner {
      * @param sign      要验证的签名
      * @return 是否有效
      */
-    boolean validate(String content, byte[] key, SignAlgorithm algorithm, byte[] sign);
+    boolean validate(String content, byte[] key, SignatureAlgorithm algorithm, byte[] sign);
 }

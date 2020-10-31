@@ -1,9 +1,4 @@
-package top.chengdongqing.common.signature.asymmetric;
-
-import top.chengdongqing.common.signature.ByteArray;
-import top.chengdongqing.common.signature.IDigitalSigner;
-import top.chengdongqing.common.signature.SignAlgorithm;
-import top.chengdongqing.common.signature.ToByteArray;
+package top.chengdongqing.common.signature;
 
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -28,16 +23,16 @@ public class AsymmetricSigner implements IDigitalSigner {
      * 执行签名
      * 这里的key仅接受base64形式
      */
-    public static ByteArray signature(String content, String key, SignAlgorithm algorithm) {
-        return SignerHolder.SIGNER.signature(content, ToByteArray.of(key).fromBase64(), algorithm);
+    public static Bytes signature(String content, String key, SignatureAlgorithm algorithm) {
+        return SignerHolder.SIGNER.signature(content, ToBytes.of(key).fromBase64(), algorithm);
     }
 
     /**
      * 执行验签
      * 这里的key和sign仅接受base64形式
      */
-    public static boolean validate(String content, String key, SignAlgorithm algorithm, String sign) {
-        return SignerHolder.SIGNER.validate(content, ToByteArray.of(key).fromBase64(), algorithm, ToByteArray.of(sign).fromBase64());
+    public static boolean validate(String content, String key, SignatureAlgorithm algorithm, String sign) {
+        return SignerHolder.SIGNER.validate(content, ToBytes.of(key).fromBase64(), algorithm, ToBytes.of(sign).fromBase64());
     }
 
     /**
@@ -49,7 +44,7 @@ public class AsymmetricSigner implements IDigitalSigner {
      * @return 数字签名
      */
     @Override
-    public ByteArray signature(String content, byte[] key, SignAlgorithm algorithm) {
+    public Bytes signature(String content, byte[] key, SignatureAlgorithm algorithm) {
         try {
             Signature signature = Signature.getInstance(algorithm.getAlgorithm());
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamilyName());
@@ -57,7 +52,7 @@ public class AsymmetricSigner implements IDigitalSigner {
             PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
             signature.initSign(privateKey);
             signature.update(content.getBytes());
-            return ByteArray.of(signature.sign());
+            return Bytes.of(signature.sign());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -73,7 +68,7 @@ public class AsymmetricSigner implements IDigitalSigner {
      * @return 签名是否正确
      */
     @Override
-    public boolean validate(String content, byte[] key, SignAlgorithm algorithm, byte[] sign) {
+    public boolean validate(String content, byte[] key, SignatureAlgorithm algorithm, byte[] sign) {
         try {
             Signature signature = Signature.getInstance(algorithm.getAlgorithm());
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamilyName());

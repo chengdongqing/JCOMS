@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum SignAlgorithm {
+public enum SignatureAlgorithm {
 
     MD5("MD", "MD5"),
     SHA1("SHA", "SHA-1"),
