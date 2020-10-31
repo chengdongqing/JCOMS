@@ -23,7 +23,6 @@ public interface ISender<T> {
      * 检查参数
      *
      * @param entity 参数实体
-     * @return 检查结果
      */
     void checkArgs(T entity);
 }
