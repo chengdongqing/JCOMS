@@ -25,7 +25,7 @@ public record Bytes(byte[] bytes) {
      * @param name excel名称
      */
     public void render(String name) {
-        StreamRender.init(name + EXCEL_SUFFIX, bytes).render();
+        StreamRender.of(name + EXCEL_SUFFIX, bytes).render();
     }
 
     /**
@@ -37,6 +37,6 @@ public record Bytes(byte[] bytes) {
     public void renderWithDate(String name) {
         String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         name = String.join("", name, "-", date, EXCEL_SUFFIX);
-        StreamRender.init(name, bytes).render();
+        StreamRender.of(name, bytes).render();
     }
 }

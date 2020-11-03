@@ -23,7 +23,7 @@ public class StreamRender extends Render {
     /**
      * 工厂方法创建当前对象
      */
-    public static Render init(String name, byte[] data) {
+    public static Render of(String name, byte[] data) {
         return new StreamRender(name, data);
     }
 
