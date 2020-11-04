@@ -13,12 +13,12 @@ private VerificationCode verificationCode;
 
 public void test() {
     // 发送短信验证码
-    verificationCode.sendCodeBySMS("19999999999", SmsTemplate.LOGIN);
+    verificationCode.send("19999999999", SmsTemplate.LOGIN);
     // 发送邮件验证码
-    verificationCode.sendCodeByEmail("19999999999@qq.com", EmailTemplate.BIND_ACCOUNT);
+    verificationCode.send("19999999999@qq.com", EmailTemplate.BIND_ACCOUNT);
     // 校验验证码
     String account = ...
     String code = ...
-    verificationCode.verifyCode(account, code);
+    verificationCode.verify(account, code);
 }
 ```

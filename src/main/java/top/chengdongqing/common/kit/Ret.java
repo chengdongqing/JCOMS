@@ -16,17 +16,17 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Ret<T> implements Serializable {
+public class Ret implements Serializable {
 
     private int code;
     private String msg;
-    private T data;
+    private Object data;
 
     public Ret(int code) {
         this.code = code;
     }
 
-    public Ret(int code, T data) {
+    public Ret(int code, Object data) {
         this.code = code;
         this.data = data;
     }

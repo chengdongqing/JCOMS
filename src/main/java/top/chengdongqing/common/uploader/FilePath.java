@@ -20,5 +20,5 @@ public enum FilePath {
     /**
      * 存放路径
      */
-    private String path;
+    private final String path;
 }

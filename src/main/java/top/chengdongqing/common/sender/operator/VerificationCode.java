@@ -19,7 +19,7 @@ import java.time.Duration;
 import java.util.Objects;
 
 /**
- * 发送器
+ * 验证码发送与验证
  *
  * @author Luyao
  */
@@ -35,7 +35,7 @@ public class VerificationCode {
     /**
      * 发送短信验证码
      */
-    public Ret sendCodeBySMS(String to, SmsTemplate template) {
+    public Ret send(String to, SmsTemplate template) {
         String code = StrKit.generateRandomCode();
         try {
             // 将随机数转成JSON字符串作为短信内容
@@ -56,7 +56,7 @@ public class VerificationCode {
     /**
      * 发送邮件验证码
      */
-    public Ret sendCodeByEmail(String to, EmailTemplate template) {
+    public Ret send(String to, EmailTemplate template) {
         String code = StrKit.generateRandomCode();
         try {
             // 将随机数加到邮件内容中
@@ -93,7 +93,7 @@ public class VerificationCode {
     /**
      * 校验验证码是否正确且有效
      */
-    public boolean verifyCode(String account, String code) {
+    public boolean verify(String account, String code) {
         String key = CacheKeys.VERIFICATION_CODE + account;
         String value = cacheTemplate.getStr(key);
         return Objects.equals(value, code);

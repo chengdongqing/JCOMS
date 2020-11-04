@@ -33,7 +33,7 @@ public abstract class Uploader {
      * @param path 存放路径
      * @return 上传结果
      */
-    public Ret<String> uploadImage(MultipartFile file, FilePath path) {
+    public Ret uploadImage(MultipartFile file, FilePath path) {
         return upload(file, path, constants.getImageFormats(), constants.getImageMaxSize());
     }
 
@@ -44,7 +44,7 @@ public abstract class Uploader {
      * @param path 存放路径
      * @return 上传结果
      */
-    public Ret<String> uploadVideo(MultipartFile file, FilePath path) {
+    public Ret uploadVideo(MultipartFile file, FilePath path) {
         return upload(file, path, constants.getVideoFormats(), constants.getVideoMaxSize());
     }
 
@@ -57,9 +57,9 @@ public abstract class Uploader {
      * @param maxSize 允许的大小
      * @return 上传结果
      */
-    private Ret<String> upload(MultipartFile file, FilePath path, String[] formats, int maxSize) {
+    private Ret upload(MultipartFile file, FilePath path, String[] formats, int maxSize) {
         // 检查文件
-        Ret<String> checkResult = check(file, formats, maxSize);
+        Ret checkResult = check(file, formats, maxSize);
         if (checkResult.isFail()) return checkResult;
 
         // 生成文件名
@@ -67,7 +67,7 @@ public abstract class Uploader {
 
         // 执行上传
         try {
-            upload(file.getBytes(), path, fileName);
+            upload(file.getBytes(), path.getPath(), fileName);
             return Ret.ok(path.getPath() + fileName);
         } catch (Exception e) {
             log.error("文件上传错误", e);
@@ -82,9 +82,8 @@ public abstract class Uploader {
      * @param fileBytes 文件字节数组
      * @param path      存放路径
      * @param fileName  文件名
-     * @return 上传结果
      */
-    abstract void upload(byte[] fileBytes, FilePath path, String fileName) throws Exception;
+    abstract void upload(byte[] fileBytes, String path, String fileName) throws Exception;
 
     /**
      * 检查文件
@@ -94,7 +93,7 @@ public abstract class Uploader {
      * @param maxSize 允许的大小
      * @return 检查结果，如果没问题将文件后缀名返回
      */
-    private Ret<String> check(MultipartFile file, String[] formats, int maxSize) {
+    private Ret check(MultipartFile file, String[] formats, int maxSize) {
         // 检查文件是否存在
         if (file.isEmpty()) throw new IllegalArgumentException("The file is empty.");
 

@@ -22,9 +22,9 @@ public class LocalUploader extends Uploader {
 
     @Async
     @Override
-    void upload(byte[] fileBytes, FilePath path, String fileName) throws Exception {
+    void upload(byte[] fileBytes, String path, String fileName) throws Exception {
         // 获取文件夹对象
-        Path directory = Path.of(baseUploadPath + path.getPath());
+        Path directory = Path.of(baseUploadPath + path);
         // 判断文件夹是否存在
         if (!Files.isDirectory(directory)) {
             // 不存在则自动创建文件夹

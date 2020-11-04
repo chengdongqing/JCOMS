@@ -19,6 +19,6 @@ public enum Regexps {
     ACCOUNT("账号", PHONE_NUMBER.getValue() + "|" + EMAIL_ADDRESS.getValue()),
     NICKNAME("昵称", "[a-zA-Z\\u4E00-\\u9FA5][a-zA-Z0-9_\\u4E00-\\u9FA5]{1,20}");
 
-    private String name;
-    private String value;
+    private final String name;
+    private final String value;
 }

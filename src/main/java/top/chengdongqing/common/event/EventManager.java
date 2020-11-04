@@ -24,7 +24,7 @@ public class EventManager implements ApplicationContextAware {
             100,
             60L,
             TimeUnit.SECONDS,
-            new SynchronousQueue()
+            new SynchronousQueue<>()
     );
     // 监听器集合
     private static final Map<String, Set<EventListener>> syncListeners = new ConcurrentHashMap<>();
@@ -62,9 +62,9 @@ public class EventManager implements ApplicationContextAware {
             throw new IllegalArgumentException("The args are wrong!");
         }
         // 默认异步
-        boolean isAsync = async != null && async.length > 0 ? async[0] : true;
+        boolean isAsync = async == null || async.length <= 0 || async[0];
 
-        Set<EventListener> eventListeners = new HashSet() {{
+        Set<EventListener> eventListeners = new HashSet<>() {{
             add(listener);
         }};
         // 根据是否异步来加到指定的map

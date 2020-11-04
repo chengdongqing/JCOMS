@@ -10,7 +10,6 @@ package top.chengdongqing.common.signature;
  */
 public interface IDigitalSigner {
 
-
     /**
      * 执行数字签名
      *

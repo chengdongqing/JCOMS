@@ -1,7 +1,6 @@
 package top.chengdongqing.common.sender.sms;
 
 import org.apache.commons.lang3.StringUtils;
-import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.constant.Regexps;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.sender.ISender;
