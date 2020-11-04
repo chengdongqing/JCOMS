@@ -20,12 +20,7 @@ import java.util.concurrent.*;
 public class EventManager implements ApplicationContextAware {
 
     // 异步执行线程池
-    private static final ExecutorService threadPool = new ThreadPoolExecutor(0,
-            100,
-            60L,
-            TimeUnit.SECONDS,
-            new SynchronousQueue<>()
-    );
+    private static final ExecutorService threadPool = Executors.newCachedThreadPool();
     // 监听器集合
     private static final Map<String, Set<EventListener>> syncListeners = new ConcurrentHashMap<>();
     private static final Map<String, Set<EventListener>> asyncListeners = new ConcurrentHashMap<>();
@@ -34,7 +29,7 @@ public class EventManager implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         // 获取所有的监听器
         Collection<EventListener> listeners = applicationContext.getBeansOfType(EventListener.class).values();
-        // 将监听器按是否异步安放在map里
+        // 将监听器按是否异步存放在map里
         listeners.forEach(listener -> {
             Class<? extends EventListener> listenerClass = listener.getClass();
             // 是否有配置注解
@@ -97,7 +92,7 @@ public class EventManager implements ApplicationContextAware {
     }
 
     /**
-     * 通知订阅者
+     * 通知监听者
      */
     private static void sendEvent(Map<String, Set<EventListener>> listeners, String name, Object data, boolean async) {
         listeners.forEach((key, value) -> {
