@@ -5,7 +5,7 @@ import top.chengdongqing.common.payment.PaymentRequestEntity;
 import top.chengdongqing.common.payment.IRequestPayment;
 
 /**
- * @author James Lu
+ * @author Luyao
  */
 public class PCRequestPayment implements IRequestPayment {
 

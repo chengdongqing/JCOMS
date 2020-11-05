@@ -3,7 +3,7 @@ package top.chengdongqing.common.payment.wxpay;
 /**
  * 微信响应状态
  *
- * @author James Lu
+ * @author Luyao
  */
 public interface WxStatus {
 

@@ -33,7 +33,7 @@ import java.util.Map;
  * 微信支付
  * V2
  *
- * @author James Lu
+ * @author Luyao
  */
 @Slf4j
 @Component
@@ -66,7 +66,7 @@ public class V2WxPayment implements IPayment {
         PaymentDetails paymentDetails = PaymentDetails.builder()
                 .orderNo(params.get("out_trade_no"))
                 .paymentNo(params.get("transaction_id"))
-                // 将单位分转为元
+                // 将单位从分转为元
                 .paymentAmount(new BigDecimal(params.get("total_fee")).divide(BigDecimal.valueOf(100)))
                 // 转换支付时间
                 .paymentTime(LocalDateTime.parse(params.get("time_end"), DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
@@ -99,7 +99,7 @@ public class V2WxPayment implements IPayment {
     public Ret requestClose(String orderNo) {
         // 封装请求参数
         Map<String, String> params = new HashMap<>();
-        params.put("appid", constants.getAppId());
+        params.put("appid", constants.getAppId().getMp());
         params.put("mch_id", constants.getMchId());
         params.put("nonce_str", StrKit.getRandomUUID());
         params.put("out_trade_no", orderNo);
@@ -127,7 +127,7 @@ public class V2WxPayment implements IPayment {
 
         // 封装请求参数
         Map<String, String> params = new HashMap<>();
-        params.put("appid", constants.getAppId());
+        params.put("appid", constants.getAppId().getMp());
         params.put("mch_id", constants.getMchId());
         params.put("nonce_str", StrKit.getRandomUUID());
         params.put("out_trade_no", orderNo);

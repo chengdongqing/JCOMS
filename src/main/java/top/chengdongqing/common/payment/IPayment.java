@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * 支付顶层接口
  *
- * @author James Lu
+ * @author Luyao
  */
 public interface IPayment {
 

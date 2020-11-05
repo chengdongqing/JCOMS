@@ -7,7 +7,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
 /**
- * @author James Lu
+ * @author Luyao
  */
 @Data
 @Component
@@ -18,7 +18,7 @@ public class V2WxConstants {
     /**
      * 应用编号
      */
-    private String appId;
+    private AppId appId;
     /**
      * 商户号
      */
@@ -61,4 +61,16 @@ public class V2WxConstants {
      */
     @Value("${web-title:火星商城}")
     private String webTitle;
+
+    @Data
+    @Component
+    @RefreshScope
+    @ConfigurationProperties(prefix = "payment.wx.v2.appid")
+    public static class AppId {
+
+        private String mp;
+        private String pc;
+        private String app;
+        private String mb;
+    }
 }

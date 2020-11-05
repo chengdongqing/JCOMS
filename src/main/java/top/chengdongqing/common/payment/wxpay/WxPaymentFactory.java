@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * 微信支付工厂
  *
- * @author James Lu
+ * @author Luyao
  */
 @Component
 @RefreshScope

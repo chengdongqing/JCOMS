@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 支付请求实体
  *
- * @author James Lu
+ * @author Luyao
  */
 @Data
 @Builder

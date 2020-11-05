@@ -1,6 +1,5 @@
 package top.chengdongqing.common.payment.wxpay.v2;
 
-import lombok.extern.slf4j.Slf4j;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.payment.PaymentRequestEntity;
@@ -16,18 +15,15 @@ import java.util.Map;
 /**
  * 微信小程序或微信浏览器内支付
  *
- * @author James Lu
+ * @author Luyao
  */
-@Slf4j
 public class MPRequestPayment extends V2RequestPayment {
 
     @Override
-    protected void fillSpecialParams(Map<String, String> params, PaymentRequestEntity entity) {
+    protected void addSpecialParams(Map<String, String> params, PaymentRequestEntity entity) {
+        params.put("appid", constants.getAppId().getMp());
         params.put("trade_type", TradeType.JSAPI.name());
         params.put("openid", entity.getOpenId());
-        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(params), constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256);
-        params.put("sign", sign.toHex());
-        params.remove("key");
     }
 
     /**
@@ -39,8 +35,8 @@ public class MPRequestPayment extends V2RequestPayment {
     @Override
     protected Ret packageData(Map<String, String> resultMap) {
         Map<String, String> data = new HashMap<>();
-        data.put("appId", constants.getAppId());
-        data.put("timeStamp", Instant.now().toEpochMilli() + "");
+        data.put("appId", constants.getAppId().getMp());
+        data.put("timeStamp", Instant.now().getEpochSecond() + "");
         data.put("nonceStr", StrKit.getRandomUUID());
         data.put("package", "prepay_id=" + resultMap.get("prepay_id"));
         data.put("signType", constants.getSignType());

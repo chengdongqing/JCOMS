@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 /**
  * 支付客户端枚举
  *
- * @author James Lu
+ * @author Luyao
  */
 @Getter
 @AllArgsConstructor

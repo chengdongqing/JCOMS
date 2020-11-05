@@ -13,7 +13,7 @@ import java.util.Map;
  * 微信支付
  * V3
  *
- * @author James Lu
+ * @author Luyao
  */
 @Component
 public class V3WxPayment implements IPayment {

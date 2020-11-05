@@ -8,7 +8,7 @@ import top.chengdongqing.common.payment.IRequestPayment;
 /**
  * 策略模式+工厂模式
  *
- * @author James Lu
+ * @author Luyao
  */
 public class RequestPaymentContext {
 

@@ -3,7 +3,7 @@ package top.chengdongqing.common.payment.wxpay;
 /**
  * 交易类型
  *
- * @author James Lu
+ * @author Luyao
  */
 public enum TradeType {
 

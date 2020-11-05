@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * 上传器工厂
  *
- * @author James Lu
+ * @author Luyao
  */
 @Component
 @RefreshScope
