@@ -22,7 +22,7 @@ public class LocalUploader extends Uploader {
 
     @Async
     @Override
-    void upload(byte[] fileBytes, String path, String fileName) throws Exception {
+    protected void upload(byte[] fileBytes, String path, String fileName) throws Exception {
         // 获取文件夹对象
         Path directory = Path.of(baseUploadPath + path);
         // 判断文件夹是否存在

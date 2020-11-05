@@ -63,7 +63,7 @@ public abstract class Uploader {
         if (checkResult.isFail()) return checkResult;
 
         // 生成文件名
-        String fileName = StrKit.getRandomUUID() + checkResult.getData();
+        String fileName = StrKit.getRandomUUID() + checkResult.data();
 
         // 执行上传
         try {
@@ -83,7 +83,7 @@ public abstract class Uploader {
      * @param path      存放路径
      * @param fileName  文件名
      */
-    abstract void upload(byte[] fileBytes, String path, String fileName) throws Exception;
+    protected abstract void upload(byte[] fileBytes, String path, String fileName) throws Exception;
 
     /**
      * 检查文件

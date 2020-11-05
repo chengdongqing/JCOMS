@@ -32,7 +32,7 @@ public class OSSUploader extends Uploader {
 
     @Async
     @Override
-    void upload(byte[] fileBytes, String path, String fileName) throws Exception {
+    protected void upload(byte[] fileBytes, String path, String fileName) throws Exception {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(fileBytes)) {
             client.putObject(constants.getBucket(), path + fileName, inputStream);
         }

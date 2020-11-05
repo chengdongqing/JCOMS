@@ -1,0 +1,32 @@
+package top.chengdongqing.common.payment;
+
+import lombok.Builder;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+/**
+ * @author James Lu
+ */
+@Data
+@Builder
+public class PaymentDetails {
+
+    /**
+     * 订单号
+     */
+    private String orderNo;
+    /**
+     * 付款单号
+     */
+    private String paymentNo;
+    /**
+     * 付款金额
+     */
+    private BigDecimal paymentAmount;
+    /**
+     * 付款时间
+     */
+    private LocalDateTime paymentTime;
+}

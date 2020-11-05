@@ -26,7 +26,7 @@ import java.util.Base64;
 public class TokenOperator {
 
     @Autowired
-    private Constants constants;
+    private TokenConstants constants;
 
     /**
      * 生成token
@@ -115,7 +115,7 @@ public class TokenOperator {
 @Component
 @RefreshScope
 @ConfigurationProperties(prefix = "jwt")
-class Constants {
+class TokenConstants {
 
     /**
      * 公钥，验签用

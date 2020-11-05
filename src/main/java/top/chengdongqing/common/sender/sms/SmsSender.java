@@ -10,6 +10,7 @@ import top.chengdongqing.common.sender.entity.SmsEntity;
  * 短信发送器
  *
  * @author Luyao
+ * @see AliSmsSender
  */
 public interface SmsSender extends ISender<SmsEntity> {
 

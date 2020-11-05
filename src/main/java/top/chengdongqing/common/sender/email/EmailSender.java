@@ -10,6 +10,7 @@ import top.chengdongqing.common.sender.entity.EmailEntity;
  * 邮件发送器
  *
  * @author Luyao
+ * @see ApacheEmailSender
  */
 public interface EmailSender extends ISender<EmailEntity> {
 

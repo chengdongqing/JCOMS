@@ -1,9 +1,6 @@
 package top.chengdongqing.common.kit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import top.chengdongqing.common.constant.Status;
 
 import java.io.Serializable;
@@ -13,43 +10,22 @@ import java.io.Serializable;
  *
  * @author Luyao
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Ret implements Serializable {
-
-    private int code;
-    private String msg;
-    private Object data;
-
-    public Ret(int code) {
-        this.code = code;
-    }
-
-    public Ret(int code, Object data) {
-        this.code = code;
-        this.data = data;
-    }
-
-    public Ret(int code, String msg) {
-        this.code = code;
-        this.msg = msg;
-    }
+public record Ret<T>(int code, T data, String msg) implements Serializable {
 
     public static Ret ok() {
-        return new Ret(RetCode.ok);
+        return new Ret<>(RetCode.ok, null, null);
     }
 
-    public static Ret ok(Object data) {
-        return new Ret(RetCode.ok, data);
+    public static <T> Ret ok(T data) {
+        return new Ret<>(RetCode.ok, data, null);
     }
 
     public static Ret fail() {
-        return new Ret(RetCode.fail);
+        return new Ret<>(RetCode.fail, null, null);
     }
 
     public static Ret fail(String msg) {
-        return new Ret(RetCode.fail, msg);
+        return new Ret<>(RetCode.fail, null, msg);
     }
 
     @JsonIgnore

@@ -20,7 +20,7 @@ public class MongoUploader extends Uploader {
 
     @Async
     @Override
-    void upload(byte[] fileBytes, String path, String fileName) throws Exception {
+    protected void upload(byte[] fileBytes, String path, String fileName) throws Exception {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(fileBytes)) {
             gridFsTemplate.store(inputStream, path + fileName);
         }

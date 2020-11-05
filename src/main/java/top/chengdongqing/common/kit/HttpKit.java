@@ -6,6 +6,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -102,18 +103,19 @@ public class HttpKit {
     /**
      * 发送带本地证书的POST请求
      */
-    public static String postWithCert(String url, String data, File cert, char[] password) {
+    public static String postWithCert(String url, String data, InputStream cert, String password) {
         HttpRequest request = HttpRequest.newBuilder(URI.create(url))
                 .header("Content-Type", CONTENT_TYPE)
                 .POST(HttpRequest.BodyPublishers.ofString(data, StandardCharsets.UTF_8)).build();
+        char[] certPwd = password.toCharArray();
 
         try {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             KeyManagerFactory keyManagerFactory = KeyManagerFactory
                     .getInstance(KeyManagerFactory.getDefaultAlgorithm());
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(new FileInputStream(cert), password);
-            keyManagerFactory.init(keyStore, password);
+            keyStore.load(cert, certPwd);
+            keyManagerFactory.init(keyStore, certPwd);
             sslContext.init(keyManagerFactory.getKeyManagers(), null, new SecureRandom());
             HttpClient client = HttpClient.newBuilder().sslContext(sslContext).build();
             return client.send(request, HttpResponse.BodyHandlers.ofString()).body();

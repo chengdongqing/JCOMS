@@ -12,7 +12,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,7 +62,7 @@ public class POIExcelProcessor implements IExcelProcessor {
     }
 
     @Override
-    public Bytes write(LinkedHashMap<String, String> titles, JSONArray rows) {
+    public Bytes write(LinkedHashMap<String, String> titles, List<Map<String, String>> rows) {
         try (XSSFWorkbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             // 创建表格
@@ -85,7 +87,7 @@ public class POIExcelProcessor implements IExcelProcessor {
             // 创建数据行
             for (int i = 0; i < rows.size(); i++) {
                 // 该行数据对象
-                JSONObject item = rows.getJSONObject(i);
+                Map<String, String> item = rows.get(i);
                 // 在表格中创建行
                 Row row = sheet.createRow(i + 1);
 
@@ -93,7 +95,7 @@ public class POIExcelProcessor implements IExcelProcessor {
                 cellIndex = 0;
                 for (String key : titles.keySet()) {
                     Cell cell = row.createCell(cellIndex);
-                    cell.setCellValue(item.getString(key));
+                    cell.setCellValue(item.get(key));
                     cell.setCellStyle(cellStyle);
                     cellIndex++;
                 }

@@ -32,6 +32,10 @@ public class StrKit {
         return ThreadLocalRandom.current().nextInt(100000, 999999) + "";
     }
 
+    public static String buildQueryStr(Map<String, String> params) {
+        return buildQueryStr(params, false);
+    }
+
     /**
      * 构建键值对参数字符串
      */
