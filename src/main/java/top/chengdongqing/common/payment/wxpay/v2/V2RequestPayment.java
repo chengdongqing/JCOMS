@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 /**
  * 请求微信付款
  * V2
- * 模板方法模式
  *
  * @author Luyao
  */
@@ -58,22 +57,18 @@ public abstract class V2RequestPayment implements IRequestPayment {
         params.put("sign", sign.toHex());
         params.remove("key");
 
-        try {
-            // 转换数据类型
-            String xml = XmlKit.mapToXml(params);
-            // 发送请求
-            log.info("发送付款请求：{}", xml);
-            String result = HttpKit.post(constants.getPaymentUrl(), xml);
-            log.info("请求付款结果：{}", result);
+        // 转换数据类型
+        String xml = XmlKit.mapToXml(params);
+        // 发送请求
+        log.info("发送付款请求：{}", xml);
+        String result = HttpKit.post(constants.getPaymentUrl(), xml);
+        log.info("请求付款结果：{}", result);
 
-            // 转换结果格式
-            Map<String, String> resultMap = XmlKit.xmlToMap(result);
-            // 判断处理结果是否成功
-            Ret verifyResult = V2WxPayment.getResult(resultMap);
-            return verifyResult.isOk() ? packageData(resultMap) : verifyResult;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        // 转换结果格式
+        Map<String, String> resultMap = XmlKit.xmlToMap(result);
+        // 判断处理结果是否成功
+        Ret verifyResult = V2WxPayment.getResult(resultMap);
+        return verifyResult.isOk() ? packageData(resultMap) : verifyResult;
     }
 
     /**

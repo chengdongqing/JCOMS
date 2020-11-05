@@ -59,8 +59,14 @@ public class V2WxConstants {
     /**
      * 网站标题
      */
-    @Value("${web-title:火星商城}")
+    @Value("${web-title}")
     private String webTitle;
+
+    /**
+     * 网站域名
+     */
+    @Value("${web-url}")
+    private String webUrl;
 
     @Data
     @Component

@@ -17,6 +17,8 @@ public class MBRequestPayment extends V2RequestPayment {
     protected void addSpecialParams(Map<String, String> params, PaymentRequestEntity entity) {
         params.put("appid", constants.getAppId().getMb());
         params.put("trade_type", TradeType.MWEB.name());
+        // 场景信息
+        params.put("scene_info", "{\"h5_info\": {\"type\":\"Wap\",\"wap_url\": \"" + constants.getWebUrl() + "\",\"wap_name\": \"" + constants.getWebTitle() + "\"}}");
     }
 
     @Override

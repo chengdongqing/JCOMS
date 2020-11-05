@@ -2,7 +2,6 @@ package top.chengdongqing.common.payment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.experimental.Accessors;
 
 /**
  * 支付客户端枚举
