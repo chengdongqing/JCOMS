@@ -113,7 +113,7 @@ public class V2WxPayment implements IPayment {
         String xml = XmlKit.mapToXml(params);
         // 发送请求
         log.info("发送关闭订单请求：{}", xml);
-        String result = HttpKit.post(constants.getCloseUrl(), xml);
+        String result = HttpKit.post(constants.getCloseUrl(), xml).body();
         log.info("请求关闭订单结果：{}", result);
         // 判断结果
         return getResult(XmlKit.xmlToMap(result));
@@ -141,12 +141,14 @@ public class V2WxPayment implements IPayment {
         params.remove("key");
 
         // 获取证书文件流
-        try (InputStream cert = Files.newInputStream(Paths.get(constants.getCertPath()))) {
+        try {
             // 转换数据类型
             String xml = XmlKit.mapToXml(params);
+            // 读取证书
+            byte[] certBytes = Files.readAllBytes(Paths.get(constants.getCertPath()));
             log.info("发送订单退款请求：{}", xml);
             // 发送请求
-            String result = HttpKit.postWithCert(constants.getRefundUrl(), xml, cert, constants.getMchId());
+            String result = HttpKit.post(constants.getRefundUrl(), xml, certBytes, constants.getMchId()).body();
             log.info("请求订单退款结果：{}", result);
             // 判断结果
             return getResult(XmlKit.xmlToMap(result));

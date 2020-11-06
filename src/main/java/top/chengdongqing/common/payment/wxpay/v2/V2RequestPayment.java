@@ -61,7 +61,7 @@ public abstract class V2RequestPayment implements IRequestPayment {
         String xml = XmlKit.mapToXml(params);
         // 发送请求
         log.info("发送付款请求：{}", xml);
-        String result = HttpKit.post(constants.getPaymentUrl(), xml);
+        String result = HttpKit.post(constants.getPaymentUrl(), xml).body();
         log.info("请求付款结果：{}", result);
 
         // 转换结果格式

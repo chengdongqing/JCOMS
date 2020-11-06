@@ -63,7 +63,7 @@ public class AliSmsSender implements SmsSender {
 
         try {
             // 发送请求
-            String result = HttpKit.get(constants.getGatewayUrl(), params);
+            String result = HttpKit.get(constants.getGatewayUrl(), params).body();
             SendResult sendResult = JSON.parseObject(result, SendResult.class);
             log.info("发送短信参数：{}", params);
             log.info("发送短信结果：{}", result);
