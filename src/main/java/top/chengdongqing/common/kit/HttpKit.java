@@ -5,6 +5,7 @@ import org.springframework.http.HttpMethod;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -163,7 +164,8 @@ public class HttpKit {
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
             keyStore.load(certStream, password);
             keyManagerFactory.init(keyStore, password);
-            sslContext.init(keyManagerFactory.getKeyManagers(), null, new SecureRandom());
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
             return sslContext;
         }
     }
