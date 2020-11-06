@@ -1,4 +1,7 @@
-package top.chengdongqing.common.signature;
+package top.chengdongqing.common.signature.secretkey;
+
+import top.chengdongqing.common.signature.transform.SignBytes;
+import top.chengdongqing.common.signature.SignatureAlgorithm;
 
 import javax.crypto.KeyGenerator;
 import java.security.KeyPair;
@@ -23,8 +26,8 @@ public class SecretKeyGenerator {
         try {
             // 获取指定算法的密钥对生成器
             KeyPairGenerator generator = KeyPairGenerator.getInstance(algorithm.getFamilyName());
-            // 如果是sha1WithRSA指定生成的密钥长度，否则用默认的长度
-            if (algorithm == SignatureAlgorithm.SHA1_RSA) generator.initialize(1024);
+            // 如果是RSA1则指定生成的密钥长度，否则用默认的长度
+            if (algorithm == SignatureAlgorithm.RSA_SHA1) generator.initialize(1024);
             // 生成密钥对
             KeyPair keyPair = generator.generateKeyPair();
             // 将私钥和公钥通过Base64编码
@@ -43,10 +46,10 @@ public class SecretKeyGenerator {
      * @param algorithm 签名算法
      * @return 密钥
      */
-    public static Bytes generateKey(SignatureAlgorithm algorithm) {
+    public static SignBytes generateKey(SignatureAlgorithm algorithm) {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm.getAlgorithm());
-            return Bytes.of(keyGenerator.generateKey().getEncoded());
+            return SignBytes.of(keyGenerator.generateKey().getEncoded());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

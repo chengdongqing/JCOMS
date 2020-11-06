@@ -5,9 +5,10 @@ import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.payment.PaymentRequestEntity;
 import top.chengdongqing.common.payment.wxpay.TradeType;
 import top.chengdongqing.common.payment.wxpay.v2.V2RequestPayment;
-import top.chengdongqing.common.signature.Bytes;
-import top.chengdongqing.common.signature.HMacSigner;
+import top.chengdongqing.common.signature.DigitalSigner;
+import top.chengdongqing.common.signature.transform.SignBytes;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.signature.transform.StrToBytes;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -35,7 +36,9 @@ public class APPRequestPayment extends V2RequestPayment {
         data.put("package", "Sign=WXPay");
         data.put("noncestr", StrKit.getRandomUUID());
         data.put("timestamp", Instant.now().getEpochSecond() + "");
-        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(data), v2constants.getSecretKey(), SignatureAlgorithm.SHA256);
+        SignBytes sign = DigitalSigner.signature(StrKit.buildQueryStr(data),
+                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex(),
+                SignatureAlgorithm.SHA256);
         data.put("sign", sign.toHex());
         return Ret.ok(data);
     }

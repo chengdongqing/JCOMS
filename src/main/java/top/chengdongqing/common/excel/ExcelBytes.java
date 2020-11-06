@@ -8,15 +8,15 @@ import java.time.format.DateTimeFormatter;
 /**
  * @author Luyao
  */
-public record Bytes(byte[] bytes) {
+public record ExcelBytes(byte[] bytes) {
 
     /**
      * 默认文件后缀名
      */
     private static final String EXCEL_SUFFIX = ".xlsx";
 
-    public static Bytes of(byte[] bytes) {
-        return new Bytes(bytes);
+    public static ExcelBytes of(byte[] bytes) {
+        return new ExcelBytes(bytes);
     }
 
     /**

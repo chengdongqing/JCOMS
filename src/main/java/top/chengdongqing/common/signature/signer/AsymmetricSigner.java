@@ -1,4 +1,8 @@
-package top.chengdongqing.common.signature;
+package top.chengdongqing.common.signature.signer;
+
+import top.chengdongqing.common.signature.IDigitalSigner;
+import top.chengdongqing.common.signature.transform.SignBytes;
+import top.chengdongqing.common.signature.SignatureAlgorithm;
 
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -15,26 +19,6 @@ import java.security.spec.X509EncodedKeySpec;
  */
 public class AsymmetricSigner implements IDigitalSigner {
 
-    private static class SignerHolder {
-        private static final AsymmetricSigner SIGNER = new AsymmetricSigner();
-    }
-
-    /**
-     * 执行签名
-     * 这里的key仅接受base64形式
-     */
-    public static Bytes signature(String content, String key, SignatureAlgorithm algorithm) {
-        return SignerHolder.SIGNER.signature(content, ToBytes.of(key).fromBase64(), algorithm);
-    }
-
-    /**
-     * 执行验签
-     * 这里的key和sign仅接受base64形式
-     */
-    public static boolean verify(String content, String key, SignatureAlgorithm algorithm, String sign) {
-        return SignerHolder.SIGNER.verify(content, ToBytes.of(key).fromBase64(), algorithm, ToBytes.of(sign).fromBase64());
-    }
-
     /**
      * 执行签名
      *
@@ -44,7 +28,7 @@ public class AsymmetricSigner implements IDigitalSigner {
      * @return 数字签名
      */
     @Override
-    public Bytes signature(String content, byte[] key, SignatureAlgorithm algorithm) {
+    public SignBytes signature(String content, byte[] key, SignatureAlgorithm algorithm) {
         try {
             Signature signature = Signature.getInstance(algorithm.getAlgorithm());
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamilyName());
@@ -52,7 +36,7 @@ public class AsymmetricSigner implements IDigitalSigner {
             PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
             signature.initSign(privateKey);
             signature.update(content.getBytes());
-            return Bytes.of(signature.sign());
+            return SignBytes.of(signature.sign());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

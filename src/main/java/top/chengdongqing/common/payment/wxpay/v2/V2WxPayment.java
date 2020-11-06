@@ -18,9 +18,10 @@ import top.chengdongqing.common.payment.PaymentRequestEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
 import top.chengdongqing.common.payment.wxpay.v2.reqpay.RequestPaymentContext;
-import top.chengdongqing.common.signature.Bytes;
-import top.chengdongqing.common.signature.HMacSigner;
+import top.chengdongqing.common.signature.DigitalSigner;
+import top.chengdongqing.common.signature.transform.SignBytes;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.signature.transform.StrToBytes;
 
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -58,7 +59,10 @@ public class V2WxPayment implements IPayment {
 
         // 验证签名
         params.put("key", v2constants.getSecretKey());
-        boolean isOk = HMacSigner.verifyForHex(StrKit.buildQueryStr(params), v2constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256, params.get("sign"));
+        boolean isOk = DigitalSigner.verify(StrKit.buildQueryStr(params),
+                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex(),
+                SignatureAlgorithm.HMAC_SHA256,
+                StrToBytes.of(params.get("sign")).toBytesFromHex());
         if (!isOk) return toFailXml("验签失败");
 
         // 判断支付结果
@@ -107,7 +111,9 @@ public class V2WxPayment implements IPayment {
         params.put("out_trade_no", orderNo);
         params.put("key", v2constants.getSecretKey());
         params.put("sign_type", v2constants.getSignType());
-        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(params), v2constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256);
+        SignBytes sign = DigitalSigner.signature(StrKit.buildQueryStr(params),
+                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex(),
+                SignatureAlgorithm.HMAC_SHA256);
         params.put("sign", sign.toHex());
         params.remove("key");
 
@@ -138,7 +144,9 @@ public class V2WxPayment implements IPayment {
         params.put("refund_fee", refundFee);
         params.put("key", v2constants.getSecretKey());
         params.put("sign_type", v2constants.getSignType());
-        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(params), v2constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256);
+        SignBytes sign = DigitalSigner.signature(StrKit.buildQueryStr(params),
+                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex(),
+                SignatureAlgorithm.HMAC_SHA256);
         params.put("sign", sign.toHex());
         params.remove("key");
 

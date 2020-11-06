@@ -6,14 +6,12 @@ import com.alibaba.fastjson.JSONObject;
 import java.util.List;
 
 /**
- * excel数据集合
- *
  * @author Luyao
  */
-public record Rows(JSONArray rows) {
+public record ExcelRows(JSONArray rows) {
 
-    public static Rows of(JSONArray rows) {
-        return new Rows(rows);
+    public static ExcelRows of(JSONArray rows) {
+        return new ExcelRows(rows);
     }
 
     /**

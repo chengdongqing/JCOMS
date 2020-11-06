@@ -1,4 +1,4 @@
-package top.chengdongqing.common.signature;
+package top.chengdongqing.common.signature.secretkey;
 
 import java.util.Objects;
 

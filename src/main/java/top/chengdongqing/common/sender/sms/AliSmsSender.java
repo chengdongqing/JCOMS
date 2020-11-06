@@ -13,9 +13,10 @@ import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.sender.entity.SmsEntity;
-import top.chengdongqing.common.signature.Bytes;
-import top.chengdongqing.common.signature.HMacSigner;
+import top.chengdongqing.common.signature.DigitalSigner;
+import top.chengdongqing.common.signature.transform.SignBytes;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.signature.transform.StrToBytes;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -58,7 +59,9 @@ public class AliSmsSender implements SmsSender {
         // 放到模板的参数，JSON格式
         params.put("TemplateParam", entity.getContent());
         String content = StrKit.buildQueryStr(params, true);
-        Bytes bytes = HMacSigner.signatureForBase64(content, constants.getAccessSecret(), SignatureAlgorithm.HMAC_SHA1);
+        SignBytes bytes = DigitalSigner.signature(content,
+                StrToBytes.of(constants.getAccessSecret()).toBytesFromBase64(),
+                SignatureAlgorithm.HMAC_SHA1);
         params.put("Signature", bytes.toBase64());
 
         try {

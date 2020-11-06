@@ -1,33 +1,31 @@
-package top.chengdongqing.common.signature;
+package top.chengdongqing.common.signature.transform;
 
 import java.math.BigInteger;
 import java.util.Base64;
 
 /**
- * 将字符串转字节数组
- *
  * @author Luyao
  */
-public record ToBytes(String str) {
+public record StrToBytes(String str) {
 
     /**
      * 静态工厂方法
      */
-    public static ToBytes of(String str) {
-        return new ToBytes(str);
+    public static StrToBytes of(String str) {
+        return new StrToBytes(str);
     }
 
     /**
      * 从16进制字符串转字节数组
      */
-    public byte[] fromHex() {
+    public byte[] toBytesFromHex() {
         return new BigInteger(str, 16).toByteArray();
     }
 
     /**
-     * 从base64字符串解码为字节数组
+     * 从base64字符串转字节数组
      */
-    public byte[] fromBase64() {
+    public byte[] toBytesFromBase64() {
         return Base64.getDecoder().decode(str);
     }
 }

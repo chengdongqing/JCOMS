@@ -8,8 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
-import top.chengdongqing.common.signature.AsymmetricSigner;
+import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.signature.transform.StrToBytes;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -53,7 +54,9 @@ public class TokenOperator {
         Base64.Encoder encoder = Base64.getUrlEncoder();
         String content = encoder.encodeToString(JSON.toJSONBytes(headers)) + "." + encoder.encodeToString(JSON.toJSONBytes(payloads));
         // 执行签名
-        String signature = AsymmetricSigner.signature(content, constants.getPrivateKey(), SignatureAlgorithm.EdDSA_ED25519).toBase64();
+        String signature = DigitalSigner.signature(content,
+                StrToBytes.of(constants.getPrivateKey()).toBytesFromBase64(),
+                SignatureAlgorithm.EdDSA_ED25519).toBase64();
         content += "." + signature;
         return new Token(content, LocalDateTime.ofInstant(expiryTime, ZoneId.systemDefault()));
     }
@@ -73,7 +76,10 @@ public class TokenOperator {
         String content = parts[0] + "." + parts[1];
 
         // 验签
-        boolean verify = AsymmetricSigner.verify(content, constants.getPublicKey(), SignatureAlgorithm.EdDSA_ED25519, parts[2]);
+        boolean verify = DigitalSigner.verify(content,
+                StrToBytes.of(constants.getPublicKey()).toBytesFromBase64(),
+                SignatureAlgorithm.EdDSA_ED25519,
+                StrToBytes.of(parts[2]).toBytesFromBase64());
         if (!verify) return false;
 
         // 判断是否过期

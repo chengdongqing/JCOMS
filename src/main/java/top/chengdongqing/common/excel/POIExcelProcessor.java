@@ -30,7 +30,7 @@ public class POIExcelProcessor implements IExcelProcessor {
     }
 
     @Override
-    public Rows read(Map<String, String> titles, String fileName, byte[] bytes) {
+    public ExcelRows read(Map<String, String> titles, String fileName, byte[] bytes) {
         try (Workbook workbook = getWorkbook(fileName, bytes)) {
             // 获取表格
             Sheet sheet = workbook.getSheetAt(0);
@@ -54,14 +54,14 @@ public class POIExcelProcessor implements IExcelProcessor {
                 });
                 rows.add(item);
             }
-            return Rows.of(rows);
+            return ExcelRows.of(rows);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Bytes write(LinkedHashMap<String, String> titles, List<Map<String, String>> rows) {
+    public ExcelBytes write(LinkedHashMap<String, String> titles, List<Map<String, String>> rows) {
         try (XSSFWorkbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             // 创建表格
@@ -102,7 +102,7 @@ public class POIExcelProcessor implements IExcelProcessor {
 
             // 写入到输出流
             workbook.write(os);
-            return Bytes.of(os.toByteArray());
+            return ExcelBytes.of(os.toByteArray());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

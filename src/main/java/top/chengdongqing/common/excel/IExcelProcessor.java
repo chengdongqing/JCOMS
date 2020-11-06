@@ -20,7 +20,7 @@ public interface IExcelProcessor {
      * @param bytes    二进制文件
      * @return excel数据集合
      */
-    Rows read(Map<String, String> titles, String fileName, byte[] bytes);
+    ExcelRows read(Map<String, String> titles, String fileName, byte[] bytes);
 
     /**
      * 写入到excel
@@ -29,5 +29,5 @@ public interface IExcelProcessor {
      * @param rows   数据行
      * @return excel字节数组
      */
-    Bytes write(LinkedHashMap<String, String> titles, List<Map<String, String>> rows);
+    ExcelBytes write(LinkedHashMap<String, String> titles, List<Map<String, String>> rows);
 }

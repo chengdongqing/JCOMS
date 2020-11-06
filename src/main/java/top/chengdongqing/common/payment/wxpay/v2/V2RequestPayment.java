@@ -10,9 +10,10 @@ import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.payment.IRequestPayment;
 import top.chengdongqing.common.payment.PaymentRequestEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
-import top.chengdongqing.common.signature.Bytes;
-import top.chengdongqing.common.signature.HMacSigner;
+import top.chengdongqing.common.signature.DigitalSigner;
+import top.chengdongqing.common.signature.transform.SignBytes;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.signature.transform.StrToBytes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -56,7 +57,9 @@ public abstract class V2RequestPayment implements IRequestPayment {
         // 不同客户端添加不同的参数
         addSpecialParams(params, entity);
         // 执行签名
-        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(params), v2constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256);
+        SignBytes sign = DigitalSigner.signature(StrKit.buildQueryStr(params),
+                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex(),
+                SignatureAlgorithm.HMAC_SHA256);
         params.put("sign", sign.toHex());
         params.remove("key");
 

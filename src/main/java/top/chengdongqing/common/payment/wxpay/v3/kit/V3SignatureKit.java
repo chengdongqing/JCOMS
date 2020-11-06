@@ -3,8 +3,9 @@ package top.chengdongqing.common.payment.wxpay.v3.kit;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
 import top.chengdongqing.common.payment.wxpay.v3.callback.WxCallback;
-import top.chengdongqing.common.signature.AsymmetricSigner;
+import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.signature.transform.StrToBytes;
 
 /**
  * 签名工具
@@ -14,20 +15,6 @@ import top.chengdongqing.common.signature.SignatureAlgorithm;
  * @author Luyao
  */
 public class V3SignatureKit {
-
-    /**
-     * 验证签名
-     *
-     * @param wxCallback 微信回调参数实体
-     * @param key        公钥
-     * @return 验证结果
-     */
-    public static boolean verify(WxCallback wxCallback, String key) {
-        // 获取待签名字符串
-        String content = getContent(wxCallback.getTimestamp(), wxCallback.getNonceStr(), wxCallback.getBody());
-        // 验证签名
-        return AsymmetricSigner.verify(content, key, SignatureAlgorithm.SHA256_RSA, wxCallback.getSign());
-    }
 
     /**
      * 生成签名
@@ -42,7 +29,24 @@ public class V3SignatureKit {
         // 获取待签名字符串
         String content = getContent(method.name(), url, timestamp, nonceStr, body);
         // 生成签名
-        return AsymmetricSigner.signature(content, key, SignatureAlgorithm.SHA256_RSA).toBase64();
+        return DigitalSigner.signature(content, StrToBytes.of(key).toBytesFromBase64(), SignatureAlgorithm.RSA_SHA256).toBase64();
+    }
+
+    /**
+     * 验证签名
+     *
+     * @param wxCallback 微信回调参数实体
+     * @param key        公钥
+     * @return 验证结果
+     */
+    public static boolean verify(WxCallback wxCallback, String key) {
+        // 获取待签名字符串
+        String content = getContent(wxCallback.getTimestamp(), wxCallback.getNonceStr(), wxCallback.getBody());
+        // 验证签名
+        return DigitalSigner.verify(content,
+                StrToBytes.of(key).toBytesFromBase64(),
+                SignatureAlgorithm.RSA_SHA256,
+                StrToBytes.of(wxCallback.getSign()).toBytesFromBase64());
     }
 
     /**
