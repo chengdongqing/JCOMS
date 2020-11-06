@@ -12,25 +12,25 @@ import java.io.Serializable;
  */
 public record Ret<T>(int code, T data, String msg) implements Serializable {
 
-    public static Ret ok() {
-        return new Ret<>(RetCode.ok, null, null);
+    public static Ret<Void> ok() {
+        return new Ret<>(RetCode.OK, null, null);
     }
 
-    public static <T> Ret ok(T data) {
-        return new Ret<>(RetCode.ok, data, null);
+    public static <T> Ret<T> ok(T data) {
+        return new Ret<>(RetCode.OK, data, null);
     }
 
-    public static Ret fail() {
-        return new Ret<>(RetCode.fail, null, null);
+    public static Ret<Void> fail() {
+        return new Ret<>(RetCode.FAIL, null, null);
     }
 
-    public static Ret fail(String msg) {
-        return new Ret<>(RetCode.fail, null, msg);
+    public static Ret<Void> fail(String msg) {
+        return new Ret<>(RetCode.FAIL, null, msg);
     }
 
     @JsonIgnore
     public boolean isOk() {
-        return code == RetCode.ok;
+        return code == RetCode.OK;
     }
 
     @JsonIgnore
@@ -45,10 +45,10 @@ public record Ret<T>(int code, T data, String msg) implements Serializable {
         /**
          * 成功
          */
-        int ok = Status.ENABLED;
+        int OK = Status.ENABLED;
         /**
          * 失败
          */
-        int fail = Status.DISABLED;
+        int FAIL = Status.DISABLED;
     }
 }

@@ -1,13 +1,15 @@
 package top.chengdongqing.common.sender;
 
 import top.chengdongqing.common.kit.Ret;
+import top.chengdongqing.common.sender.email.EmailSender;
+import top.chengdongqing.common.sender.sms.SmsSender;
 
 /**
  * 发送器
  *
  * @author Luyao
- * @see top.chengdongqing.common.sender.sms.SmsSender
- * @see top.chengdongqing.common.sender.email.EmailSender
+ * @see SmsSender
+ * @see EmailSender
  */
 public interface ISender<T> {
 
