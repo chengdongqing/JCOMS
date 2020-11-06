@@ -15,12 +15,13 @@ import top.chengdongqing.common.payment.IPayment;
 import top.chengdongqing.common.payment.PayClient;
 import top.chengdongqing.common.payment.PaymentDetails;
 import top.chengdongqing.common.payment.PaymentRequestEntity;
+import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
+import top.chengdongqing.common.payment.wxpay.v2.reqpay.RequestPaymentContext;
 import top.chengdongqing.common.signature.Bytes;
 import top.chengdongqing.common.signature.HMacSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -40,7 +41,9 @@ import java.util.Map;
 public class V2WxPayment implements IPayment {
 
     @Autowired
-    private V2WxConstants constants;
+    private WxConstants constants;
+    @Autowired
+    private V2Constants v2constants;
 
     @Override
     public Ret requestPayment(PaymentRequestEntity entity, PayClient client) {
@@ -49,14 +52,13 @@ public class V2WxPayment implements IPayment {
 
     @Override
     public Ret handleCallback(Map<String, String> params) {
-        String sign = params.get("sign");
-        if (params.isEmpty() || StringUtils.isBlank(sign)) {
+        if (params.isEmpty() || StringUtils.isBlank(params.get("sign"))) {
             return toFailXml("参数错误");
         }
 
         // 验证签名
-        params.put("key", constants.getSecretKey());
-        boolean isOk = HMacSigner.verifyForHex(StrKit.buildQueryStr(params), constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256, sign);
+        params.put("key", v2constants.getSecretKey());
+        boolean isOk = HMacSigner.verifyForHex(StrKit.buildQueryStr(params), v2constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256, params.get("sign"));
         if (!isOk) return toFailXml("验签失败");
 
         // 判断支付结果
@@ -69,7 +71,7 @@ public class V2WxPayment implements IPayment {
                 // 将单位从分转为元
                 .paymentAmount(new BigDecimal(params.get("total_fee")).divide(BigDecimal.valueOf(100)))
                 // 转换支付时间
-                .paymentTime(LocalDateTime.parse(params.get("time_end"), DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
+                .paymentTime(LocalDateTime.parse(params.get("time_end"), DateTimeFormatter.ISO_ZONED_DATE_TIME))
                 .build();
         // 返回回调结果
         Map<String, String> map = new HashMap<>();
@@ -103,9 +105,9 @@ public class V2WxPayment implements IPayment {
         params.put("mch_id", constants.getMchId());
         params.put("nonce_str", StrKit.getRandomUUID());
         params.put("out_trade_no", orderNo);
-        params.put("key", constants.getSecretKey());
-        params.put("sign_type", constants.getSignType());
-        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(params), constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256);
+        params.put("key", v2constants.getSecretKey());
+        params.put("sign_type", v2constants.getSignType());
+        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(params), v2constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256);
         params.put("sign", sign.toHex());
         params.remove("key");
 
@@ -134,9 +136,9 @@ public class V2WxPayment implements IPayment {
         params.put("out_refund_no", refundNo);
         params.put("total_fee", totalFee);
         params.put("refund_fee", refundFee);
-        params.put("key", constants.getSecretKey());
-        params.put("sign_type", constants.getSignType());
-        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(params), constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256);
+        params.put("key", v2constants.getSecretKey());
+        params.put("sign_type", v2constants.getSignType());
+        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(params), v2constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256);
         params.put("sign", sign.toHex());
         params.remove("key");
 
@@ -145,7 +147,7 @@ public class V2WxPayment implements IPayment {
             // 转换数据类型
             String xml = XmlKit.mapToXml(params);
             // 读取证书
-            byte[] certBytes = Files.readAllBytes(Paths.get(constants.getCertPath()));
+            byte[] certBytes = Files.readAllBytes(Paths.get(v2constants.getCertPath()));
             log.info("发送订单退款请求：{}", xml);
             // 发送请求
             String result = HttpKit.post(constants.getRefundUrl(), xml, certBytes, constants.getMchId()).body();

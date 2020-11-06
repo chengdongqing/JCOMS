@@ -1,5 +1,8 @@
 package top.chengdongqing.common.encryptor;
 
+import top.chengdongqing.common.encryptor.entity.DecryptEntity;
+import top.chengdongqing.common.encryptor.entity.EncryptEntity;
+
 /**
  * 加解密器
  *
@@ -12,42 +15,16 @@ public interface IEncryptor {
     /**
      * 对称加密
      *
-     * @param data 明文
-     * @param key  密钥
+     * @param entity 参数实体
      * @return 密文
      */
-    byte[] encrypt(byte[] data, String key);
+    DecryptEntity encrypt(EncryptEntity entity);
 
     /**
      * 对称解密
      *
-     * @param data 密文
-     * @param key  密钥
+     * @param entity 参数实体
      * @return 明文
      */
-    byte[] decrypt(byte[] data, String key);
-
-    /**
-     * 基于口令加密
-     *
-     * @param data     明文
-     * @param key      密钥
-     * @param password 口令
-     * @return 密文
-     */
-    default byte[] encrypt(byte[] data, String key, String password) {
-        return null;
-    }
-
-    /**
-     * 基于口令解密
-     *
-     * @param data     密文
-     * @param key      密钥
-     * @param password 口令
-     * @return 明文
-     */
-    default byte[] decrypt(byte[] data, String key, String password) {
-        return null;
-    }
+    byte[] decrypt(EncryptEntity entity);
 }

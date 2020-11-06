@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.payment.IRequestPayment;
 import top.chengdongqing.common.payment.PaymentRequestEntity;
+import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.signature.Bytes;
 import top.chengdongqing.common.signature.HMacSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
@@ -32,7 +33,9 @@ import java.util.stream.Collectors;
 public abstract class V2RequestPayment implements IRequestPayment {
 
     @Autowired
-    protected V2WxConstants constants;
+    protected WxConstants constants;
+    @Autowired
+    protected V2Constants v2constants;
 
     @Override
     public Ret requestPayment(PaymentRequestEntity entity) {
@@ -48,12 +51,12 @@ public abstract class V2RequestPayment implements IRequestPayment {
         String timeExpire = LocalDateTime.now().plusMinutes(30).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         params.put("time_expire", timeExpire);
         params.put("notify_url", constants.getNotifyUrl());
-        params.put("key", constants.getSecretKey());
-        params.put("sign_type", constants.getSignType());
+        params.put("key", v2constants.getSecretKey());
+        params.put("sign_type", v2constants.getSignType());
         // 不同客户端添加不同的参数
         addSpecialParams(params, entity);
         // 执行签名
-        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(params), constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256);
+        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(params), v2constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256);
         params.put("sign", sign.toHex());
         params.remove("key");
 

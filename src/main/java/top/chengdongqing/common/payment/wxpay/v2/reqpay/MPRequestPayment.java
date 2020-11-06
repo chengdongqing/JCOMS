@@ -1,9 +1,10 @@
-package top.chengdongqing.common.payment.wxpay.v2;
+package top.chengdongqing.common.payment.wxpay.v2.reqpay;
 
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.payment.PaymentRequestEntity;
 import top.chengdongqing.common.payment.wxpay.TradeType;
+import top.chengdongqing.common.payment.wxpay.v2.V2RequestPayment;
 import top.chengdongqing.common.signature.Bytes;
 import top.chengdongqing.common.signature.HMacSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
@@ -39,8 +40,8 @@ public class MPRequestPayment extends V2RequestPayment {
         data.put("timeStamp", Instant.now().getEpochSecond() + "");
         data.put("nonceStr", StrKit.getRandomUUID());
         data.put("package", "prepay_id=" + resultMap.get("prepay_id"));
-        data.put("signType", constants.getSignType());
-        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(data), constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256);
+        data.put("signType", v2constants.getSignType());
+        Bytes sign = HMacSigner.signatureForHex(StrKit.buildQueryStr(data), v2constants.getSecretKey(), SignatureAlgorithm.HMAC_SHA256);
         data.put("paySign", sign.toHex());
         return Ret.ok(data);
     }

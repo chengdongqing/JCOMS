@@ -1,4 +1,4 @@
-package top.chengdongqing.common.payment.wxpay.v2;
+package top.chengdongqing.common.payment.wxpay;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,13 +7,15 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
 /**
+ * 微信支付配置
+ *
  * @author Luyao
  */
 @Data
 @Component
 @RefreshScope
-@ConfigurationProperties(prefix = "payment.wx.v2")
-public class V2WxConstants {
+@ConfigurationProperties(prefix = "payment.wx")
+public class WxConstants {
 
     /**
      * 应用编号
@@ -23,10 +25,6 @@ public class V2WxConstants {
      * 商户号
      */
     private String mchId;
-    /**
-     * 签名用的密钥
-     */
-    private String secretKey;
 
     /**
      * 订单请求支付地址
@@ -46,17 +44,6 @@ public class V2WxConstants {
     private String refundUrl;
 
     /**
-     * 证书地址
-     */
-    private String certPath;
-
-    /**
-     * 签名方式
-     */
-    @Value("${sign-type:HMAC-SHA256}")
-    private String signType;
-
-    /**
      * 网站标题
      */
     @Value("${web-title}")
@@ -71,7 +58,7 @@ public class V2WxConstants {
     @Data
     @Component
     @RefreshScope
-    @ConfigurationProperties(prefix = "payment.wx.v2.appid")
+    @ConfigurationProperties(prefix = "payment.wx.appid")
     public static class AppId {
 
         private String mp;

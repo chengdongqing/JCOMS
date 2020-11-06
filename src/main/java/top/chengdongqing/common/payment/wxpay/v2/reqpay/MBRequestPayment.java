@@ -1,8 +1,9 @@
-package top.chengdongqing.common.payment.wxpay.v2;
+package top.chengdongqing.common.payment.wxpay.v2.reqpay;
 
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.PaymentRequestEntity;
 import top.chengdongqing.common.payment.wxpay.TradeType;
+import top.chengdongqing.common.payment.wxpay.v2.V2RequestPayment;
 
 import java.util.Map;
 
