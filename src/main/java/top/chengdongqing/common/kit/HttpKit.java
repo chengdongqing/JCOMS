@@ -152,17 +152,16 @@ public class HttpKit {
      * @throws Exception
      */
     private static SSLContext buildSSLContext(byte[] certBytes, String certPwd) throws Exception {
-        // 将证书密码转为字符数组
+        // 将证书密码字符串转为字符数组
         char[] password = certPwd.toCharArray();
 
         // 读取证书流
-        try (ByteArrayInputStream certStream = new ByteArrayInputStream(certBytes)) {
+        try (ByteArrayInputStream stream = new ByteArrayInputStream(certBytes)) {
             // 构建ssl上下文
             SSLContext sslContext = SSLContext.getInstance("TLS");
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory
-                    .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(certStream, password);
+            keyStore.load(stream, password);
             keyManagerFactory.init(keyStore, password);
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
@@ -174,9 +173,7 @@ public class HttpKit {
      * 给访问路径拼接参数
      */
     private static String buildUrlWithQueryStr(String url, Map<String, String> params) {
-        if (params == null || params.isEmpty()) {
-            return url;
-        }
+        if (params == null || params.isEmpty()) return url;
 
         StringBuilder sb = new StringBuilder(url);
         // 若已有参数则和之前的参数合并
