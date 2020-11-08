@@ -1,7 +1,7 @@
 package top.chengdongqing.common.signature.secretkey;
 
-import top.chengdongqing.common.signature.transform.SignBytes;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.signature.transform.SignBytes;
 
 import javax.crypto.KeyGenerator;
 import java.security.KeyPair;

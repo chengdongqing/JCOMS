@@ -12,7 +12,7 @@ import java.io.Serializable;
  */
 public record Ret<T>(int code, T data, String msg) implements Serializable {
 
-    public static Ret<Void> ok() {
+    public static Ret<String> ok() {
         return new Ret<>(RetCode.OK, null, null);
     }
 
@@ -20,11 +20,11 @@ public record Ret<T>(int code, T data, String msg) implements Serializable {
         return new Ret<>(RetCode.OK, data, null);
     }
 
-    public static Ret<Void> fail() {
+    public static Ret<String> fail() {
         return new Ret<>(RetCode.FAIL, null, null);
     }
 
-    public static Ret<Void> fail(String msg) {
+    public static Ret<String> fail(String msg) {
         return new Ret<>(RetCode.FAIL, null, msg);
     }
 

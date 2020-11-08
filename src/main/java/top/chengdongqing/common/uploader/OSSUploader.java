@@ -16,7 +16,7 @@ import java.io.ByteArrayInputStream;
  * @author Luyao
  */
 @Component
-public class OSSUploader extends Uploader {
+public class OSSUploader extends AbstractUploader {
 
     @Autowired
     private OSSConstants constants;

@@ -8,10 +8,12 @@
 #### 使用
 ```
 @Autowired
-private UploaderFactory uploaderFactory;
+private Uploader uploader;
 
 public void test() {
     // 上传图片
-    uploaderFactory.getUploader().uploadImage(file, FilePath.AVATAR);
+    uploader.uploadImage(file, FilePath.AVATAR);
+    // 上传视频
+    uploader.uploadVideo(file, ...);
 }
 ```

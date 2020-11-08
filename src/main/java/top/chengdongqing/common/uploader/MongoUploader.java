@@ -13,7 +13,7 @@ import java.io.ByteArrayInputStream;
  * @author Luyao
  */
 @Component
-public class MongoUploader extends Uploader {
+public class MongoUploader extends AbstractUploader {
 
     @Autowired
     private GridFsTemplate gridFsTemplate;
