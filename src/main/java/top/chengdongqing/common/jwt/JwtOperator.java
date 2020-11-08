@@ -2,6 +2,7 @@ package top.chengdongqing.common.jwt;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,15 @@ import java.util.Base64;
  * @author Luyao
  */
 @Component
-public class TokenOperator {
+@AllArgsConstructor
+public class JwtOperator {
 
     @Autowired
-    private TokenConstants constants;
+    private JwtConstants constants;
+    /**
+     * 签名算法
+     */
+    private static final SignatureAlgorithm ALGORITHM = SignatureAlgorithm.EdDSA_ED25519;
 
     /**
      * 生成token
@@ -36,31 +42,35 @@ public class TokenOperator {
      * @param payloads 有效载荷
      * @return token对象
      */
-    public Token generate(JSONObject payloads) {
+    public JwtInfo generate(JSONObject payloads) {
         if (payloads == null || payloads.isEmpty()) throw new IllegalArgumentException("The payloads cannot be empty.");
 
-        // 头部
-        JSONObject headers = new JSONObject();
+        // 头部信息
+        JwtHeader header = new JwtHeader();
         // 签名算法
-        headers.put("algorithm", SignatureAlgorithm.EdDSA_ED25519.getAlgorithm());
-        Instant now = Instant.now();
+        header.setAlgorithm(ALGORITHM.getAlgorithm());
         // 签发时间
-        headers.put("issueTime", now.toEpochMilli() + "");
-        Instant expiryTime = now.plus(constants.getDuration(), ChronoUnit.MINUTES);
+        Instant now = Instant.now();
+        header.setIssueTime(now.toEpochMilli());
         // 过期时间
-        headers.put("expiryTime", expiryTime.toEpochMilli() + "");
+        Instant expiryTime = now.plus(constants.getDuration(), ChronoUnit.MINUTES);
+        header.setExpiryTime(expiryTime.toEpochMilli());
         // 拼接待签名内容
         Base64.Encoder encoder = Base64.getUrlEncoder();
-        String content = encoder.encodeToString(JSON.toJSONBytes(headers)) + "." + encoder.encodeToString(JSON.toJSONBytes(payloads));
+        String content = encoder.encodeToString(header.toJson()) + "." + encoder.encodeToString(JSON.toJSONBytes(payloads));
         // 执行签名
         String signature = DigitalSigner.signature(content,
                 StrToBytes.of(constants.getPrivateKey()).toBytesFromBase64(),
-                SignatureAlgorithm.EdDSA_ED25519).toBase64();
+                ALGORITHM).toBase64();
         content += "." + signature;
-        return Token.builder()
+        // 返回token详情
+        return JwtInfo.builder()
                 .token(content)
+                .algorithm(ALGORITHM)
                 .issueTime(now.atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .expiryTime(expiryTime.atZone(ZoneId.systemDefault()).toLocalDateTime())
+                .payloads(payloads)
+                .signature(signature)
                 .build();
     }
 
@@ -77,14 +87,27 @@ public class TokenOperator {
         String content = parts[0] + "." + parts[1];
 
         // 验签
-        boolean verify = DigitalSigner.verify(content,
+        boolean verified = DigitalSigner.verify(content,
                 StrToBytes.of(constants.getPublicKey()).toBytesFromBase64(),
-                SignatureAlgorithm.EdDSA_ED25519,
+                ALGORITHM,
                 StrToBytes.of(parts[2]).toBytesFromBase64());
-        if (!verify) return false;
+        if (!verified) return false;
 
-        // 判断是否过期
-        return Instant.ofEpochMilli(Long.parseLong(toMap(parts[0]).getString("expiryTime"))).isAfter(Instant.now());
+        // 将头部解码并转JwtHeader对象
+        JwtHeader header = JSON.parseObject(Base64.getUrlDecoder().decode(parts[0]), JwtHeader.class);
+
+        // 获取过期时间并判断是否过期
+        return Instant.ofEpochMilli(header.getExpiryTime()).isAfter(Instant.now());
+    }
+
+    /**
+     * 将token根据点分成3部分
+     */
+    private String[] getParts(String token) {
+        if (StringUtils.isBlank(token)) throw new IllegalArgumentException("The token cannot be blank");
+        String[] parts = token.split("\\.");
+        if (parts.length != 3) throw new IllegalArgumentException("The token is wrong.");
+        return parts;
     }
 
     /**
@@ -95,24 +118,7 @@ public class TokenOperator {
      */
     public JSONObject getPayloads(String token) {
         String[] parts = getParts(token);
-        return toMap(parts[1]);
-    }
-
-    /**
-     * 将token根据.分成3部分
-     */
-    private String[] getParts(String token) {
-        if (StringUtils.isBlank(token)) throw new IllegalArgumentException("The token cannot be blank");
-        String[] parts = token.split("\\.");
-        if (parts.length != 3) throw new IllegalArgumentException("The token is wrong.");
-        return parts;
-    }
-
-    /**
-     * 将token某一段内容解码并转map
-     */
-    private JSONObject toMap(String content) {
-        JSONObject object = JSON.parseObject(new String(Base64.getUrlDecoder().decode(content)));
+        JSONObject object = JSON.parseObject(new String(Base64.getUrlDecoder().decode(parts[1])));
         if (object == null || object.isEmpty()) throw new IllegalStateException("token解析失败");
         return object;
     }
@@ -122,7 +128,7 @@ public class TokenOperator {
 @Component
 @RefreshScope
 @ConfigurationProperties(prefix = "jwt")
-class TokenConstants {
+class JwtConstants {
 
     /**
      * 公钥，验签用
@@ -136,4 +142,30 @@ class TokenConstants {
      * 有效时长，单位：分钟
      */
     private Long duration;
+}
+
+@Data
+class JwtHeader {
+
+    /**
+     * 签名算法
+     */
+    private String algorithm;
+    /**
+     * 签发时间
+     */
+    private Long issueTime;
+    /**
+     * 过期时间
+     */
+    private Long expiryTime;
+
+    /**
+     * 转JSON字节数组
+     *
+     * @return 当前对象的JSON字节数组
+     */
+    public byte[] toJson() {
+        return JSON.toJSONBytes(this);
+    }
 }

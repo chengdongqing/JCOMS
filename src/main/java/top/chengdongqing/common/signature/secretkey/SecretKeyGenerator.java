@@ -25,7 +25,7 @@ public class SecretKeyGenerator {
     public static SecretKeyPair generateKeyPair(SignatureAlgorithm algorithm) {
         try {
             // 获取指定算法的密钥对生成器
-            KeyPairGenerator generator = KeyPairGenerator.getInstance(algorithm.getFamilyName());
+            KeyPairGenerator generator = KeyPairGenerator.getInstance(algorithm.getFamily());
             // 如果是RSA1则指定生成的密钥长度，否则用默认的长度
             if (algorithm == SignatureAlgorithm.RSA_SHA1) generator.initialize(1024);
             // 生成密钥对

@@ -31,7 +31,7 @@ public class AsymmetricSigner implements IDigitalSigner {
     public SignBytes signature(String content, byte[] key, SignatureAlgorithm algorithm) {
         try {
             Signature signature = Signature.getInstance(algorithm.getAlgorithm());
-            KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamilyName());
+            KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamily());
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(key);
             PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
             signature.initSign(privateKey);
@@ -55,7 +55,7 @@ public class AsymmetricSigner implements IDigitalSigner {
     public boolean verify(String content, byte[] key, SignatureAlgorithm algorithm, byte[] sign) {
         try {
             Signature signature = Signature.getInstance(algorithm.getAlgorithm());
-            KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamilyName());
+            KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamily());
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(key);
             PublicKey publicKey = keyFactory.generatePublic(keySpec);
             signature.initVerify(publicKey);

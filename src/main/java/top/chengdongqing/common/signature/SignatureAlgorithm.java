@@ -25,7 +25,7 @@ public enum SignatureAlgorithm {
     EcDSA_SHA256("EC", "sha256WithECDSA", AsymmetricSigner.class),
     EdDSA_ED25519("EdDSA", "Ed25519", AsymmetricSigner.class);
 
-    private final String familyName;
+    private final String family;
     private final String algorithm;
     private final Class<? extends IDigitalSigner> signer;
 }
