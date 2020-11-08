@@ -13,7 +13,6 @@ import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.signature.transform.StrToBytes;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
@@ -58,7 +57,11 @@ public class TokenOperator {
                 StrToBytes.of(constants.getPrivateKey()).toBytesFromBase64(),
                 SignatureAlgorithm.EdDSA_ED25519).toBase64();
         content += "." + signature;
-        return new Token(content, LocalDateTime.ofInstant(expiryTime, ZoneId.systemDefault()));
+        return Token.builder()
+                .token(content)
+                .issueTime(now.atZone(ZoneId.systemDefault()).toLocalDateTime())
+                .expiryTime(expiryTime.atZone(ZoneId.systemDefault()).toLocalDateTime())
+                .build();
     }
 
     /**
@@ -68,9 +71,7 @@ public class TokenOperator {
      * @return 是否有效
      */
     public boolean verify(String token) {
-        if (StringUtils.isBlank(token)) throw new IllegalArgumentException("The token cannot be blank");
-        String[] parts = token.split("\\.");
-        if (parts.length != 3) throw new IllegalArgumentException("The token is wrong.");
+        String[] parts = getParts(token);
 
         // 获取被签名的数据
         String content = parts[0] + "." + parts[1];
