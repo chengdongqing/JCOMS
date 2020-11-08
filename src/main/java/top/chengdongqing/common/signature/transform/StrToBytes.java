@@ -1,6 +1,5 @@
 package top.chengdongqing.common.signature.transform;
 
-import java.math.BigInteger;
 import java.util.Base64;
 
 /**
@@ -16,10 +15,17 @@ public record StrToBytes(String str) {
     }
 
     /**
-     * 从16进制字符串转字节数组
+     * 从16进制字符串转2进制字节数组
      */
     public byte[] toBytesFromHex() {
-        return new BigInteger(str, 16).toByteArray();
+        String hex = str.length() % 2 != 0 ? "0" + str : str;
+        byte[] bytes = new byte[hex.length() / 2];
+        for (int i = 0; i < bytes.length; i++) {
+            int index = i * 2;
+            int v = Integer.parseInt(hex.substring(index, index + 2), 16);
+            bytes[i] = (byte) v;
+        }
+        return bytes;
     }
 
     /**

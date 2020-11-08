@@ -26,11 +26,11 @@ public class Test {
         SecretKeyPair keyPair = SecretKeyGenerator.generateKeyPair(algorithm);
         System.out.println("私钥：" + keyPair.privateKey());
         System.out.println("公钥：" + keyPair.publicKey());
-        SignBytes sign = DigitalSigner.signature(content, StrToBytes.of(keyPair.privateKey()).toBytesFromBase64(), algorithm);
+        SignBytes sign = DigitalSigner.signature(algorithm, content, StrToBytes.of(keyPair.privateKey()).toBytesFromBase64());
         System.out.println("签名（16进制字符串）：" + sign.toHex());
         System.out.println("签名（base64字符串）：" + sign.toBase64());
-        boolean isOk = DigitalSigner.verify(content, StrToBytes.of(keyPair.publicKey()).toBytesFromBase64(),
-                algorithm, StrToBytes.of(sign.toBase64()).toBytesFromBase64());
+        boolean isOk = DigitalSigner.verify(algorithm, content, StrToBytes.of(keyPair.publicKey()).toBytesFromBase64(),
+                StrToBytes.of(sign.toBase64()).toBytesFromBase64());
         System.out.println("签名有效：" + isOk);
     }
 
@@ -39,20 +39,20 @@ public class Test {
         SignBytes key = SecretKeyGenerator.generateKey(algorithm);
         System.out.println("密钥（16进制字符串）：" + key.toHex());
         System.out.println("密钥（base64字符串）：" + key.toBase64());
-        SignBytes sign = DigitalSigner.signature(content, StrToBytes.of(key.toHex()).toBytesFromHex(), algorithm);
+        SignBytes sign = DigitalSigner.signature(algorithm, content, StrToBytes.of(key.toHex()).toBytesFromHex());
         System.out.println("签名（16进制字符串）：" + sign.toHex());
         System.out.println("签名（base64字符串）：" + sign.toBase64());
-        boolean isOk = DigitalSigner.verify(content, StrToBytes.of(key.toHex()).toBytesFromHex(),
-                algorithm, StrToBytes.of(sign.toHex()).toBytesFromHex());
+        boolean isOk = DigitalSigner.verify(algorithm, content, StrToBytes.of(key.toHex()).toBytesFromHex(),
+                StrToBytes.of(sign.toHex()).toBytesFromHex());
         System.out.println("签名有效：" + isOk);
     }
 
     private static void test3(String content, SignatureAlgorithm algorithm) {
         System.out.println("基于消息摘要算法的数字签名----------------");
-        SignBytes sign = DigitalSigner.signature(content, null, algorithm);
+        SignBytes sign = DigitalSigner.signature(algorithm, content, null);
         System.out.println("签名（16进制字符串）：" + sign.toHex());
         System.out.println("签名（base64字符串）：" + sign.toBase64());
-        boolean isOk = DigitalSigner.verify(content, null, algorithm, StrToBytes.of(sign.toHex()).toBytesFromHex());
+        boolean isOk = DigitalSigner.verify(algorithm, content, null, StrToBytes.of(sign.toHex()).toBytesFromHex());
         System.out.println("签名有效：" + isOk);
     }
 }

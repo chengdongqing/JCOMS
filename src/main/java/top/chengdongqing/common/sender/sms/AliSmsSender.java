@@ -59,9 +59,8 @@ public class AliSmsSender implements SmsSender {
         // 放到模板的参数，JSON格式
         params.put("TemplateParam", entity.getContent());
         String content = StrKit.buildQueryStr(params, true);
-        SignBytes bytes = DigitalSigner.signature(content,
-                StrToBytes.of(constants.getAccessSecret()).toBytesFromBase64(),
-                SignatureAlgorithm.HMAC_SHA1);
+        SignBytes bytes = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA1, content,
+                StrToBytes.of(constants.getAccessSecret()).toBytesFromBase64());
         params.put("Signature", bytes.toBase64());
 
         try {

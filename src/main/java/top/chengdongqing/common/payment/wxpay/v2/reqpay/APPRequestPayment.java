@@ -36,9 +36,9 @@ public class APPRequestPayment extends V2RequestPayment {
         data.put("package", "Sign=WXPay");
         data.put("noncestr", StrKit.getRandomUUID());
         data.put("timestamp", Instant.now().getEpochSecond() + "");
-        SignBytes sign = DigitalSigner.signature(StrKit.buildQueryStr(data),
-                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex(),
-                SignatureAlgorithm.SHA256);
+        SignBytes sign = DigitalSigner.signature(SignatureAlgorithm.SHA256,
+                StrKit.buildQueryStr(data),
+                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex());
         data.put("sign", sign.toHex());
         return Ret.ok(data);
     }

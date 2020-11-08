@@ -1,8 +1,8 @@
 package top.chengdongqing.common.signature.signer;
 
 import top.chengdongqing.common.signature.IDigitalSigner;
-import top.chengdongqing.common.signature.transform.SignBytes;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.signature.transform.SignBytes;
 
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -19,16 +19,8 @@ import java.security.spec.X509EncodedKeySpec;
  */
 public class AsymmetricSigner implements IDigitalSigner {
 
-    /**
-     * 执行签名
-     *
-     * @param content   签名的内容
-     * @param key       私钥
-     * @param algorithm 签名算法
-     * @return 数字签名
-     */
     @Override
-    public SignBytes signature(String content, byte[] key, SignatureAlgorithm algorithm) {
+    public SignBytes signature(SignatureAlgorithm algorithm, String content, byte[] key) {
         try {
             Signature signature = Signature.getInstance(algorithm.getAlgorithm());
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamily());
@@ -42,17 +34,8 @@ public class AsymmetricSigner implements IDigitalSigner {
         }
     }
 
-    /**
-     * 验证签名
-     *
-     * @param content   签名的内容
-     * @param key       公钥
-     * @param algorithm 签名算法
-     * @param sign      要校验的签名
-     * @return 签名是否正确
-     */
     @Override
-    public boolean verify(String content, byte[] key, SignatureAlgorithm algorithm, byte[] sign) {
+    public boolean verify(SignatureAlgorithm algorithm, String content, byte[] key, byte[] sign) {
         try {
             Signature signature = Signature.getInstance(algorithm.getAlgorithm());
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamily());

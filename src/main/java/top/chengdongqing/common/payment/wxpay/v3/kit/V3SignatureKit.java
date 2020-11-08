@@ -29,7 +29,7 @@ public class V3SignatureKit {
         // 获取待签名字符串
         String content = getContent(method.name(), url, timestamp, nonceStr, body);
         // 生成签名
-        return DigitalSigner.signature(content, StrToBytes.of(key).toBytesFromBase64(), SignatureAlgorithm.RSA_SHA256).toBase64();
+        return DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256, content, StrToBytes.of(key).toBytesFromBase64()).toBase64();
     }
 
     /**
@@ -43,9 +43,8 @@ public class V3SignatureKit {
         // 获取待签名字符串
         String content = getContent(wxCallback.getTimestamp(), wxCallback.getNonceStr(), wxCallback.getBody());
         // 验证签名
-        return DigitalSigner.verify(content,
+        return DigitalSigner.verify(SignatureAlgorithm.RSA_SHA256, content,
                 StrToBytes.of(key).toBytesFromBase64(),
-                SignatureAlgorithm.RSA_SHA256,
                 StrToBytes.of(wxCallback.getSign()).toBytesFromBase64());
     }
 

@@ -59,9 +59,8 @@ public class JwtOperator {
         Base64.Encoder encoder = Base64.getUrlEncoder();
         String content = encoder.encodeToString(header.toJson()) + "." + encoder.encodeToString(JSON.toJSONBytes(payloads));
         // 执行签名
-        String signature = DigitalSigner.signature(content,
-                StrToBytes.of(constants.getPrivateKey()).toBytesFromBase64(),
-                ALGORITHM).toBase64();
+        String signature = DigitalSigner.signature(ALGORITHM, content,
+                StrToBytes.of(constants.getPrivateKey()).toBytesFromBase64()).toBase64();
         content += "." + signature;
         // 返回token详情
         return JwtInfo.builder()
@@ -87,9 +86,8 @@ public class JwtOperator {
         String content = parts[0] + "." + parts[1];
 
         // 验签
-        boolean verified = DigitalSigner.verify(content,
+        boolean verified = DigitalSigner.verify(ALGORITHM, content,
                 StrToBytes.of(constants.getPublicKey()).toBytesFromBase64(),
-                ALGORITHM,
                 StrToBytes.of(parts[2]).toBytesFromBase64());
         if (!verified) return false;
 

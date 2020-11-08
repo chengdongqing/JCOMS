@@ -42,9 +42,9 @@ public class MPRequestPayment extends V2RequestPayment {
         data.put("nonceStr", StrKit.getRandomUUID());
         data.put("package", "prepay_id=" + resultMap.get("prepay_id"));
         data.put("signType", v2constants.getSignType());
-        SignBytes sign = DigitalSigner.signature(StrKit.buildQueryStr(data),
-                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex(),
-                SignatureAlgorithm.HMAC_SHA256);
+        SignBytes sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
+                StrKit.buildQueryStr(data),
+                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex());
         data.put("paySign", sign.toHex());
         return Ret.ok(data);
     }

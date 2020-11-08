@@ -57,9 +57,8 @@ public abstract class V2RequestPayment implements IRequestPayment {
         // 不同客户端添加不同的参数
         addSpecialParams(params, entity);
         // 执行签名
-        SignBytes sign = DigitalSigner.signature(StrKit.buildQueryStr(params),
-                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex(),
-                SignatureAlgorithm.HMAC_SHA256);
+        SignBytes sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256, StrKit.buildQueryStr(params),
+                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex());
         params.put("sign", sign.toHex());
         params.remove("key");
 
