@@ -19,6 +19,9 @@ import java.util.Map;
 
 /**
  * HTTP工具类
+ * 默认支持GET、POST、PUT、DELETE请求
+ * 支持本地证书构建SSL上下文
+ * 支持自定义请求头、地址栏参数、请求体等
  *
  * @author Luyao
  */
@@ -28,20 +31,20 @@ public class HttpKit {
         return get(url, null);
     }
 
-    public static HttpResponse<String> get(String url, Map<String, String> queryParams) {
-        return get(url, queryParams, null);
+    public static HttpResponse<String> get(String url, Map<String, String> params) {
+        return get(url, params, null);
     }
 
     /**
      * 发送GET请求
      *
-     * @param url         请求地址
-     * @param queryParams 查询参数对
-     * @param headers     请求头
+     * @param url     请求地址
+     * @param params  参数键值对
+     * @param headers 请求头
      * @return 响应结果
      */
-    public static HttpResponse<String> get(String url, Map<String, String> queryParams, Map<String, String> headers) {
-        return send(HttpMethod.GET, url, queryParams, headers, null, null, null);
+    public static HttpResponse<String> get(String url, Map<String, String> params, Map<String, String> headers) {
+        return send(HttpMethod.GET, url, params, headers, null, null, null);
     }
 
     public static HttpResponse<String> post(String url, String data) {
@@ -52,8 +55,8 @@ public class HttpKit {
         return post(url, null, headers, data);
     }
 
-    public static HttpResponse<String> post(String url, Map<String, String> queryParams, Map<String, String> headers, String data) {
-        return post(url, queryParams, headers, data, null, null);
+    public static HttpResponse<String> post(String url, Map<String, String> params, Map<String, String> headers, String data) {
+        return post(url, params, headers, data, null, null);
     }
 
     public static HttpResponse<String> post(String url, String data, byte[] certBytes, String certPwd) {
@@ -63,60 +66,60 @@ public class HttpKit {
     /**
      * 发送POST请求
      *
-     * @param url         请求地址
-     * @param queryParams 查询参数对
-     * @param headers     请求头
-     * @param data        请求体
-     * @param certBytes   证书数据
-     * @param certPwd     证书密码
+     * @param url       请求地址
+     * @param params    参数键值对
+     * @param headers   请求头
+     * @param data      请求体
+     * @param certBytes 证书数据
+     * @param certPwd   证书密码
      * @return 响应结果
      */
-    public static HttpResponse<String> post(String url, Map<String, String> queryParams, Map<String, String> headers,
+    public static HttpResponse<String> post(String url, Map<String, String> params, Map<String, String> headers,
                                             String data, byte[] certBytes, String certPwd) {
-        return send(HttpMethod.POST, url, queryParams, headers, data, certBytes, certPwd);
+        return send(HttpMethod.POST, url, params, headers, data, certBytes, certPwd);
     }
 
     /**
      * 发送DELETE请求
      *
-     * @param url         请求地址
-     * @param queryParams 查询参数对
-     * @param headers     请求头
-     * @param data        请求体
+     * @param url     请求地址
+     * @param params  参数键值对
+     * @param headers 请求头
+     * @param data    请求体
      * @return 响应结果
      */
-    public static HttpResponse<String> delete(String url, Map<String, String> queryParams, Map<String, String> headers,
+    public static HttpResponse<String> delete(String url, Map<String, String> params, Map<String, String> headers,
                                               String data) {
-        return send(HttpMethod.DELETE, url, queryParams, headers, data, null, null);
+        return send(HttpMethod.DELETE, url, params, headers, data, null, null);
     }
 
     /**
      * 发送PUT请求
      *
-     * @param url         请求地址
-     * @param queryParams 查询参数对
-     * @param headers     请求头
-     * @param data        请求体
+     * @param url     请求地址
+     * @param params  参数键值对
+     * @param headers 请求头
+     * @param data    请求体
      * @return 响应结果
      */
-    public static HttpResponse<String> put(String url, Map<String, String> queryParams, Map<String, String> headers,
+    public static HttpResponse<String> put(String url, Map<String, String> params, Map<String, String> headers,
                                            String data) {
-        return send(HttpMethod.PUT, url, queryParams, headers, data, null, null);
+        return send(HttpMethod.PUT, url, params, headers, data, null, null);
     }
 
     /**
      * 发送HTTP请求
      *
-     * @param method      请求方式
-     * @param url         请求地址
-     * @param queryParams 跟随请求地址后的参数对
-     * @param headers     请求头
-     * @param data        请求体
-     * @param certBytes   证书数据
-     * @param certPwd     证书密码
+     * @param method    请求方式
+     * @param url       请求地址
+     * @param params    参数键值对
+     * @param headers   请求头
+     * @param data      请求体
+     * @param certBytes 证书数据
+     * @param certPwd   证书密码
      * @return 响应结果
      */
-    public static HttpResponse<String> send(HttpMethod method, String url, Map<String, String> queryParams,
+    public static HttpResponse<String> send(HttpMethod method, String url, Map<String, String> params,
                                             Map<String, String> headers, String data,
                                             byte[] certBytes, String certPwd) {
         try {
@@ -128,7 +131,7 @@ public class HttpKit {
             HttpClient client = clientBuilder.build();
 
             // 构建HTTP请求
-            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(buildUrlWithQueryStr(url, queryParams)))
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(buildUrlWithparams(url, params)))
                     .method(method.name(), data == null ?
                             HttpRequest.BodyPublishers.noBody() :
                             HttpRequest.BodyPublishers.ofString(data)
@@ -149,7 +152,6 @@ public class HttpKit {
      * @param certBytes 证书数据
      * @param certPwd   证书密码
      * @return SSL上下文
-     * @throws Exception
      */
     private static SSLContext buildSSLContext(byte[] certBytes, String certPwd) throws Exception {
         // 将证书密码字符串转为字符数组
@@ -170,9 +172,13 @@ public class HttpKit {
     }
 
     /**
-     * 给访问路径拼接参数
+     * 构建带参数的请求地址
+     *
+     * @param url    请求地址
+     * @param params 参数键值对
+     * @return 带参数的请求地址
      */
-    private static String buildUrlWithQueryStr(String url, Map<String, String> params) {
+    private static String buildUrlWithparams(String url, Map<String, String> params) {
         if (params == null || params.isEmpty()) return url;
 
         StringBuilder sb = new StringBuilder(url);
