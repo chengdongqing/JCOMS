@@ -5,7 +5,6 @@ import com.aliyun.oss.OSSClientBuilder;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
@@ -30,7 +29,6 @@ public class OSSUploader extends AbstractUploader {
                         constants.getAccessSecret());
     }
 
-    @Async
     @Override
     protected void upload(byte[] fileBytes, String path, String fileName) throws Exception {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(fileBytes)) {

@@ -56,6 +56,33 @@ public interface FileManager {
     void clearDirectory(FilePath path) throws Exception;
 
     /**
+     * 重命名文件
+     *
+     * @param fileUrl 文件路径
+     * @param name    新文件名
+     * @throws Exception
+     */
+    void renameFile(String fileUrl, String name) throws Exception;
+
+    /**
+     * 移动文件
+     *
+     * @param fileUrl    文件路径
+     * @param targetPath 目标文件夹
+     * @throws Exception
+     */
+    void moveFile(String fileUrl, FilePath targetPath) throws Exception;
+
+    /**
+     * 移动多个文件
+     *
+     * @param fileUrls    文件路径
+     * @param targetPath 目标文件夹
+     * @throws Exception
+     */
+    void moveFiles(List<String> fileUrls, FilePath targetPath) throws Exception;
+
+    /**
      * 获取文件格式
      *
      * @param fileName 文件名
@@ -65,6 +92,6 @@ public interface FileManager {
         if (StringUtils.isBlank(fileName) || !fileName.contains(".")) {
             throw new IllegalArgumentException("The file name is wrong.");
         }
-        return fileName.substring(fileName.indexOf(".") + 1);
+        return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
 }

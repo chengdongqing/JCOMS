@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import top.chengdongqing.common.kit.Ret;
 
-import java.io.IOException;
-
 /**
  * 上传器
  *
@@ -30,12 +28,8 @@ public class Uploader {
      * @param path 存放路径
      * @return 上传结果
      */
-    public Ret<String> uploadImage(MultipartFile file, FilePath path) throws IOException {
-        return uploaderFactory.getUploader().upload(File.builder()
-                        .name(file.getOriginalFilename())
-                        .bytes(file.getBytes())
-                        .build(),
-                path,
+    public Ret<String> uploadImage(MultipartFile file, FilePath path) {
+        return uploaderFactory.getUploader().upload(file, path,
                 constants.getImageFormats(),
                 constants.getImageMaxSize());
     }
@@ -47,12 +41,8 @@ public class Uploader {
      * @param path 存放路径
      * @return 上传结果
      */
-    public Ret<String> uploadVideo(MultipartFile file, FilePath path) throws IOException {
-        return uploaderFactory.getUploader().upload(File.builder()
-                        .name(file.getOriginalFilename())
-                        .bytes(file.getBytes())
-                        .build(),
-                path,
+    public Ret<String> uploadVideo(MultipartFile file, FilePath path) {
+        return uploaderFactory.getUploader().upload(file, path,
                 constants.getVideoFormats(),
                 constants.getVideoMaxSize());
     }

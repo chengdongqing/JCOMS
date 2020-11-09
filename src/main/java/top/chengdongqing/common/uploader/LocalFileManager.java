@@ -2,12 +2,12 @@ package top.chengdongqing.common.uploader;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.ZoneId;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,16 +25,12 @@ public class LocalFileManager extends AbstractUploader implements FileManager {
     @Value("${upload.local.base-path}")
     private String basePath;
 
-    @Async
     @Override
     protected void upload(byte[] fileBytes, String path, String fileName) throws Exception {
         // 获取文件夹对象
         Path directory = Path.of(basePath + path);
-        // 判断文件夹是否存在
-        if (!Files.isDirectory(directory)) {
-            // 不存在则自动创建文件夹
-            Files.createDirectories(directory);
-        }
+        // 文件夹不存在则自动创建
+        if (!Files.isDirectory(directory)) Files.createDirectories(directory);
         // 获取将要存放在该路径的文件对象
         Path targetFile = directory.resolve(fileName);
         // 如果已存在则删除
@@ -50,11 +46,12 @@ public class LocalFileManager extends AbstractUploader implements FileManager {
         Path path = Paths.get(basePath + fileUrl);
         String filename = path.getFileName().toString();
         return File.builder()
-                .bytes(content ? Files.readAllBytes(path) : null)
                 .name(filename)
-                .format(FileManager.getFormat(filename))
                 .size(Files.size(path))
                 .path(path.toUri().toString())
+                .isDirectory(Files.isDirectory(path))
+                .format(FileManager.getFormat(filename))
+                .bytes(content ? Files.readAllBytes(path) : null)
                 .uploadTime(Files.getLastModifiedTime(path).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
                 .build();
     }
@@ -95,11 +92,45 @@ public class LocalFileManager extends AbstractUploader implements FileManager {
         if (!Files.isDirectory(directory)) {
             throw new IllegalArgumentException(path.getPath() + " does not a directory.");
         }
+        recursiveDelete(directory);
+    }
 
-        // 获取指定文件夹下的所有文件并删除
-        List<Path> pathFiles = Files.list(directory).collect(Collectors.toList());
-        for (Path file : pathFiles) {
-            deleteFile(path.getPath() + file.getFileName());
+    /**
+     * 递归删除文件
+     *
+     * @param directory 文件夹
+     * @throws Exception
+     */
+    private void recursiveDelete(Path directory) throws Exception {
+        List<Path> files = Files.list(directory).collect(Collectors.toList());
+        for (Path file : files) {
+            if (Files.isDirectory(file) && Files.list(file).count() > 0) {
+                recursiveDelete(file);
+            }
+            Files.delete(file);
+        }
+    }
+
+    @Override
+    public void renameFile(String fileUrl, String name) throws Exception {
+        Path file = Paths.get(basePath + fileUrl);
+        String fileName = file.getFileName().toString();
+        Path newFile = Path.of(basePath + fileUrl.replace(fileName, name));
+        Files.move(file, newFile, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Override
+    public void moveFile(String fileUrl, FilePath targetPath) throws Exception {
+        Path file = Paths.get(basePath + fileUrl);
+        Path directory = Paths.get(basePath + targetPath.getPath());
+        if (!Files.isDirectory(directory)) Files.createDirectories(directory);
+        Files.move(file, directory.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Override
+    public void moveFiles(List<String> fileUrls, FilePath targetPath) throws Exception {
+        for (String fileUrl : fileUrls) {
+            moveFile(fileUrl, targetPath);
         }
     }
 }

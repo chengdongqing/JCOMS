@@ -27,7 +27,7 @@ public class UploaderFactory extends ApplicationObjectSupport {
      */
     public AbstractUploader getUploader() throws CannotLoadBeanClassException {
         Objects.requireNonNull(active, "upload.active cannot be null.");
-        String beanName = active + "Uploader";
+        String beanName = active + "FileManager";
         return super.getApplicationContext().getBean(beanName, AbstractUploader.class);
     }
 }

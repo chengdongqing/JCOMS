@@ -19,6 +19,10 @@ public class File {
      */
     private String name;
     /**
+     * 是否是文件夹
+     */
+    private boolean isDirectory;
+    /**
      * 文件大小
      */
     private Long size;

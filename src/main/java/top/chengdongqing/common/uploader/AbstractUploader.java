@@ -2,11 +2,11 @@ package top.chengdongqing.common.uploader;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * 上传器
@@ -30,7 +30,7 @@ public abstract class AbstractUploader {
      * @param maxSize 允许的大小
      * @return 上传结果
      */
-    public Ret<String> upload(File file, FilePath path, String[] formats, int maxSize) {
+    public Ret<String> upload(MultipartFile file, FilePath path, String[] formats, int maxSize) {
         // 检查文件
         Ret<String> checkResult = check(file, formats, maxSize);
         if (checkResult.isFail()) return checkResult;
@@ -50,7 +50,6 @@ public abstract class AbstractUploader {
 
     /**
      * 具体上传处理
-     * 可异步执行
      *
      * @param fileBytes 文件字节数组
      * @param path      存放路径
@@ -66,9 +65,8 @@ public abstract class AbstractUploader {
      * @param maxSize 允许的大小
      * @return 检查结果，如果没问题将文件后缀名返回
      */
-    private Ret<String> check(File file, String[] formats, int maxSize) {
-        Objects.requireNonNull(file);
-        Objects.requireNonNull(file.getBytes());
+    private Ret<String> check(MultipartFile file, String[] formats, int maxSize) {
+        if(file.isEmpty()) throw new IllegalArgumentException("The file is empty.");
 
         // 检查文件格式
         String format = FileManager.getFormat(file.getName());
