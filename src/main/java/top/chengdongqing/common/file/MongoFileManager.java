@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Component;
+import top.chengdongqing.common.file.upload.AbstractUploader;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -31,9 +32,9 @@ public class MongoFileManager extends AbstractUploader implements FileManager {
     private static final String QUERY_KEY = "filename";
 
     @Override
-    protected void upload(byte[] fileBytes, String path, String fileName) throws Exception {
+    protected void upload(byte[] fileBytes, String path, String filename) throws Exception {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(fileBytes)) {
-            gridFsTemplate.store(inputStream, path + fileName);
+            gridFsTemplate.store(inputStream, path + filename);
         }
     }
 
@@ -71,32 +72,49 @@ public class MongoFileManager extends AbstractUploader implements FileManager {
     }
 
     @Override
-    public void deleteFile(String fileUrl) throws Exception {
+    public void deleteFile(String fileUrl) {
         gridFsTemplate.delete(Query.query(Criteria.where(QUERY_KEY).is(fileUrl)));
     }
 
     @Override
-    public void deleteFiles(List<String> fileUrls) throws Exception {
+    public void deleteFiles(List<String> fileUrls) {
         gridFsTemplate.delete(Query.query(Criteria.where(QUERY_KEY).in(fileUrls)));
     }
 
     @Override
-    public void clearDirectory(FilePath path) throws Exception {
+    public void clearDirectory(FilePath path) {
         gridFsTemplate.delete(Query.query(Criteria.where(QUERY_KEY).alike(Example.of(path.getPath()))));
     }
 
     @Override
     public void renameFile(String fileUrl, String name) throws Exception {
-        throw new IllegalStateException("gridFs still not support to rename file now.");
+        File file = getFile(fileUrl, true);
+        move(file.getBytes(), fileUrl, fileUrl.replace(FileManager.getName(fileUrl), name));
+    }
+
+    /**
+     * 移动文件
+     *
+     * @param fileBytes 文件的内容
+     * @param newKey    旧文件的key
+     * @param newKey    新文件的key
+     * @throws Exception
+     */
+    private void move(byte[] fileBytes, String oldKey, String newKey) throws Exception {
+        upload(fileBytes, newKey.substring(0, newKey.lastIndexOf("/") + 1), FileManager.getName(newKey));
+        deleteFile(oldKey);
     }
 
     @Override
     public void moveFile(String fileUrl, FilePath targetPath) throws Exception {
-        throw new IllegalStateException("gridFs still not support to move file now.");
+        File file = getFile(fileUrl, true);
+        move(file.getBytes(), fileUrl, targetPath.getPath() + FileManager.getName(fileUrl));
     }
 
     @Override
     public void moveFiles(List<String> fileUrls, FilePath targetPath) throws Exception {
-        throw new IllegalStateException("gridFs still not support to move files now.");
+        for (String fileUrl : fileUrls) {
+            moveFile(fileUrl, targetPath);
+        }
     }
 }

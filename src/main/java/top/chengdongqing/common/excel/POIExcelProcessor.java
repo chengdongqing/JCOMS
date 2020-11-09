@@ -18,13 +18,13 @@ import java.util.Map;
 /**
  * @author Luyao
  */
-public class POIExcelProcessor implements IExcelProcessor {
+public class POIExcelProcessor implements ExcelProcessor {
 
     private static class ExcelProcessorHolder {
-        private static final IExcelProcessor ME = new POIExcelProcessor();
+        private static final ExcelProcessor ME = new POIExcelProcessor();
     }
 
-    public static IExcelProcessor me() {
+    public static ExcelProcessor me() {
         return ExcelProcessorHolder.ME;
     }
 

@@ -8,6 +8,9 @@ import java.util.List;
  * 文件管理器
  *
  * @author Luyao
+ * @see LocalFileManager
+ * @see MongoFileManager
+ * @see OSSFileManager
  */
 public interface FileManager {
 

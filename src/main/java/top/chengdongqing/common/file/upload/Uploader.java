@@ -1,4 +1,4 @@
-package top.chengdongqing.common.file;
+package top.chengdongqing.common.file.upload;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import top.chengdongqing.common.file.FilePath;
 import top.chengdongqing.common.kit.Ret;
 
 /**

@@ -11,7 +11,7 @@ import java.util.Map;
  * @author Luyao
  * @see POIExcelProcessor
  */
-public interface IExcelProcessor {
+public interface ExcelProcessor {
 
     /**
      * 读取excel

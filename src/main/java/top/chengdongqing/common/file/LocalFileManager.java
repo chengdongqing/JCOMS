@@ -3,6 +3,7 @@ package top.chengdongqing.common.file;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
+import top.chengdongqing.common.file.upload.AbstractUploader;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,13 +27,13 @@ public class LocalFileManager extends AbstractUploader implements FileManager {
     private String basePath;
 
     @Override
-    protected void upload(byte[] fileBytes, String path, String fileName) throws Exception {
+    protected void upload(byte[] fileBytes, String path, String filename) throws Exception {
         // 获取文件夹对象
         Path directory = Path.of(basePath + path);
         // 文件夹不存在则自动创建
         if (!Files.isDirectory(directory)) Files.createDirectories(directory);
         // 获取将要存放在该路径的文件对象
-        Path targetFile = directory.resolve(fileName);
+        Path targetFile = directory.resolve(filename);
         // 如果已存在则删除
         Files.deleteIfExists(targetFile);
         // 创建指定路径的文件

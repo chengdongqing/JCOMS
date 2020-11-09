@@ -1,4 +1,4 @@
-package top.chengdongqing.common.file;
+package top.chengdongqing.common.file.upload;
 
 import org.springframework.beans.factory.CannotLoadBeanClassException;
 import org.springframework.beans.factory.annotation.Value;

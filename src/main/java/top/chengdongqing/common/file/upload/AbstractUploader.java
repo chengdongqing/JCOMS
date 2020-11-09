@@ -1,8 +1,9 @@
-package top.chengdongqing.common.file;
+package top.chengdongqing.common.file.upload;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import top.chengdongqing.common.file.*;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 
@@ -36,12 +37,11 @@ public abstract class AbstractUploader {
         if (checkResult.isFail()) return checkResult;
 
         // 生成文件名
-        String fileName = StrKit.getRandomUUID() + checkResult.data();
+        String filename = StrKit.getRandomUUID() + checkResult.data();
 
         // 执行上传
         try {
-            upload(file.getBytes(), path.getPath(), fileName);
-            return Ret.ok(path.getPath() + fileName);
+            return Ret.ok(path.getPath() + filename);
         } catch (Exception e) {
             log.error("文件上传错误", e);
             throw new RuntimeException(e);
@@ -53,9 +53,9 @@ public abstract class AbstractUploader {
      *
      * @param fileBytes 文件字节数组
      * @param path      存放路径
-     * @param fileName  文件名
+     * @param filename  文件名
      */
-    protected abstract void upload(byte[] fileBytes, String path, String fileName) throws Exception;
+    protected abstract void upload(byte[] fileBytes, String path, String filename) throws Exception;
 
     /**
      * 检查文件

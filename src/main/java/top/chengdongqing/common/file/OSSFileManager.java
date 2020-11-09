@@ -10,8 +10,8 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import top.chengdongqing.common.file.upload.AbstractUploader;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.ZoneId;
@@ -40,9 +40,9 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
     }
 
     @Override
-    protected void upload(byte[] fileBytes, String path, String fileName) throws Exception {
+    protected void upload(byte[] fileBytes, String path, String filename) throws Exception {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(fileBytes)) {
-            client.putObject(constants.getBucket(), path + fileName, inputStream);
+            client.putObject(constants.getBucket(), path + filename, inputStream);
         }
     }
 
@@ -60,7 +60,7 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
 
         if (content) {
             OSSObject ossObject = client.getObject(constants.getBucket(), fileUrl);
-            try (InputStream stream = new BufferedInputStream(ossObject.getObjectContent())) {
+            try (InputStream stream = ossObject.getObjectContent()) {
                 file.setBytes(stream.readAllBytes());
             }
         }
@@ -101,6 +101,12 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
         move(fileUrl, newFileUrl);
     }
 
+    /**
+     * 移动文件
+     *
+     * @param oldKey 旧文件的键
+     * @param newKey 新文件的键
+     */
     private void move(String oldKey, String newKey) {
         client.copyObject(constants.getBucket(), oldKey, constants.getBucket(), newKey);
         client.deleteObject(constants.getBucket(), oldKey);
