@@ -1,7 +1,8 @@
 package top.chengdongqing.common.excel;
 
+import com.alibaba.fastjson.JSONArray;
+
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,5 +30,5 @@ public interface IExcelProcessor {
      * @param rows   数据行
      * @return excel字节数组
      */
-    ExcelBytes write(LinkedHashMap<String, String> titles, List<Map<String, String>> rows);
+    ExcelBytes write(LinkedHashMap<String, String> titles, JSONArray rows);
 }

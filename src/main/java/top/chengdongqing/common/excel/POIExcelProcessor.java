@@ -13,7 +13,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -61,7 +60,7 @@ public class POIExcelProcessor implements IExcelProcessor {
     }
 
     @Override
-    public ExcelBytes write(LinkedHashMap<String, String> titles, List<Map<String, String>> rows) {
+    public ExcelBytes write(LinkedHashMap<String, String> titles, JSONArray rows) {
         try (XSSFWorkbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             // 创建表格
@@ -86,7 +85,7 @@ public class POIExcelProcessor implements IExcelProcessor {
             // 创建数据行
             for (int i = 0; i < rows.size(); i++) {
                 // 该行数据对象
-                Map<String, String> item = rows.get(i);
+                JSONObject item = rows.getJSONObject(i);
                 // 在表格中创建行
                 Row row = sheet.createRow(i + 1);
 
@@ -94,7 +93,7 @@ public class POIExcelProcessor implements IExcelProcessor {
                 cellIndex = 0;
                 for (String key : titles.keySet()) {
                     Cell cell = row.createCell(cellIndex);
-                    cell.setCellValue(item.get(key));
+                    cell.setCellValue(item.getString(key));
                     cell.setCellStyle(cellStyle);
                     cellIndex++;
                 }
@@ -111,7 +110,7 @@ public class POIExcelProcessor implements IExcelProcessor {
     /**
      * 获取workbook
      *
-     * @param fileName 文件名，根据文件后缀名判断需要创建那种类型的workbook
+     * @param fileName 文件名，根据文件后缀名判断需要创建哪种类型的workbook
      * @return workbook
      */
     private Workbook getWorkbook(String fileName, byte[] bytes) throws Exception {

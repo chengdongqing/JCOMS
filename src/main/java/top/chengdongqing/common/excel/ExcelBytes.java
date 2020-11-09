@@ -36,7 +36,6 @@ public record ExcelBytes(byte[] bytes) {
      */
     public void renderWithDate(String name) {
         String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        name = String.join("", name, "-", date, EXCEL_SUFFIX);
-        StreamRender.of(name, bytes).render();
+        render(String.join("-", name, date));
     }
 }

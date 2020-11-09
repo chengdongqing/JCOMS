@@ -19,6 +19,7 @@ LinkedHashMap<String, String> titles = new LinkedHashMap<String, String>() {{
     put("phoneNumber", "手机号");
     put("name", "名称");
 }};
-JSONArray rows = new JSONArray(users.stream().map(item -> (Object) item).collect(Collectors.toList()));
+JSONArray rows = new JSONArray();
+rows.addAll(users);
 POIExcelProcessor.me().write(titles, rows).renderWithDate("用户手机号和名称关系");
 ```
