@@ -1,6 +1,9 @@
 package top.chengdongqing.common.file;
 
 import org.apache.commons.lang3.StringUtils;
+import top.chengdongqing.common.file.manager.LocalFileManager;
+import top.chengdongqing.common.file.manager.MongoFileManager;
+import top.chengdongqing.common.file.manager.OSSFileManager;
 
 import java.util.List;
 

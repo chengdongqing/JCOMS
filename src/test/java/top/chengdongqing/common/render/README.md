@@ -10,5 +10,5 @@
 ```
 String name = "测试.xlsx";
 byte[] bytes = ...
-StreamRender.init(name, bytes).render();
+StreamRender.of(name, bytes).render();
 ```

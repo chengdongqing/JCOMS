@@ -1,8 +1,11 @@
-package top.chengdongqing.common.file;
+package top.chengdongqing.common.file.manager;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
+import top.chengdongqing.common.file.File;
+import top.chengdongqing.common.file.FileManager;
+import top.chengdongqing.common.file.FilePath;
 import top.chengdongqing.common.file.upload.AbstractUploader;
 
 import java.nio.file.Files;
@@ -100,7 +103,6 @@ public class LocalFileManager extends AbstractUploader implements FileManager {
      * 递归删除文件
      *
      * @param directory 文件夹
-     * @throws Exception
      */
     private void recursiveDelete(Path directory) throws Exception {
         List<Path> files = Files.list(directory).collect(Collectors.toList());

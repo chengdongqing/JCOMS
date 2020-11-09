@@ -1,4 +1,4 @@
-package top.chengdongqing.common.file;
+package top.chengdongqing.common.file.manager;
 
 import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.model.GridFSFile;
@@ -9,6 +9,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Component;
+import top.chengdongqing.common.file.File;
+import top.chengdongqing.common.file.FileManager;
+import top.chengdongqing.common.file.FilePath;
 import top.chengdongqing.common.file.upload.AbstractUploader;
 
 import java.io.BufferedInputStream;

@@ -3,7 +3,11 @@ package top.chengdongqing.common.file.upload;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import top.chengdongqing.common.file.*;
+import top.chengdongqing.common.file.FileManager;
+import top.chengdongqing.common.file.FilePath;
+import top.chengdongqing.common.file.manager.LocalFileManager;
+import top.chengdongqing.common.file.manager.MongoFileManager;
+import top.chengdongqing.common.file.manager.OSSFileManager;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 
@@ -41,6 +45,7 @@ public abstract class AbstractUploader {
 
         // 执行上传
         try {
+            upload(file.getBytes(), path.getPath(), filename);
             return Ret.ok(path.getPath() + filename);
         } catch (Exception e) {
             log.error("文件上传错误", e);

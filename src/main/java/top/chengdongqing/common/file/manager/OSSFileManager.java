@@ -1,4 +1,4 @@
-package top.chengdongqing.common.file;
+package top.chengdongqing.common.file.manager;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -10,6 +10,9 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import top.chengdongqing.common.file.File;
+import top.chengdongqing.common.file.FileManager;
+import top.chengdongqing.common.file.FilePath;
 import top.chengdongqing.common.file.upload.AbstractUploader;
 
 import java.io.ByteArrayInputStream;

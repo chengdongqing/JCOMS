@@ -26,7 +26,7 @@ public abstract class Render {
     }
 
     /**
-     * 渲染到客户端
+     * render to client.
      */
     public abstract void render();
 }
