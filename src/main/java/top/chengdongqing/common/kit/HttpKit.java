@@ -131,7 +131,7 @@ public class HttpKit {
             HttpClient client = clientBuilder.build();
 
             // 构建HTTP请求
-            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(buildUrlWithparams(url, params)))
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(buildUrlWithParams(url, params)))
                     .method(method.name(), data == null ?
                             HttpRequest.BodyPublishers.noBody() :
                             HttpRequest.BodyPublishers.ofString(data)
@@ -178,7 +178,7 @@ public class HttpKit {
      * @param params 参数键值对
      * @return 带参数的请求地址
      */
-    private static String buildUrlWithparams(String url, Map<String, String> params) {
+    private static String buildUrlWithParams(String url, Map<String, String> params) {
         if (params == null || params.isEmpty()) return url;
 
         StringBuilder sb = new StringBuilder(url);
