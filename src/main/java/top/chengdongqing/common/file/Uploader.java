@@ -1,4 +1,4 @@
-package top.chengdongqing.common.uploader;
+package top.chengdongqing.common.file;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;

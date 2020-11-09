@@ -1,4 +1,4 @@
-package top.chengdongqing.common.uploader;
+package top.chengdongqing.common.file;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -14,8 +14,8 @@ import java.util.Arrays;
  *
  * @author Luyao
  * @see LocalFileManager
- * @see MongoUploader
- * @see OSSUploader
+ * @see MongoFileManager
+ * @see OSSFileManager
  */
 @Slf4j
 @Component
@@ -63,7 +63,7 @@ public abstract class AbstractUploader {
      * @param file    文件对象
      * @param formats 支持的格式
      * @param maxSize 允许的大小
-     * @return 检查结果，如果没问题将文件后缀名返回
+     * @return 检查结果，正常将返回文件后缀名
      */
     private Ret<String> check(MultipartFile file, String[] formats, int maxSize) {
         if(file.isEmpty()) throw new IllegalArgumentException("The file is empty.");

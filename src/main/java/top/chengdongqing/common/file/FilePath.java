@@ -1,4 +1,4 @@
-package top.chengdongqing.common.uploader;
+package top.chengdongqing.common.file;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

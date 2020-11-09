@@ -35,7 +35,7 @@ public class SenderFactory extends ApplicationObjectSupport {
      *
      * @return 短信发送器实例
      */
-    public ISender getSmsSender() throws CannotLoadBeanClassException {
+    public SmsSender getSmsSender() throws CannotLoadBeanClassException {
         Objects.requireNonNull(smsActive, "sms.active cannot be blank.");
         String beanName = smsActive + "SmsSender";
         return super.getApplicationContext().getBean(beanName, SmsSender.class);
@@ -46,7 +46,7 @@ public class SenderFactory extends ApplicationObjectSupport {
      *
      * @return 邮件发送器实例
      */
-    public ISender getEmailSender() throws CannotLoadBeanClassException {
+    public EmailSender getEmailSender() throws CannotLoadBeanClassException {
         Objects.requireNonNull(emailActive, "sms.active cannot be blank.");
         String beanName = emailActive + "EmailSender";
         return super.getApplicationContext().getBean(beanName, EmailSender.class);

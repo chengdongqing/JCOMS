@@ -1,5 +1,7 @@
 package top.chengdongqing.common.render;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -16,12 +18,16 @@ public class StreamRender extends Render {
     private final byte[] data;
 
     public StreamRender(String name, byte[] data) {
+        if (StringUtils.isBlank(name) || data == null) {
+            throw new IllegalArgumentException("The name and data cannot be null");
+        }
+
         this.name = URLEncoder.encode(name, charset);
         this.data = data;
     }
 
     /**
-     * 工厂方法创建当前对象
+     * 工厂方法创建实例
      */
     public static Render of(String name, byte[] data) {
         return new StreamRender(name, data);

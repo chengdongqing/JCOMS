@@ -1,7 +1,9 @@
-package top.chengdongqing.common.uploader;
+package top.chengdongqing.common.file;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -10,8 +12,10 @@ import java.time.LocalDateTime;
  *
  * @author Luyao
  */
-@Getter
+@Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class File {
 
     /**

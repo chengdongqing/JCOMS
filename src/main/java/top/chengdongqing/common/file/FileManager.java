@@ -1,4 +1,4 @@
-package top.chengdongqing.common.uploader;
+package top.chengdongqing.common.file;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -76,7 +76,7 @@ public interface FileManager {
     /**
      * 移动多个文件
      *
-     * @param fileUrls    文件路径
+     * @param fileUrls   文件路径
      * @param targetPath 目标文件夹
      * @throws Exception
      */
@@ -93,5 +93,18 @@ public interface FileManager {
             throw new IllegalArgumentException("The file name is wrong.");
         }
         return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
+
+    /**
+     * 获取文件名
+     *
+     * @param fileUrl 文件路径
+     * @return 文件名
+     */
+    static String getName(String fileUrl) {
+        if (StringUtils.isBlank(fileUrl) || !fileUrl.contains("/")) {
+            throw new IllegalArgumentException("The file url is wrong.");
+        }
+        return fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
     }
 }
