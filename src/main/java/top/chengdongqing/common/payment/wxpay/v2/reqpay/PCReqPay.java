@@ -1,9 +1,8 @@
 package top.chengdongqing.common.payment.wxpay.v2.reqpay;
 
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.payment.PaymentRequestEntity;
+import top.chengdongqing.common.payment.PayReqEntity;
 import top.chengdongqing.common.payment.wxpay.TradeType;
-import top.chengdongqing.common.payment.wxpay.v2.V2RequestPayment;
 
 import java.util.Map;
 
@@ -12,10 +11,10 @@ import java.util.Map;
  *
  * @author Luyao
  */
-public class PCRequestPayment extends V2RequestPayment {
+public class PCReqPay extends WxV2ReqPay {
 
     @Override
-    protected void addSpecialParams(Map<String, String> params, PaymentRequestEntity entity) {
+    protected void addSpecialParams(Map<String, String> params, PayReqEntity entity) {
         params.put("appid", constants.getAppId().getPc());
         params.put("trade_type", TradeType.NATIVE.name());
     }

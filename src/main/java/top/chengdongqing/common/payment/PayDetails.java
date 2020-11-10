@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @Builder
-public class PaymentDetails {
+public class PayDetails {
 
     /**
      * 订单号

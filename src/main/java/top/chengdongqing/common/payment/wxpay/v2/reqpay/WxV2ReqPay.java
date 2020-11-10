@@ -1,4 +1,4 @@
-package top.chengdongqing.common.payment.wxpay.v2;
+package top.chengdongqing.common.payment.wxpay.v2.reqpay;
 
 import com.alibaba.fastjson.JSON;
 import lombok.AllArgsConstructor;
@@ -7,9 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.*;
-import top.chengdongqing.common.payment.IRequestPayment;
-import top.chengdongqing.common.payment.PaymentRequestEntity;
+import top.chengdongqing.common.payment.IReqPay;
+import top.chengdongqing.common.payment.PayReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
+import top.chengdongqing.common.payment.wxpay.v2.V2WxPayment;
+import top.chengdongqing.common.payment.wxpay.v2.WxV2Constants;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.BytesToStr;
@@ -31,7 +33,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public abstract class V2RequestPayment implements IRequestPayment {
+public abstract class WxV2ReqPay implements IReqPay {
 
     @Autowired
     protected WxConstants constants;
@@ -39,7 +41,7 @@ public abstract class V2RequestPayment implements IRequestPayment {
     protected WxV2Constants v2constants;
 
     @Override
-    public Ret requestPayment(PaymentRequestEntity entity) {
+    public Ret requestPayment(PayReqEntity entity) {
         // 封装请求参数
         Map<String, String> params = new HashMap<>();
         params.put("mch_id", constants.getMchId());
@@ -82,7 +84,7 @@ public abstract class V2RequestPayment implements IRequestPayment {
      * @param items 商品列表
      * @return 商品详情JSON字符串
      */
-    private static String getGoodsDetail(List<PaymentRequestEntity.OrderItem> items) {
+    private static String getGoodsDetail(List<PayReqEntity.OrderItem> items) {
         // 给微信的商品详情对象
         @Data
         @AllArgsConstructor
@@ -105,7 +107,7 @@ public abstract class V2RequestPayment implements IRequestPayment {
      * @param params 被填充的参数map
      * @param entity 请求付款的参数实体
      */
-    protected abstract void addSpecialParams(Map<String, String> params, PaymentRequestEntity entity);
+    protected abstract void addSpecialParams(Map<String, String> params, PayReqEntity entity);
 
     /**
      * 封装返回的数据

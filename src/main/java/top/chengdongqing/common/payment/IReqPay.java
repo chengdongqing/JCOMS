@@ -7,7 +7,7 @@ import top.chengdongqing.common.kit.Ret;
  *
  * @author Luyao
  */
-public interface IRequestPayment {
+public interface IReqPay {
 
     /**
      * 请求付款
@@ -15,5 +15,5 @@ public interface IRequestPayment {
      * @param entity 请求参数实体
      * @return 请求结果
      */
-    Ret requestPayment(PaymentRequestEntity entity);
+    Ret requestPayment(PayReqEntity entity);
 }

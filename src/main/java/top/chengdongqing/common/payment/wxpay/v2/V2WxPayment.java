@@ -13,11 +13,11 @@ import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.kit.XmlKit;
 import top.chengdongqing.common.payment.IPayment;
 import top.chengdongqing.common.payment.PayClient;
-import top.chengdongqing.common.payment.PaymentDetails;
-import top.chengdongqing.common.payment.PaymentRequestEntity;
+import top.chengdongqing.common.payment.PayDetails;
+import top.chengdongqing.common.payment.PayReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
-import top.chengdongqing.common.payment.wxpay.v2.reqpay.RequestPaymentContext;
+import top.chengdongqing.common.payment.wxpay.v2.reqpay.ReqPayContext;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.BytesToStr;
@@ -48,8 +48,8 @@ public class V2WxPayment implements IPayment {
     private WxV2Constants v2constants;
 
     @Override
-    public Ret requestPayment(PaymentRequestEntity entity, PayClient client) {
-        return new RequestPaymentContext(client).request(entity);
+    public Ret requestPayment(PayReqEntity entity, PayClient client) {
+        return new ReqPayContext(client).request(entity);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class V2WxPayment implements IPayment {
         if (!WxStatus.isOk(params.get("result_code"))) return toFailXml("支付失败");
 
         // 封装支付信息
-        PaymentDetails paymentDetails = PaymentDetails.builder()
+        PayDetails payDetails = PayDetails.builder()
                 .orderNo(params.get("out_trade_no"))
                 .paymentNo(params.get("transaction_id"))
                 // 将单位从分转为元
@@ -83,7 +83,7 @@ public class V2WxPayment implements IPayment {
         map.put("return_code", WxStatus.SUCCESS);
         return Ret.ok(CallbackResponseEntity.builder()
                 .xml(XmlKit.mapToXml(map))
-                .details(paymentDetails)
+                .details(payDetails)
                 .build()
         );
     }
@@ -174,7 +174,7 @@ public class V2WxPayment implements IPayment {
      * @param resultMap 响应信息
      * @return 验证结果
      */
-    static Ret getResult(Map<String, String> resultMap) {
+    public static Ret getResult(Map<String, String> resultMap) {
         boolean isOk = WxStatus.isOk(resultMap.get("return_code")) && WxStatus.isOk(resultMap.get("result_code"));
         return isOk ? Ret.ok() : Ret.fail(ErrorMsg.REQUEST_FAILED);
     }
@@ -193,6 +193,6 @@ public class V2WxPayment implements IPayment {
         /**
          * 收集的支付详情
          */
-        private PaymentDetails details;
+        private PayDetails details;
     }
 }

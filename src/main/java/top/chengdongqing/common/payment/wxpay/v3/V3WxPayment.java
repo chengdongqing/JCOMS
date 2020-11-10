@@ -14,13 +14,13 @@ import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IPayment;
 import top.chengdongqing.common.payment.PayClient;
-import top.chengdongqing.common.payment.PaymentDetails;
-import top.chengdongqing.common.payment.PaymentRequestEntity;
+import top.chengdongqing.common.payment.PayDetails;
+import top.chengdongqing.common.payment.PayReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
 import top.chengdongqing.common.payment.wxpay.v3.callback.ResourceHolder;
 import top.chengdongqing.common.payment.wxpay.v3.callback.WxCallback;
-import top.chengdongqing.common.payment.wxpay.v3.reqpay.RequestPaymentContext;
+import top.chengdongqing.common.payment.wxpay.v3.reqpay.ReqPayContext;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.math.BigDecimal;
@@ -46,8 +46,8 @@ public class V3WxPayment implements IPayment {
     private WxV3Constants v3constants;
 
     @Override
-    public Ret requestPayment(PaymentRequestEntity entity, PayClient client) {
-        return new RequestPaymentContext(client).request(entity);
+    public Ret requestPayment(PayReqEntity entity, PayClient client) {
+        return new ReqPayContext(client).request(entity);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class V3WxPayment implements IPayment {
         if (!resource.isTradeSuccess()) return toFailJson("交易失败");
 
         // 封装支付信息
-        PaymentDetails paymentDetails = PaymentDetails.builder()
+        PayDetails payDetails = PayDetails.builder()
                 .orderNo(resource.getOutTradeNo())
                 .paymentNo(resource.getTransactionId())
                 // 将单位从分转为元
@@ -92,7 +92,7 @@ public class V3WxPayment implements IPayment {
         response.put("code", WxStatus.SUCCESS);
         return Ret.ok(CallbackResponseEntity.builder()
                 .json(JSON.toJSONString(response))
-                .details(paymentDetails)
+                .details(payDetails)
                 .build()
         );
     }
@@ -142,6 +142,6 @@ public class V3WxPayment implements IPayment {
         /**
          * 收集的支付详情
          */
-        private PaymentDetails details;
+        private PayDetails details;
     }
 }

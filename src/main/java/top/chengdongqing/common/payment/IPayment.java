@@ -19,7 +19,7 @@ public interface IPayment {
      * @param client 客户端类型
      * @return 响应数据
      */
-    Ret requestPayment(PaymentRequestEntity entity, PayClient client);
+    Ret requestPayment(PayReqEntity entity, PayClient client);
 
     /**
      * 处理付款成功回调

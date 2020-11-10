@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Data
 @Builder
-public class PaymentRequestEntity {
+public class PayReqEntity {
 
     /**
      * 订单号

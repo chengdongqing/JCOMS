@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 @Component
 @RefreshScope
-public class WxPaymentFactory extends ApplicationObjectSupport {
+public class WxPayFactory extends ApplicationObjectSupport {
 
     @Value("${payment.wx.active}")
     private String active;
