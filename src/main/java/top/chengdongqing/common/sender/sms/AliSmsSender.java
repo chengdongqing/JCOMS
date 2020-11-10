@@ -31,15 +31,13 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class AliSmsSender implements SmsSender {
+public class AliSmsSender extends SmsSender {
 
     @Autowired
     private AliSmsConstants constants;
 
     @Override
-    public Ret send(SmsEntity entity) {
-        checkArgs(entity);
-
+    public Ret sendSms(SmsEntity entity) {
         // 封装参数
         Map<String, String> params = new HashMap<>();
         params.put("PhoneNumbers", entity.getTo());
@@ -67,8 +65,7 @@ public class AliSmsSender implements SmsSender {
             // 发送请求
             String result = HttpKit.get(constants.getGatewayUrl(), params).body();
             SendResult sendResult = JSON.parseObject(result, SendResult.class);
-            log.info("发送短信参数：{}", params);
-            log.info("发送短信结果：{}", result);
+            log.info("发送短信参数：{}, 发送短信结果：{}", params, result);
             return sendResult.isOk() ? Ret.ok() : Ret.fail(ErrorMsg.SEND_FAILED);
         } catch (Exception e) {
             log.error(ErrorMsg.SEND_FAILED, e);

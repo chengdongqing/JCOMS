@@ -20,11 +20,4 @@ public interface ISender<T> {
      * @return 发送结果
      */
     Ret send(T entity);
-
-    /**
-     * 检查参数
-     *
-     * @param entity 参数实体
-     */
-    void checkArgs(T entity);
 }

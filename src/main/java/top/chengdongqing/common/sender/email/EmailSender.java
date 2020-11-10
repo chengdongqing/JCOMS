@@ -12,21 +12,30 @@ import top.chengdongqing.common.sender.entity.EmailEntity;
  * @author Luyao
  * @see ApacheEmailSender
  */
-public interface EmailSender extends ISender<EmailEntity> {
+public abstract class EmailSender implements ISender<EmailEntity> {
 
     /**
      * 发送邮件
+     *
+     * @param entity 发送需要的参数实体
+     * @return 发送结果
      */
     @Override
-    Ret send(EmailEntity entity);
-
-    @Override
-    default void checkArgs(EmailEntity entity) {
+    public Ret send(EmailEntity entity) {
         if (StringUtils.isAnyBlank(entity.getTo(), entity.getTitle(), entity.getContent())) {
             throw new IllegalArgumentException("The args can not be blank.");
         }
         if (!entity.getTo().matches(Regexps.EMAIL_ADDRESS.getValue())) {
             throw new IllegalArgumentException("The email address is error.");
         }
+        return sendEmail(entity);
     }
+
+    /**
+     * 具体邮件发送细节
+     *
+     * @param entity 参数实体
+     * @return 发送结果
+     */
+    protected abstract Ret sendEmail(EmailEntity entity);
 }

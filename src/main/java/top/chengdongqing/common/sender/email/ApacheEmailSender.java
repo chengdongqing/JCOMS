@@ -15,21 +15,20 @@ import top.chengdongqing.common.sender.entity.EmailEntity;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 基于Apache的邮件发送器
+ * 邮件发送器
+ * 基于Apache commons
  *
  * @author Luyao
  */
 @Slf4j
 @Component
-public class ApacheEmailSender implements EmailSender {
+public class ApacheEmailSender extends EmailSender {
 
     @Autowired
     private ApacheEmailConstants constants;
 
     @Override
-    public Ret send(EmailEntity entity) {
-        checkArgs(entity);
-
+    public Ret sendEmail(EmailEntity entity) {
         // 实例化网页邮件客户端
         HtmlEmail he = new HtmlEmail();
         he.setHostName(constants.getHost());

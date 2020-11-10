@@ -12,21 +12,27 @@ import top.chengdongqing.common.sender.entity.SmsEntity;
  * @author Luyao
  * @see AliSmsSender
  */
-public interface SmsSender extends ISender<SmsEntity> {
+public abstract class SmsSender implements ISender<SmsEntity> {
 
     /**
      * 发送短信
      */
     @Override
-    Ret send(SmsEntity entity);
-
-    @Override
-    default void checkArgs(SmsEntity entity) {
+    public Ret send(SmsEntity entity) {
         if (StringUtils.isAnyBlank(entity.getTo(), entity.getTemplate(), entity.getContent())) {
             throw new IllegalArgumentException("The args can not be blank.");
         }
         if (!entity.getTo().matches(Regexps.PHONE_NUMBER.getValue())) {
             throw new IllegalArgumentException("The phone number is error.");
         }
+        return sendSms(entity);
     }
+
+    /**
+     * 具体发送短信细节
+     *
+     * @param entity 参数实体
+     * @return 发送结果
+     */
+    protected abstract Ret sendSms(SmsEntity entity);
 }
