@@ -5,6 +5,8 @@ import top.chengdongqing.common.constant.Regexps;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.sender.ISender;
 
+import java.util.regex.Pattern;
+
 /**
  * 短信发送器
  *
@@ -14,6 +16,11 @@ import top.chengdongqing.common.sender.ISender;
 public abstract class SmsSender implements ISender<SmsEntity> {
 
     /**
+     * 预编译手机号校验正则，提高性能
+     */
+    private static final Pattern PATTERN = Pattern.compile(Regexps.PHONE_NUMBER.getRegex());
+
+    /**
      * 发送短信
      */
     @Override
@@ -21,7 +28,7 @@ public abstract class SmsSender implements ISender<SmsEntity> {
         if (StringUtils.isAnyBlank(entity.getTo(), entity.getTemplate(), entity.getContent())) {
             throw new IllegalArgumentException("The args can not be blank.");
         }
-        if (!entity.getTo().matches(Regexps.PHONE_NUMBER.getValue())) {
+        if (!PATTERN.matcher(entity.getTo()).matches()) {
             throw new IllegalArgumentException("The phone number is error.");
         }
         return sendSms(entity);

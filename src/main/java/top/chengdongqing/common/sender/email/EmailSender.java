@@ -5,6 +5,8 @@ import top.chengdongqing.common.constant.Regexps;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.sender.ISender;
 
+import java.util.regex.Pattern;
+
 /**
  * 邮件发送器
  *
@@ -12,6 +14,11 @@ import top.chengdongqing.common.sender.ISender;
  * @see ApacheEmailSender
  */
 public abstract class EmailSender implements ISender<EmailEntity> {
+
+    /**
+     * 预编译邮箱校验正则，提高性能
+     */
+    private static final Pattern PATTERN = Pattern.compile(Regexps.EMAIL_ADDRESS.getRegex());
 
     /**
      * 发送邮件
@@ -24,7 +31,7 @@ public abstract class EmailSender implements ISender<EmailEntity> {
         if (StringUtils.isAnyBlank(entity.getTo(), entity.getTitle(), entity.getContent())) {
             throw new IllegalArgumentException("The args can not be blank.");
         }
-        if (!entity.getTo().matches(Regexps.EMAIL_ADDRESS.getValue())) {
+        if (!PATTERN.matcher(entity.getTo()).matches()) {
             throw new IllegalArgumentException("The email address is error.");
         }
         return sendEmail(entity);
