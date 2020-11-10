@@ -49,23 +49,32 @@ public class EventManager implements ApplicationContextAware {
 
     /**
      * 添加监听器
+     * 异步执行
+     *
+     * @param name     事件名称
+     * @param listener 监听器
+     */
+    public static void addListener(String name, EventListener listener) {
+        addListener(name, listener, true);
+    }
+
+    /**
+     * 添加监听器
      *
      * @param name     事件名称
      * @param listener 监听器
      * @param async    是否异步
      */
-    public static void addListener(String name, EventListener listener, boolean... async) {
-        if (StringUtils.isBlank(name) || listener == null || async != null && async.length > 1) {
+    public static void addListener(String name, EventListener listener, boolean async) {
+        if (StringUtils.isBlank(name) || listener == null) {
             throw new IllegalArgumentException("The args are wrong!");
         }
-        // 默认异步
-        boolean isAsync = async == null || async.length <= 0 || async[0];
 
         Set<EventListener> eventListeners = new HashSet<>() {{
             add(listener);
         }};
         // 根据是否异步来加到指定的map
-        if (isAsync) {
+        if (async) {
             addListener(asyncListeners, name, eventListeners);
         } else {
             addListener(syncListeners, name, eventListeners);
