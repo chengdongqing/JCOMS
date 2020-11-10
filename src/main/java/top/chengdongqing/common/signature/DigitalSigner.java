@@ -1,6 +1,6 @@
 package top.chengdongqing.common.signature;
 
-import top.chengdongqing.common.signature.transform.SignBytes;
+import top.chengdongqing.common.transformer.BytesToStr;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +26,7 @@ public class DigitalSigner {
      * @param key       签名密钥
      * @return 数字签名
      */
-    public static SignBytes signature(SignatureAlgorithm algorithm, String content, byte[] key) {
+    public static BytesToStr signature(SignatureAlgorithm algorithm, String content, byte[] key) {
         return getInstance(algorithm).signature(algorithm, content, key);
     }
 

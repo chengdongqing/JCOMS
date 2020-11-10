@@ -3,7 +3,7 @@ package top.chengdongqing.common.signature;
 import top.chengdongqing.common.signature.signer.AsymmetricSigner;
 import top.chengdongqing.common.signature.signer.HMacSigner;
 import top.chengdongqing.common.signature.signer.MessageDigestSigner;
-import top.chengdongqing.common.signature.transform.SignBytes;
+import top.chengdongqing.common.transformer.BytesToStr;
 
 /**
  * 数字签名器顶层接口
@@ -23,7 +23,7 @@ public interface IDigitalSigner {
      * @param key       密钥
      * @return 签名
      */
-    SignBytes signature(SignatureAlgorithm algorithm, String content, byte[] key);
+    BytesToStr signature(SignatureAlgorithm algorithm, String content, byte[] key);
 
     /**
      * 验证签名是否有效

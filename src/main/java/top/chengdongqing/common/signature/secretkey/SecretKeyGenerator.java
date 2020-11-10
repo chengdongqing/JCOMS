@@ -1,7 +1,7 @@
 package top.chengdongqing.common.signature.secretkey;
 
 import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.signature.transform.SignBytes;
+import top.chengdongqing.common.transformer.BytesToStr;
 
 import javax.crypto.KeyGenerator;
 import java.security.KeyPair;
@@ -46,10 +46,10 @@ public class SecretKeyGenerator {
      * @param algorithm 签名算法
      * @return 密钥
      */
-    public static SignBytes generateKey(SignatureAlgorithm algorithm) {
+    public static BytesToStr generateKey(SignatureAlgorithm algorithm) {
         try {
             KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm.getAlgorithm());
-            return SignBytes.of(keyGenerator.generateKey().getEncoded());
+            return BytesToStr.of(keyGenerator.generateKey().getEncoded());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }

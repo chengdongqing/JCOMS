@@ -2,7 +2,7 @@ package top.chengdongqing.common.signature.signer;
 
 import top.chengdongqing.common.signature.IDigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.signature.transform.SignBytes;
+import top.chengdongqing.common.transformer.BytesToStr;
 
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -20,7 +20,7 @@ import java.security.spec.X509EncodedKeySpec;
 public class AsymmetricSigner implements IDigitalSigner {
 
     @Override
-    public SignBytes signature(SignatureAlgorithm algorithm, String content, byte[] key) {
+    public BytesToStr signature(SignatureAlgorithm algorithm, String content, byte[] key) {
         try {
             Signature signature = Signature.getInstance(algorithm.getAlgorithm());
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamily());
@@ -28,7 +28,7 @@ public class AsymmetricSigner implements IDigitalSigner {
             PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
             signature.initSign(privateKey);
             signature.update(content.getBytes());
-            return SignBytes.of(signature.sign());
+            return BytesToStr.of(signature.sign());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

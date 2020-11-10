@@ -7,8 +7,8 @@ import top.chengdongqing.common.payment.wxpay.TradeType;
 import top.chengdongqing.common.payment.wxpay.v2.V2RequestPayment;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.signature.transform.SignBytes;
-import top.chengdongqing.common.signature.transform.StrToBytes;
+import top.chengdongqing.common.transformer.BytesToStr;
+import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ public class MPRequestPayment extends V2RequestPayment {
         data.put("nonceStr", StrKit.getRandomUUID());
         data.put("package", "prepay_id=" + resultMap.get("prepay_id"));
         data.put("signType", v2constants.getSignType());
-        SignBytes sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
+        BytesToStr sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(data),
                 StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex());
         data.put("paySign", sign.toHex());

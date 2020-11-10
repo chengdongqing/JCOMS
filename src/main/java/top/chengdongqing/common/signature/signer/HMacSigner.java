@@ -2,7 +2,7 @@ package top.chengdongqing.common.signature.signer;
 
 import top.chengdongqing.common.signature.IDigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.signature.transform.SignBytes;
+import top.chengdongqing.common.transformer.BytesToStr;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -17,11 +17,11 @@ import java.util.Arrays;
 public class HMacSigner implements IDigitalSigner {
 
     @Override
-    public SignBytes signature(SignatureAlgorithm algorithm, String content, byte[] key) {
+    public BytesToStr signature(SignatureAlgorithm algorithm, String content, byte[] key) {
         try {
             Mac mac = Mac.getInstance(algorithm.getAlgorithm());
             mac.init(new SecretKeySpec(key, algorithm.getAlgorithm()));
-            return SignBytes.of(mac.doFinal(content.getBytes()));
+            return BytesToStr.of(mac.doFinal(content.getBytes()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -11,7 +11,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.signature.transform.StrToBytes;
+import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.Instant;
 import java.time.ZoneId;

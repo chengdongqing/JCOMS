@@ -20,8 +20,8 @@ import top.chengdongqing.common.payment.wxpay.WxStatus;
 import top.chengdongqing.common.payment.wxpay.v2.reqpay.RequestPaymentContext;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.signature.transform.SignBytes;
-import top.chengdongqing.common.signature.transform.StrToBytes;
+import top.chengdongqing.common.transformer.BytesToStr;
+import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -111,7 +111,7 @@ public class V2WxPayment implements IPayment {
         params.put("out_trade_no", orderNo);
         params.put("key", v2constants.getSecretKey());
         params.put("sign_type", v2constants.getSignType());
-        SignBytes sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
+        BytesToStr sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(params),
                 StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex());
         params.put("sign", sign.toHex());
@@ -144,7 +144,7 @@ public class V2WxPayment implements IPayment {
         params.put("refund_fee", refundFee);
         params.put("key", v2constants.getSecretKey());
         params.put("sign_type", v2constants.getSignType());
-        SignBytes sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
+        BytesToStr sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(params),
                 StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex());
         params.put("sign", sign.toHex());

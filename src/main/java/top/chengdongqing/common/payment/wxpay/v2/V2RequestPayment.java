@@ -12,8 +12,8 @@ import top.chengdongqing.common.payment.PaymentRequestEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.signature.transform.SignBytes;
-import top.chengdongqing.common.signature.transform.StrToBytes;
+import top.chengdongqing.common.transformer.BytesToStr;
+import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -57,7 +57,7 @@ public abstract class V2RequestPayment implements IRequestPayment {
         // 不同客户端添加不同的参数
         addSpecialParams(params, entity);
         // 执行签名
-        SignBytes sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256, StrKit.buildQueryStr(params),
+        BytesToStr sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256, StrKit.buildQueryStr(params),
                 StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex());
         params.put("sign", sign.toHex());
         params.remove("key");

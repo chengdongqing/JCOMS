@@ -1,8 +1,10 @@
-package top.chengdongqing.common.signature.transform;
+package top.chengdongqing.common.transformer;
 
 import java.util.Base64;
 
 /**
+ * 字符串转字节数组
+ *
  * @author Luyao
  */
 public record StrToBytes(String str) {

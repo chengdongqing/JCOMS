@@ -5,7 +5,7 @@ import org.springframework.http.HttpMethod;
 import top.chengdongqing.common.payment.wxpay.v3.callback.WxCallback;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.signature.transform.StrToBytes;
+import top.chengdongqing.common.transformer.StrToBytes;
 
 /**
  * 签名工具
