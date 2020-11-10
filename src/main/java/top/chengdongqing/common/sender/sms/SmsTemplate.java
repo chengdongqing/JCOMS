@@ -1,4 +1,4 @@
-package top.chengdongqing.common.sender.template;
+package top.chengdongqing.common.sender.sms;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

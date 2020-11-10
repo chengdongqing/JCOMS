@@ -6,6 +6,8 @@ import top.chengdongqing.common.payment.PayClient;
 import top.chengdongqing.common.payment.PaymentRequestEntity;
 
 /**
+ * 请求付款对象上下文
+ * 自动根据客户端获取不同的请求付款类实例
  * 策略模式+工厂模式
  *
  * @author Luyao

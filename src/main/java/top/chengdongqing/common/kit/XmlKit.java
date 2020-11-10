@@ -32,7 +32,7 @@ public class XmlKit {
      * xml转map
      *
      * @param xml xml字符串
-     * @return map对象
+     * @return map键值对
      */
     public static Map<String, String> xmlToMap(String xml) {
         if (StringUtils.isBlank(xml)) throw new IllegalArgumentException("The xml can not be blank");
@@ -57,24 +57,24 @@ public class XmlKit {
     /**
      * map转xml
      *
-     * @param map
-     * @return
+     * @param map map键值对
+     * @return xml字符串
      */
     public static String mapToXml(Map<String, String> map) {
         if (map == null || map.isEmpty()) throw new IllegalArgumentException("The map can not be null or empty");
 
-        Document document = newDocumentBuilder().newDocument();
-        Element root = document.createElement("xml");
-        map.forEach((key, value) -> {
-            if (StringUtils.isNotBlank(value)) {
-                Element element = document.createElement(key);
-                element.appendChild(document.createTextNode(value));
-                root.appendChild(element);
-            }
-        });
-        document.appendChild(root);
-
         try (StringWriter writer = new StringWriter()) {
+            Document document = newDocumentBuilder().newDocument();
+            Element root = document.createElement("xml");
+            map.forEach((key, value) -> {
+                if (StringUtils.isNotBlank(value)) {
+                    Element element = document.createElement(key);
+                    element.appendChild(document.createTextNode(value));
+                    root.appendChild(element);
+                }
+            });
+            document.appendChild(root);
+
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             DOMSource source = new DOMSource(document);
             transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
@@ -90,21 +90,17 @@ public class XmlKit {
     /**
      * 构建xml文档
      *
-     * @return
+     * @return DocumentBuilder
      */
-    private static DocumentBuilder newDocumentBuilder() {
+    private static DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        try {
-            dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            dbFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
-            dbFactory.setXIncludeAware(false);
-            dbFactory.setExpandEntityReferences(false);
-            return dbFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        }
+        dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        dbFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
+        dbFactory.setXIncludeAware(false);
+        dbFactory.setExpandEntityReferences(false);
+        return dbFactory.newDocumentBuilder();
     }
 }

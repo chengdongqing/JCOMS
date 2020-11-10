@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.constant.Regexps;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.sender.ISender;
-import top.chengdongqing.common.sender.entity.EmailEntity;
 
 /**
  * 邮件发送器
@@ -21,7 +20,7 @@ public abstract class EmailSender implements ISender<EmailEntity> {
      * @return 发送结果
      */
     @Override
-    public Ret send(EmailEntity entity) {
+    public Ret<String> send(EmailEntity entity) {
         if (StringUtils.isAnyBlank(entity.getTo(), entity.getTitle(), entity.getContent())) {
             throw new IllegalArgumentException("The args can not be blank.");
         }
@@ -37,5 +36,5 @@ public abstract class EmailSender implements ISender<EmailEntity> {
      * @param entity 参数实体
      * @return 发送结果
      */
-    protected abstract Ret sendEmail(EmailEntity entity);
+    protected abstract Ret<String> sendEmail(EmailEntity entity);
 }

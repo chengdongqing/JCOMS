@@ -14,6 +14,15 @@ import java.util.Map;
 public interface ExcelProcessor {
 
     /**
+     * 获取默认的实例
+     *
+     * @return ExcelProcessor
+     */
+    static ExcelProcessor getInstance() {
+        return new POIExcelProcessor();
+    }
+
+    /**
      * 读取excel
      *
      * @param titles   标题行，中文列名 - 英文列名

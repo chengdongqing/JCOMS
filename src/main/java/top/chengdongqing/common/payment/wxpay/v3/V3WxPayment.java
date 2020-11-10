@@ -4,8 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import top.chengdongqing.common.encrypt.EncryptAlgorithm;
+import top.chengdongqing.common.encrypt.Encryptor;
+import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IPayment;
 import top.chengdongqing.common.payment.PayClient;
@@ -13,13 +18,14 @@ import top.chengdongqing.common.payment.PaymentDetails;
 import top.chengdongqing.common.payment.PaymentRequestEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
-import top.chengdongqing.common.payment.wxpay.v3.callback.CallbackResource;
+import top.chengdongqing.common.payment.wxpay.v3.callback.ResourceHolder;
 import top.chengdongqing.common.payment.wxpay.v3.callback.WxCallback;
-import top.chengdongqing.common.payment.wxpay.v3.kit.DecryptKit;
-import top.chengdongqing.common.payment.wxpay.v3.kit.V3SignatureKit;
 import top.chengdongqing.common.payment.wxpay.v3.reqpay.RequestPaymentContext;
+import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -30,13 +36,14 @@ import java.util.Map;
  *
  * @author Luyao
  */
+@Slf4j
 @Component
 public class V3WxPayment implements IPayment {
 
     @Autowired
     private WxConstants constants;
     @Autowired
-    private V3Constants v3constants;
+    private WxV3Constants v3constants;
 
     @Override
     public Ret requestPayment(PaymentRequestEntity entity, PayClient client) {
@@ -46,18 +53,27 @@ public class V3WxPayment implements IPayment {
     @Override
     public Ret handleCallback(Map<String, String> params) {
         if (params.isEmpty()) return toFailJson("参数错误");
+        log.info("微信支付回调V3参数: {}", params);
         // 将弱类型MAP转强类型对象
         WxCallback wxCallback = WxCallback.of(params);
 
         // 验证签名
-        boolean verify = V3SignatureKit.verify(wxCallback, v3constants.getPublicKey());
+        boolean verify = WxV3Signer.verify(wxCallback, v3constants.getPublicKey());
         if (!verify) return toFailJson("验签失败");
 
         // 获取请求体中的加密数据
-        String resourceStr = JSON.parseObject(wxCallback.getBody()).getString("resource");
-        CallbackResource callbackResource = JSON.parseObject(resourceStr, CallbackResource.class);
+        String resourceHolderJson = JSON.parseObject(wxCallback.getBody()).getString("resource");
+        ResourceHolder resourceHolder = JSON.parseObject(resourceHolderJson, ResourceHolder.class);
+        // 获取密文、随机数、关联数据
+        byte[] ciphertext = StrToBytes.of(resourceHolder.getCiphertext()).fromBase64();
+        byte[] iv = resourceHolder.getNonce().getBytes();
+        String associatedData = resourceHolder.getAssociatedData();
         // 解密数据
-        CallbackResource.Resource resource = DecryptKit.decrypt(callbackResource, constants.getMchId());
+        String resourceJson = Encryptor.decrypt(EncryptAlgorithm.AES_GCM_NoPadding,
+                ByteUtils.concatenate(iv, ciphertext),
+                constants.getMchId(), associatedData).toText();
+        log.info("微信支付回调数据解密后：{}", resourceJson);
+        ResourceHolder.Resource resource = JSON.parseObject(resourceJson, ResourceHolder.Resource.class);
 
         // 判断支付结果
         if (!resource.isTradeSuccess()) return toFailJson("交易失败");
@@ -67,7 +83,7 @@ public class V3WxPayment implements IPayment {
                 .orderNo(resource.getOutTradeNo())
                 .paymentNo(resource.getTransactionId())
                 // 将单位从分转为元
-                .paymentAmount(new BigDecimal(resource.getAmount().getPayerTotal()).divide(BigDecimal.valueOf(100)))
+                .paymentAmount(new BigDecimal(resource.getAmount().getPayerTotal()).divide(BigDecimal.valueOf(100), RoundingMode.HALF_DOWN))
                 // 转换支付时间
                 .paymentTime(LocalDateTime.parse(resource.getSuccessTime(), DateTimeFormatter.ISO_ZONED_DATE_TIME))
                 .build();
@@ -96,7 +112,16 @@ public class V3WxPayment implements IPayment {
 
     @Override
     public Ret requestClose(String orderNo) {
-        return null;
+        // 获取完整请求地址
+        String closeUrl = v3constants.getCloseUrl().formatted(orderNo);
+        // 获取请求体
+        JSONObject body = new JSONObject();
+        body.put("mchid", constants.getMchId());
+        // 发送请求
+        log.info("请求关闭订单：{}", orderNo);
+        HttpResponse<String> response = HttpKit.post(closeUrl, body.toJSONString());
+        log.info("订单号{} 关闭订单响应：{}", orderNo, response);
+        return response.statusCode() == 204 ? Ret.ok() : Ret.fail();
     }
 
     @Override

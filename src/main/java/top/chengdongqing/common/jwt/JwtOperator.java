@@ -2,7 +2,6 @@ package top.chengdongqing.common.jwt;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,6 @@ import java.util.Base64;
  * @author Luyao
  */
 @Component
-@AllArgsConstructor
 public class JwtOperator {
 
     @Autowired
@@ -60,7 +58,7 @@ public class JwtOperator {
         String content = encoder.encodeToString(header.toJson()) + "." + encoder.encodeToString(JSON.toJSONBytes(payloads));
         // 执行签名
         String signature = DigitalSigner.signature(ALGORITHM, content,
-                StrToBytes.of(constants.getPrivateKey()).toBytesFromBase64()).toBase64();
+                StrToBytes.of(constants.getPrivateKey()).fromBase64()).toBase64();
         content += "." + signature;
         // 返回token详情
         return JwtInfo.builder()
@@ -87,8 +85,8 @@ public class JwtOperator {
 
         // 验签
         boolean verified = DigitalSigner.verify(ALGORITHM, content,
-                StrToBytes.of(constants.getPublicKey()).toBytesFromBase64(),
-                StrToBytes.of(parts[2]).toBytesFromBase64());
+                StrToBytes.of(constants.getPublicKey()).fromBase64(),
+                StrToBytes.of(parts[2]).fromBase64());
         if (!verified) return false;
 
         // 将头部解码并转JwtHeader对象

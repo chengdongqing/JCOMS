@@ -7,7 +7,7 @@ import top.chengdongqing.common.encrypt.encryptor.RSAEncryptor;
 import top.chengdongqing.common.transformer.BytesToStr;
 
 /**
- * 加解密器
+ * 加解密器顶层接口
  *
  * @author Luyao
  * @see RSAEncryptor

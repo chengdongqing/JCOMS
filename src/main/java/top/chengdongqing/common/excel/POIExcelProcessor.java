@@ -16,17 +16,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * excel处理器
+ * 基于apache poi
+ *
  * @author Luyao
  */
 public class POIExcelProcessor implements ExcelProcessor {
-
-    private static class ExcelProcessorHolder {
-        private static final ExcelProcessor ME = new POIExcelProcessor();
-    }
-
-    public static ExcelProcessor me() {
-        return ExcelProcessorHolder.ME;
-    }
 
     @Override
     public ExcelRows read(Map<String, String> titles, String fileName, byte[] bytes) {

@@ -23,7 +23,6 @@ public interface FileManager {
      * @param fileUrl 文件路径
      * @param content 是否包含文件内容
      * @return 文件详情
-     * @throws Exception
      */
     File getFile(String fileUrl, boolean content) throws Exception;
 
@@ -33,7 +32,6 @@ public interface FileManager {
      * @param path    文件夹路径
      * @param content 是否包含文件内容
      * @return 指定文件夹下的全部文件详情
-     * @throws Exception
      */
     List<File> getFiles(FilePath path, boolean content) throws Exception;
 
@@ -41,7 +39,6 @@ public interface FileManager {
      * 删除文件
      *
      * @param fileUrl 文件路径
-     * @throws Exception
      */
     void deleteFile(String fileUrl) throws Exception;
 
@@ -49,7 +46,6 @@ public interface FileManager {
      * 删除多个文件
      *
      * @param fileUrls 文件路径列表
-     * @throws Exception
      */
     void deleteFiles(List<String> fileUrls) throws Exception;
 
@@ -57,7 +53,6 @@ public interface FileManager {
      * 清空文件夹下的所有文件
      *
      * @param path 文件夹路径
-     * @throws Exception
      */
     void clearDirectory(FilePath path) throws Exception;
 
@@ -66,7 +61,6 @@ public interface FileManager {
      *
      * @param fileUrl 文件路径
      * @param name    新文件名
-     * @throws Exception
      */
     void renameFile(String fileUrl, String name) throws Exception;
 
@@ -75,7 +69,6 @@ public interface FileManager {
      *
      * @param fileUrl    文件路径
      * @param targetPath 目标文件夹
-     * @throws Exception
      */
     void moveFile(String fileUrl, FilePath targetPath) throws Exception;
 
@@ -84,7 +77,6 @@ public interface FileManager {
      *
      * @param fileUrls   文件路径
      * @param targetPath 目标文件夹
-     * @throws Exception
      */
     void moveFiles(List<String> fileUrls, FilePath targetPath) throws Exception;
 

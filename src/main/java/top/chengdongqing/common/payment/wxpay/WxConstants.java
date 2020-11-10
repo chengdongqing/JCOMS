@@ -27,23 +27,6 @@ public class WxConstants {
     private String mchId;
 
     /**
-     * 订单请求支付地址
-     */
-    private String paymentUrl;
-    /**
-     * 支付成功通知地址
-     */
-    private String notifyUrl;
-    /**
-     * 关闭订单请求地址
-     */
-    private String closeUrl;
-    /**
-     * 订单退款请求地址
-     */
-    private String refundUrl;
-
-    /**
      * 网站标题
      */
     @Value("${web-title}")
@@ -52,8 +35,8 @@ public class WxConstants {
     /**
      * 网站域名
      */
-    @Value("${web-url}")
-    private String webUrl;
+    @Value("${web-domain}")
+    private String webDomain;
 
     @Data
     @Component

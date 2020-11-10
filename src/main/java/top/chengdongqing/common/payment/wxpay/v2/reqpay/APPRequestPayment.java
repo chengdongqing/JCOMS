@@ -38,7 +38,7 @@ public class APPRequestPayment extends V2RequestPayment {
         data.put("timestamp", Instant.now().getEpochSecond() + "");
         BytesToStr sign = DigitalSigner.signature(SignatureAlgorithm.SHA256,
                 StrKit.buildQueryStr(data),
-                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex());
+                StrToBytes.of(v2constants.getSecretKey()).fromHex());
         data.put("sign", sign.toHex());
         return Ret.ok(data);
     }

@@ -44,7 +44,7 @@ public class MPRequestPayment extends V2RequestPayment {
         data.put("signType", v2constants.getSignType());
         BytesToStr sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(data),
-                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex());
+                StrToBytes.of(v2constants.getSecretKey()).fromHex());
         data.put("paySign", sign.toHex());
         return Ret.ok(data);
     }

@@ -14,7 +14,6 @@ public interface IPayment {
 
     /**
      * 发起付款
-     * 利用策略模式，针对不同客户端执行不同请求
      *
      * @param entity 参数实体
      * @param client 客户端类型

@@ -13,7 +13,24 @@ import org.springframework.stereotype.Component;
 @Component
 @RefreshScope
 @ConfigurationProperties(prefix = "payment.wx.v2")
-public class V2Constants {
+public class WxV2Constants {
+
+    /**
+     * 订单请求支付地址
+     */
+    private String paymentUrl;
+    /**
+     * 支付成功通知地址
+     */
+    private String notifyUrl;
+    /**
+     * 关闭订单请求地址
+     */
+    private String closeUrl;
+    /**
+     * 订单退款请求地址
+     */
+    private String refundUrl;
 
     /**
      * 签名用的密钥

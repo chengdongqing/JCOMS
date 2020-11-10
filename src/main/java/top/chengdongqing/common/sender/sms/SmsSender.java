@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.constant.Regexps;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.sender.ISender;
-import top.chengdongqing.common.sender.entity.SmsEntity;
 
 /**
  * 短信发送器
@@ -18,7 +17,7 @@ public abstract class SmsSender implements ISender<SmsEntity> {
      * 发送短信
      */
     @Override
-    public Ret send(SmsEntity entity) {
+    public Ret<String> send(SmsEntity entity) {
         if (StringUtils.isAnyBlank(entity.getTo(), entity.getTemplate(), entity.getContent())) {
             throw new IllegalArgumentException("The args can not be blank.");
         }
@@ -34,5 +33,5 @@ public abstract class SmsSender implements ISender<SmsEntity> {
      * @param entity 参数实体
      * @return 发送结果
      */
-    protected abstract Ret sendSms(SmsEntity entity);
+    protected abstract Ret<String> sendSms(SmsEntity entity);
 }

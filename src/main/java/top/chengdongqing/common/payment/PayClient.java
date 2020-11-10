@@ -12,11 +12,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum PayClient {
 
-    PC(0, "电脑浏览器"),
-    MP(1, "小程序"),
-    APP(2, "移动端应用程序"),
+    PC(0, "PC浏览器"),
+    MP(1, "小程序/微信内浏览器"),
+    APP(2, "APP"),
     MB(3, "移动端浏览器");
 
-    private final Integer code;
+    private final int code;
     private final String name;
 }

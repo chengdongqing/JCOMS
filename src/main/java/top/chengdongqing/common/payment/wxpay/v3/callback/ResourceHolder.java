@@ -9,7 +9,7 @@ import top.chengdongqing.common.payment.wxpay.WxStatus;
  * @author Luyao
  */
 @Data
-public class CallbackResource {
+public class ResourceHolder {
 
     /**
      * 加密算法

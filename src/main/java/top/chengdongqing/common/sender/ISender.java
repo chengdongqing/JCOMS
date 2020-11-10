@@ -19,5 +19,5 @@ public interface ISender<T> {
      * @param entity 发送需要的参数实体
      * @return 发送结果
      */
-    Ret send(T entity);
+    Ret<String> send(T entity);
 }

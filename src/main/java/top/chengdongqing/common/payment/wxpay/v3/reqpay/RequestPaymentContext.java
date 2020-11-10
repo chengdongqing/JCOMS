@@ -6,8 +6,6 @@ import top.chengdongqing.common.payment.PayClient;
 import top.chengdongqing.common.payment.PaymentRequestEntity;
 
 /**
- * 策略模式+工厂模式
- *
  * @author Luyao
  */
 public class RequestPaymentContext {

@@ -99,9 +99,8 @@ public class MongoFileManager extends AbstractUploader implements FileManager {
      * 移动文件
      *
      * @param fileBytes 文件的内容
-     * @param newKey    旧文件的key
+     * @param oldKey    旧文件的key
      * @param newKey    新文件的key
-     * @throws Exception
      */
     private void move(byte[] fileBytes, String oldKey, String newKey) throws Exception {
         upload(fileBytes, newKey.substring(0, newKey.lastIndexOf("/") + 1), FileManager.getName(newKey));

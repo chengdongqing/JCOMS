@@ -36,7 +36,7 @@ public abstract class V2RequestPayment implements IRequestPayment {
     @Autowired
     protected WxConstants constants;
     @Autowired
-    protected V2Constants v2constants;
+    protected WxV2Constants v2constants;
 
     @Override
     public Ret requestPayment(PaymentRequestEntity entity) {
@@ -51,14 +51,14 @@ public abstract class V2RequestPayment implements IRequestPayment {
         params.put("spbill_create_ip", entity.getIp());
         String timeExpire = LocalDateTime.now().plusMinutes(30).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         params.put("time_expire", timeExpire);
-        params.put("notify_url", constants.getNotifyUrl());
+        params.put("notify_url", v2constants.getNotifyUrl());
         params.put("key", v2constants.getSecretKey());
         params.put("sign_type", v2constants.getSignType());
         // 不同客户端添加不同的参数
         addSpecialParams(params, entity);
         // 执行签名
         BytesToStr sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256, StrKit.buildQueryStr(params),
-                StrToBytes.of(v2constants.getSecretKey()).toBytesFromHex());
+                StrToBytes.of(v2constants.getSecretKey()).fromHex());
         params.put("sign", sign.toHex());
         params.remove("key");
 
@@ -66,7 +66,7 @@ public abstract class V2RequestPayment implements IRequestPayment {
         String xml = XmlKit.mapToXml(params);
         // 发送请求
         log.info("发送付款请求：{}", xml);
-        String result = HttpKit.post(constants.getPaymentUrl(), xml).body();
+        String result = HttpKit.post(v2constants.getPaymentUrl(), xml).body();
         log.info("请求付款结果：{}", result);
 
         // 转换结果格式
@@ -83,9 +83,7 @@ public abstract class V2RequestPayment implements IRequestPayment {
      * @return 商品详情JSON字符串
      */
     private static String getGoodsDetail(List<PaymentRequestEntity.OrderItem> items) {
-        /**
-         * 给微信的商品详情对象
-         */
+        // 给微信的商品详情对象
         @Data
         @AllArgsConstructor
         class GoodsDetail {

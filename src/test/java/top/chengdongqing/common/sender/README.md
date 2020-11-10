@@ -9,16 +9,16 @@
 - 验证码发送器
 ```
 @Autowired
-private VerificationCode verificationCode;
+private VerificationCodeSender verificationCodeSender;
 
 public void test() {
     // 发送短信验证码
-    verificationCode.send("19999999999", SmsTemplate.LOGIN);
+    verificationCodeSender.send("19999999999", SmsTemplate.LOGIN);
     // 发送邮件验证码
-    verificationCode.send("19999999999@qq.com", EmailTemplate.BIND_ACCOUNT);
+    verificationCodeSender.send("19999999999@qq.com", EmailTemplate.BIND_ACCOUNT);
     // 校验验证码
     String account = ...
     String code = ...
-    verificationCode.verify(account, code);
+    verificationCodeSender.verify(account, code);
 }
 ```

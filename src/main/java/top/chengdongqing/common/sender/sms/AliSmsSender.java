@@ -12,7 +12,6 @@ import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
-import top.chengdongqing.common.sender.entity.SmsEntity;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.BytesToStr;
@@ -37,7 +36,7 @@ public class AliSmsSender extends SmsSender {
     private AliSmsConstants constants;
 
     @Override
-    public Ret sendSms(SmsEntity entity) {
+    public Ret<String> sendSms(SmsEntity entity) {
         // 封装参数
         Map<String, String> params = new HashMap<>();
         params.put("PhoneNumbers", entity.getTo());
@@ -58,7 +57,7 @@ public class AliSmsSender extends SmsSender {
         params.put("TemplateParam", entity.getContent());
         String content = StrKit.buildQueryStr(params, true);
         BytesToStr bytes = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA1, content,
-                StrToBytes.of(constants.getAccessSecret()).toBytesFromBase64());
+                StrToBytes.of(constants.getAccessSecret()).fromBase64());
         params.put("Signature", bytes.toBase64());
 
         try {

@@ -99,7 +99,7 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
     }
 
     @Override
-    public void renameFile(String fileUrl, String name) throws Exception {
+    public void renameFile(String fileUrl, String name) {
         String newFileUrl = fileUrl.replace(FileManager.getName(fileUrl), name);
         move(fileUrl, newFileUrl);
     }
@@ -116,7 +116,7 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
     }
 
     @Override
-    public void moveFile(String fileUrl, FilePath targetPath) throws Exception {
+    public void moveFile(String fileUrl, FilePath targetPath) {
         String newFileUrl = targetPath.getPath() + FileManager.getName(fileUrl);
         move(fileUrl, newFileUrl);
     }

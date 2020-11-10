@@ -1,4 +1,4 @@
-package top.chengdongqing.common.sender.operator;
+package top.chengdongqing.common.sender;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -9,23 +9,22 @@ import top.chengdongqing.common.cache.CacheTemplate;
 import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
-import top.chengdongqing.common.sender.SenderFactory;
-import top.chengdongqing.common.sender.entity.EmailEntity;
-import top.chengdongqing.common.sender.entity.SmsEntity;
-import top.chengdongqing.common.sender.template.EmailTemplate;
-import top.chengdongqing.common.sender.template.SmsTemplate;
+import top.chengdongqing.common.sender.email.EmailEntity;
+import top.chengdongqing.common.sender.email.EmailTemplate;
+import top.chengdongqing.common.sender.sms.SmsEntity;
+import top.chengdongqing.common.sender.sms.SmsTemplate;
 
 import java.time.Duration;
 import java.util.Objects;
 
 /**
- * 验证码发送与验证
+ * 验证码发送器
  *
  * @author Luyao
  */
 @Slf4j
 @Component
-public class VerificationCode {
+public class VerificationCodeSender {
 
     @Autowired
     private SenderFactory senderFactory;
@@ -35,7 +34,7 @@ public class VerificationCode {
     /**
      * 发送短信验证码
      */
-    public Ret send(String to, SmsTemplate template) {
+    public Ret<String> send(String to, SmsTemplate template) {
         String code = StrKit.generateRandomCode();
         try {
             // 将随机数转成JSON字符串作为短信内容
@@ -56,7 +55,7 @@ public class VerificationCode {
     /**
      * 发送邮件验证码
      */
-    public Ret send(String to, EmailTemplate template) {
+    public Ret<String> send(String to, EmailTemplate template) {
         String code = StrKit.generateRandomCode();
         try {
             // 将随机数加到邮件内容中
@@ -81,7 +80,7 @@ public class VerificationCode {
      * @param code   验证码
      * @return 原发送结果
      */
-    private Ret handleResult(Ret result, String to, String code) {
+    private Ret<String> handleResult(Ret result, String to, String code) {
         if (result.isOk()) {
             // 保存验证码到缓存，默认5分钟
             String key = CacheKeys.VERIFICATION_CODE + to;

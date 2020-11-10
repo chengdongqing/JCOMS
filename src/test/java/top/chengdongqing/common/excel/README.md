@@ -10,7 +10,7 @@ Map<String, String> titles = new HashMap<String, String>() {{
     put("手机号", "phoneNumber");
     put("名称", "name");
 }};
-List<User> items = POIExcelProcessor.me().read(titles, fileName, excelBytes).toList(User.class);
+List<User> items = ExcelProcessor.getInstance().read(titles, fileName, excelBytes).toList(User.class);
 ```
 - 写入excel文件
 ```
@@ -21,5 +21,5 @@ LinkedHashMap<String, String> titles = new LinkedHashMap<String, String>() {{
 }};
 JSONArray rows = new JSONArray();
 rows.addAll(users);
-POIExcelProcessor.me().write(titles, rows).renderWithDate("用户手机号和名称关系");
+ExcelProcessor.getInstance().write(titles, rows).renderWithDate("用户手机号和名称关系");
 ```

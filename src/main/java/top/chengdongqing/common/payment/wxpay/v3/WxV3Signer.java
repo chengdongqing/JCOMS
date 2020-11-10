@@ -1,4 +1,4 @@
-package top.chengdongqing.common.payment.wxpay.v3.kit;
+package top.chengdongqing.common.payment.wxpay.v3;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
@@ -14,7 +14,7 @@ import top.chengdongqing.common.transformer.StrToBytes;
  *
  * @author Luyao
  */
-public class V3SignatureKit {
+public class WxV3Signer {
 
     /**
      * 生成签名
@@ -29,7 +29,8 @@ public class V3SignatureKit {
         // 获取待签名字符串
         String content = getContent(method.name(), url, timestamp, nonceStr, body);
         // 生成签名
-        return DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256, content, StrToBytes.of(key).toBytesFromBase64()).toBase64();
+        return DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256, content,
+                StrToBytes.of(key).fromBase64()).toBase64();
     }
 
     /**
@@ -44,8 +45,8 @@ public class V3SignatureKit {
         String content = getContent(wxCallback.getTimestamp(), wxCallback.getNonceStr(), wxCallback.getBody());
         // 验证签名
         return DigitalSigner.verify(SignatureAlgorithm.RSA_SHA256, content,
-                StrToBytes.of(key).toBytesFromBase64(),
-                StrToBytes.of(wxCallback.getSign()).toBytesFromBase64());
+                StrToBytes.of(key).fromBase64(),
+                StrToBytes.of(wxCallback.getSign()).fromBase64());
     }
 
     /**
