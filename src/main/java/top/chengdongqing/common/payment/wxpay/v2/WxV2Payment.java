@@ -12,9 +12,9 @@ import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.kit.XmlKit;
 import top.chengdongqing.common.payment.IPayment;
-import top.chengdongqing.common.payment.PayClient;
-import top.chengdongqing.common.payment.PayDetails;
-import top.chengdongqing.common.payment.PayReqEntity;
+import top.chengdongqing.common.payment.TradeType;
+import top.chengdongqing.common.payment.entity.PayReqEntity;
+import top.chengdongqing.common.payment.entity.PayResEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
 import top.chengdongqing.common.payment.wxpay.v2.reqpay.ReqPayContext;
@@ -40,7 +40,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class V2WxPayment implements IPayment {
+public class WxV2Payment implements IPayment {
 
     @Autowired
     private WxConstants constants;
@@ -48,8 +48,8 @@ public class V2WxPayment implements IPayment {
     private WxV2Constants v2constants;
 
     @Override
-    public Ret requestPayment(PayReqEntity entity, PayClient client) {
-        return new ReqPayContext(client).request(entity);
+    public Ret requestPayment(PayReqEntity entity, TradeType tradeType) {
+        return new ReqPayContext(tradeType).request(entity);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class V2WxPayment implements IPayment {
         if (!WxStatus.isOk(params.get("result_code"))) return toFailXml("支付失败");
 
         // 封装支付信息
-        PayDetails payDetails = PayDetails.builder()
+        PayResEntity payDetails = PayResEntity.builder()
                 .orderNo(params.get("out_trade_no"))
                 .paymentNo(params.get("transaction_id"))
                 // 将单位从分转为元
@@ -193,6 +193,6 @@ public class V2WxPayment implements IPayment {
         /**
          * 收集的支付详情
          */
-        private PayDetails details;
+        private PayResEntity details;
     }
 }

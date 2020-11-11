@@ -1,0 +1,25 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        enabled: false
+
+send:
+  sms:
+    active: Ali
+  email:
+    active: Apache
+
+upload:
+  active: Local
+  local:
+    base-path: xx
+  oss:
+    bucket: xx
+    endpoint: xx
+    access-id: xx
+    access-secret: xx
+
+payment:
+  wx:
+    active: V2

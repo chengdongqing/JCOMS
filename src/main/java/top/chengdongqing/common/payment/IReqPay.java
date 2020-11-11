@@ -1,6 +1,7 @@
 package top.chengdongqing.common.payment;
 
 import top.chengdongqing.common.kit.Ret;
+import top.chengdongqing.common.payment.entity.PayReqEntity;
 
 /**
  * 请求付款接口

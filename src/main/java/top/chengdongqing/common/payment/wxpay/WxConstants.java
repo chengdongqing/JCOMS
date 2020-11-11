@@ -1,7 +1,6 @@
 package top.chengdongqing.common.payment.wxpay;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
@@ -29,13 +28,11 @@ public class WxConstants {
     /**
      * 网站标题
      */
-    @Value("${web-title}")
     private String webTitle;
 
     /**
      * 网站域名
      */
-    @Value("${web-domain}")
     private String webDomain;
 
     @Data

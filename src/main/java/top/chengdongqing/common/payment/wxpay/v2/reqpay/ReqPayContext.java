@@ -2,8 +2,8 @@ package top.chengdongqing.common.payment.wxpay.v2.reqpay;
 
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IReqPay;
-import top.chengdongqing.common.payment.PayClient;
-import top.chengdongqing.common.payment.PayReqEntity;
+import top.chengdongqing.common.payment.TradeType;
+import top.chengdongqing.common.payment.entity.PayReqEntity;
 
 /**
  * @author Luyao
@@ -15,16 +15,16 @@ public class ReqPayContext {
     /**
      * 根据请求客户端获取请求实例
      *
-     * @param client 请求支付客户端
+     * @param tradeType 请求支付客户端
      */
-    public ReqPayContext(PayClient client) {
-        if (client == PayClient.PC) {
+    public ReqPayContext(TradeType tradeType) {
+        if (tradeType == TradeType.NATIVE) {
             strategy = new PCReqPay();
-        } else if (client == PayClient.APP) {
+        } else if (tradeType == TradeType.APP) {
             strategy = new APPReqPay();
-        } else if (client == PayClient.MP) {
+        } else if (tradeType == TradeType.JSAPI) {
             strategy = new MPReqPay();
-        } else if (client == PayClient.MB) {
+        } else if (tradeType == TradeType.MWEB) {
             strategy = new MBReqPay();
         }
     }

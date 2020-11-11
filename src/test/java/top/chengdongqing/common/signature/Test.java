@@ -6,7 +6,7 @@ import top.chengdongqing.common.transformer.BytesToStr;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 /**
- * 签名测试类
+ * 签名测试
  *
  * @author Luyao
  */

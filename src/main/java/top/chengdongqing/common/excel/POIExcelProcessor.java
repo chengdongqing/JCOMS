@@ -24,18 +24,18 @@ import java.util.Map;
 public class POIExcelProcessor implements ExcelProcessor {
 
     @Override
-    public ExcelRows read(Map<String, String> titles, String fileName, byte[] bytes) {
-        try (Workbook workbook = getWorkbook(fileName, bytes)) {
+    public ExcelRows read(Map<String, String> titles, String filename, byte[] bytes) {
+        try (Workbook workbook = getWorkbook(filename, bytes)) {
             // 获取表格
             Sheet sheet = workbook.getSheetAt(0);
-            if (sheet == null) throw new IllegalStateException("The excel " + fileName + " no any sheet.");
+            if (sheet == null) throw new IllegalStateException("The excel " + filename + " no any sheet.");
 
             // 获取标题行
             Row titleRow = sheet.getRow(0);
             // 所有行数据
             JSONArray rows = new JSONArray();
             // 遍历每一行
-            for (int i = 1; i < sheet.getLastRowNum(); i++) {
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 // 将列和标题匹配上
                 JSONObject item = new JSONObject();
@@ -105,17 +105,17 @@ public class POIExcelProcessor implements ExcelProcessor {
     /**
      * 获取workbook
      *
-     * @param fileName 文件名，根据文件后缀名判断需要创建哪种类型的workbook
+     * @param filename 文件名，根据文件后缀名判断需要创建哪种类型的workbook
      * @return workbook
      */
-    private Workbook getWorkbook(String fileName, byte[] bytes) throws Exception {
-        if (StringUtils.isBlank(fileName) || !fileName.contains(".xls")) {
+    private Workbook getWorkbook(String filename, byte[] bytes) throws Exception {
+        if (StringUtils.isBlank(filename) || !filename.contains(".xls")) {
             throw new IllegalArgumentException("The file name is wrong.");
         }
 
         // 将字节数组转为输入流并传给poi实例化workbook
         try (BufferedInputStream stream = new BufferedInputStream(new ByteArrayInputStream(bytes))) {
-            return fileName.endsWith(".xlsx") ? new XSSFWorkbook(stream) : new HSSFWorkbook(stream);
+            return filename.endsWith(".xlsx") ? new XSSFWorkbook(stream) : new HSSFWorkbook(stream);
         }
     }
 }

@@ -1,6 +1,6 @@
 package top.chengdongqing.common.excel;
 
-import top.chengdongqing.common.render.StreamRender;
+import top.chengdongqing.common.render.FileRender;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -25,7 +25,7 @@ public record ExcelBytes(byte[] bytes) {
      * @param name excel名称
      */
     public void render(String name) {
-        StreamRender.of(name + EXCEL_SUFFIX, bytes).render();
+        FileRender.of(name + EXCEL_SUFFIX, bytes).render();
     }
 
     /**

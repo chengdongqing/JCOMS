@@ -1,4 +1,4 @@
-package top.chengdongqing.common.payment.wxpay;
+package top.chengdongqing.common.payment;
 
 /**
  * 交易类型
@@ -8,7 +8,7 @@ package top.chengdongqing.common.payment.wxpay;
 public enum TradeType {
 
     /**
-     * 小程序，微信内浏览器
+     * 小程序
      */
     JSAPI,
     /**

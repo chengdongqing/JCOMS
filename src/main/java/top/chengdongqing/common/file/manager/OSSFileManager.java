@@ -9,6 +9,8 @@ import com.aliyun.oss.model.SimplifiedObjectMeta;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.file.File;
 import top.chengdongqing.common.file.FileManager;
@@ -28,15 +30,17 @@ import java.util.stream.Collectors;
  * @author Luyao
  */
 @Component
+@Configuration
 public class OSSFileManager extends AbstractUploader implements FileManager {
 
     @Autowired
     private OSSConstants constants;
+    @Autowired
+    private OSS client;
 
-    private final OSS client;
-
-    public OSSFileManager() {
-        client = new OSSClientBuilder().build(
+    @Bean
+    public OSS ossClient() {
+        return new OSSClientBuilder().build(
                 constants.getEndpoint(),
                 constants.getAccessId(),
                 constants.getAccessSecret());

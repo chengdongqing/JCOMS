@@ -22,7 +22,7 @@ public enum SignatureAlgorithm {
     RSA_SHA1("RSA", "sha1WithRSA", AsymmetricSigner.class),
     RSA_SHA256("RSA", "sha256WithRSA", AsymmetricSigner.class),
     DSA_SHA256("DSA", "sha256WithDSA", AsymmetricSigner.class),
-    EcDSA_SHA256("EC", "sha256WithECDSA", AsymmetricSigner.class),
+    EcDSA_SHA256("EcDSA", "sha256WithECDSA", AsymmetricSigner.class),
     EdDSA_ED25519("EdDSA", "Ed25519", AsymmetricSigner.class);
 
     private final String family;

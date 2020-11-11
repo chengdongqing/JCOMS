@@ -2,8 +2,8 @@ package top.chengdongqing.common.payment.wxpay.v2.reqpay;
 
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
-import top.chengdongqing.common.payment.PayReqEntity;
-import top.chengdongqing.common.payment.wxpay.TradeType;
+import top.chengdongqing.common.payment.TradeType;
+import top.chengdongqing.common.payment.entity.PayReqEntity;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.BytesToStr;

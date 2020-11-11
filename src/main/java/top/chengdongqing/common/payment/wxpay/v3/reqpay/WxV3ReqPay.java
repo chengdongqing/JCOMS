@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IReqPay;
-import top.chengdongqing.common.payment.PayReqEntity;
+import top.chengdongqing.common.payment.entity.PayReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 
 import java.time.LocalDateTime;

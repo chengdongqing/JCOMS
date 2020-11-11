@@ -1,4 +1,4 @@
-package top.chengdongqing.common.payment;
+package top.chengdongqing.common.payment.entity;
 
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @Builder
-public class PayDetails {
+public class PayResEntity {
 
     /**
      * 订单号

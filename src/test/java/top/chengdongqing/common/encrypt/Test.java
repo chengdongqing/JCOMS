@@ -9,7 +9,7 @@ import top.chengdongqing.common.transformer.BytesToStr;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 加解密测试类
+ * 加解密测试
  *
  * @author Luyao
  */

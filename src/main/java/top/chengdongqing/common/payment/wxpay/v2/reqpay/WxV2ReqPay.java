@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.payment.IReqPay;
-import top.chengdongqing.common.payment.PayReqEntity;
+import top.chengdongqing.common.payment.entity.PayReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
-import top.chengdongqing.common.payment.wxpay.v2.V2WxPayment;
 import top.chengdongqing.common.payment.wxpay.v2.WxV2Constants;
+import top.chengdongqing.common.payment.wxpay.v2.WxV2Payment;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.BytesToStr;
@@ -74,7 +74,7 @@ public abstract class WxV2ReqPay implements IReqPay {
         // 转换结果格式
         Map<String, String> resultMap = XmlKit.xmlToMap(result);
         // 判断处理结果是否成功
-        Ret verifyResult = V2WxPayment.getResult(resultMap);
+        Ret verifyResult = WxV2Payment.getResult(resultMap);
         return verifyResult.isOk() ? packageData(resultMap) : verifyResult;
     }
 

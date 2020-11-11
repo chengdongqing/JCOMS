@@ -26,11 +26,11 @@ public interface ExcelProcessor {
      * 读取excel
      *
      * @param titles   标题行，中文列名 - 英文列名
-     * @param fileName 文件名称
+     * @param filename 文件名称
      * @param bytes    二进制文件
      * @return excel数据集合
      */
-    ExcelRows read(Map<String, String> titles, String fileName, byte[] bytes);
+    ExcelRows read(Map<String, String> titles, String filename, byte[] bytes);
 
     /**
      * 写入到excel

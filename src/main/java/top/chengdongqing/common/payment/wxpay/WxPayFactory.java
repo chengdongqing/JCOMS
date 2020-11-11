@@ -23,7 +23,7 @@ public class WxPayFactory extends ApplicationObjectSupport {
 
     public IPayment getWxPayment() throws CannotLoadBeanClassException {
         Objects.requireNonNull(active, "payment.wx.active cannot be null.");
-        String beanName = active + "WxPayment";
+        String beanName = "Wx" + active + "Payment";
         return super.getApplicationContext().getBean(beanName, IPayment.class);
     }
 }
