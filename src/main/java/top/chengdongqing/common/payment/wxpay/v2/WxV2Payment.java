@@ -7,10 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
-import top.chengdongqing.common.kit.HttpKit;
-import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.kit.StrKit;
-import top.chengdongqing.common.kit.XmlKit;
+import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.payment.IPayment;
 import top.chengdongqing.common.payment.TradeType;
 import top.chengdongqing.common.payment.entity.PayReqEntity;
@@ -20,7 +17,6 @@ import top.chengdongqing.common.payment.wxpay.WxStatus;
 import top.chengdongqing.common.payment.wxpay.v2.reqpay.ReqPayContext;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.transformer.BytesToStr;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.math.BigDecimal;
@@ -96,34 +92,32 @@ public class WxV2Payment implements IPayment {
      * @return 带xml的处理结果
      */
     private Ret toFailXml(String errorMsg) {
-        Map<String, String> params = new HashMap<>();
-        params.put("return_code", WxStatus.FAIL);
-        params.put("return_msg", errorMsg);
+        Kv<String, String> params = Kv.go("return_code", WxStatus.FAIL).add("return_msg", errorMsg);
         return Ret.fail(XmlKit.mapToXml(params));
     }
 
     @Override
     public Ret requestClose(String orderNo) {
         // 封装请求参数
-        Map<String, String> params = new HashMap<>();
-        params.put("appid", constants.getAppId().getMp());
-        params.put("mch_id", constants.getMchId());
-        params.put("nonce_str", StrKit.getRandomUUID());
-        params.put("out_trade_no", orderNo);
-        params.put("key", v2constants.getSecretKey());
-        params.put("sign_type", v2constants.getSignType());
-        BytesToStr sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
+        Kv<String, String> params = Kv.go("appid", constants.getAppId().getMp())
+                .add("mch_id", constants.getMchId())
+                .add("nonce_str", StrKit.getRandomUUID())
+                .add("out_trade_no", orderNo)
+                .add("key", v2constants.getSecretKey())
+                .add("sign_type", v2constants.getSignType());
+        String sign = DigitalSigner.signature(
+                SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(params),
-                StrToBytes.of(v2constants.getSecretKey()).fromHex());
-        params.put("sign", sign.toHex());
+                StrToBytes.of(v2constants.getSecretKey()).fromHex())
+                .toHex();
+        params.add("sign", sign);
         params.remove("key");
 
         // 转换数据类型
         String xml = XmlKit.mapToXml(params);
         // 发送请求
-        log.info("发送关闭订单请求：{}", xml);
         String result = HttpKit.post(v2constants.getCloseUrl(), xml).body();
-        log.info("请求关闭订单结果：{}", result);
+        log.info("请求关闭订单参数：{}，\n结果：{}", xml, result);
         // 判断结果
         return getResult(XmlKit.xmlToMap(result));
     }
@@ -135,20 +129,21 @@ public class WxV2Payment implements IPayment {
         String refundFee = String.valueOf(refundAmount.multiply(BigDecimal.valueOf(100)).intValue());
 
         // 封装请求参数
-        Map<String, String> params = new HashMap<>();
-        params.put("appid", constants.getAppId().getMp());
-        params.put("mch_id", constants.getMchId());
-        params.put("nonce_str", StrKit.getRandomUUID());
-        params.put("out_trade_no", orderNo);
-        params.put("out_refund_no", refundNo);
-        params.put("total_fee", totalFee);
-        params.put("refund_fee", refundFee);
-        params.put("key", v2constants.getSecretKey());
-        params.put("sign_type", v2constants.getSignType());
-        BytesToStr sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
+        Kv<String, String> params = Kv.go("appid", constants.getAppId().getMp())
+                .add("mch_id", constants.getMchId())
+                .add("nonce_str", StrKit.getRandomUUID())
+                .add("out_trade_no", orderNo)
+                .add("out_refund_no", refundNo)
+                .add("total_fee", totalFee)
+                .add("refund_fee", refundFee)
+                .add("key", v2constants.getSecretKey())
+                .add("sign_type", v2constants.getSignType());
+        String sign = DigitalSigner.signature(
+                SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(params),
-                StrToBytes.of(v2constants.getSecretKey()).fromHex());
-        params.put("sign", sign.toHex());
+                StrToBytes.of(v2constants.getSecretKey()).fromHex())
+                .toHex();
+        params.add("sign", sign);
         params.remove("key");
 
         // 获取证书文件流
@@ -157,10 +152,9 @@ public class WxV2Payment implements IPayment {
             String xml = XmlKit.mapToXml(params);
             // 读取证书
             byte[] certBytes = Files.readAllBytes(Paths.get(v2constants.getCertPath()));
-            log.info("发送订单退款请求：{}", xml);
             // 发送请求
             String result = HttpKit.post(v2constants.getRefundUrl(), xml, certBytes, constants.getMchId()).body();
-            log.info("请求订单退款结果：{}", result);
+            log.info("请求订单退款参数：{}，\n结果：{}", xml, result);
             // 判断结果
             return getResult(XmlKit.xmlToMap(result));
         } catch (Exception e) {

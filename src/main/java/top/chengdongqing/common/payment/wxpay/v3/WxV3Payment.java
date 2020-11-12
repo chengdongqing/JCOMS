@@ -1,16 +1,17 @@
 package top.chengdongqing.common.payment.wxpay.v3;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.encrypt.EncryptAlgorithm;
 import top.chengdongqing.common.encrypt.Encryptor;
 import top.chengdongqing.common.kit.HttpKit;
+import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IPayment;
 import top.chengdongqing.common.payment.TradeType;
@@ -44,6 +45,8 @@ public class WxV3Payment implements IPayment {
     private WxConstants constants;
     @Autowired
     private WxV3Constants v3constants;
+    @Autowired
+    private WxV3Helper helper;
 
     @Override
     public Ret requestPayment(PayReqEntity entity, TradeType tradeType) {
@@ -88,10 +91,8 @@ public class WxV3Payment implements IPayment {
                 .paymentTime(LocalDateTime.parse(resource.getSuccessTime(), DateTimeFormatter.ISO_ZONED_DATE_TIME))
                 .build();
         // 返回回调结果
-        JSONObject response = new JSONObject();
-        response.put("code", WxStatus.SUCCESS);
         return Ret.ok(CallbackResponseEntity.builder()
-                .json(JSON.toJSONString(response))
+                .json(Kv.go("code", WxStatus.SUCCESS).toJson())
                 .details(payDetails)
                 .build()
         );
@@ -104,23 +105,27 @@ public class WxV3Payment implements IPayment {
      * @return 带JSON的响应对象
      */
     private Ret toFailJson(String errorMsg) {
-        JSONObject response = new JSONObject();
-        response.put("code", WxStatus.FAIL);
-        response.put("message", errorMsg);
-        return Ret.fail(response.toJSONString());
+        return Ret.fail(Kv
+                .go("code", WxStatus.FAIL)
+                .add("message", errorMsg)
+                .toJson());
     }
 
     @Override
     public Ret requestClose(String orderNo) {
-        // 获取完整请求地址
-        String closeUrl = v3constants.getCloseUrl().formatted(orderNo);
-        // 获取请求体
-        JSONObject body = new JSONObject();
-        body.put("mchid", constants.getMchId());
+        // 获取请求头
+        String apiPath = WxV3Helper.getTradeApi(v3constants.getCloseUrl().formatted(orderNo));
+        String body = Kv.go("mchid", constants.getMchId()).toJson();
+        Kv<String, String> headers = helper.getAuthorization(HttpMethod.POST, apiPath, body);
+
         // 发送请求
-        log.info("请求关闭订单：{}", orderNo);
-        HttpResponse<String> response = HttpKit.post(closeUrl, body.toJSONString());
-        log.info("订单号{} 关闭订单响应：{}", orderNo, response);
+        String requestUrl = helper.getRequestUrl(apiPath);
+        HttpResponse<String> response = HttpKit.post(requestUrl, headers, body);
+        log.info("请求关闭订单：{}，\n请求头：{}，\n请求体：{}，响应结果：{}",
+                requestUrl,
+                headers,
+                body,
+                response);
         return response.statusCode() == 204 ? Ret.ok() : Ret.fail();
     }
 

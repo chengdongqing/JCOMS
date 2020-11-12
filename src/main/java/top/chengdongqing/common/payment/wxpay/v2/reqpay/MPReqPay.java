@@ -1,5 +1,6 @@
 package top.chengdongqing.common.payment.wxpay.v2.reqpay;
 
+import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.payment.TradeType;
@@ -10,7 +11,6 @@ import top.chengdongqing.common.transformer.BytesToStr;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,13 +35,14 @@ public class MPReqPay extends WxV2ReqPay {
      */
     @Override
     protected Ret packageData(Map<String, String> resultMap) {
-        Map<String, String> data = new HashMap<>();
-        data.put("appId", constants.getAppId().getMp());
-        data.put("timeStamp", Instant.now().getEpochSecond() + "");
-        data.put("nonceStr", StrKit.getRandomUUID());
-        data.put("package", "prepay_id=" + resultMap.get("prepay_id"));
-        data.put("signType", v2constants.getSignType());
-        BytesToStr sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
+        Kv<String, String> data = Kv.go("appId", constants.getAppId().getMp())
+                .add("timeStamp", Instant.now().getEpochSecond() + "")
+                .add("nonceStr", StrKit.getRandomUUID())
+                .add("package", "prepay_id=" + resultMap.get("prepay_id"))
+                .add("signType", v2constants.getSignType());
+        // 获取签名
+        BytesToStr sign = DigitalSigner.signature(
+                SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(data),
                 StrToBytes.of(v2constants.getSecretKey()).fromHex());
         data.put("paySign", sign.toHex());

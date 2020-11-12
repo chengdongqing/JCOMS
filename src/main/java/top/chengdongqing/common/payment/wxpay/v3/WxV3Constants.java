@@ -16,9 +16,18 @@ import org.springframework.stereotype.Component;
 public class WxV3Constants {
 
     /**
+     * 认证类型描述
+     */
+    @Value("${schema:WECHATPAY2-SHA256-RSA2048}")
+    private String authSchema;
+    /**
+     * 证书序列号
+     */
+    private String certSerialNo;
+    /**
      * 订单请求支付地址
      */
-    private String paymentUrl;
+    private PaymentUrl paymentUrl;
     /**
      * 支付成功通知地址
      */
@@ -26,12 +35,11 @@ public class WxV3Constants {
     /**
      * 关闭订单请求地址
      */
-    @Value("${close-url:https://api.mch.weixin.qq.com/v3/pay/transactions/out-trade-no/%s/close}")
+    @Value("${close-url:/out-trade-no/%s/close}")
     private String closeUrl;
     /**
      * 订单退款请求地址
      */
-    @Value("${refund-url:https://api.mch.weixin.qq.com/v3/ecommerce/refunds/apply}")
     private String refundUrl;
 
     /**
@@ -42,4 +50,19 @@ public class WxV3Constants {
      * 公钥
      */
     private String publicKey;
+
+    @Data
+    @Component
+    @ConfigurationProperties("pay.wx.v3.pay-url")
+    public static class PaymentUrl {
+
+        @Value("${pc:native}")
+        private String pc;
+        @Value("${pc:jsapi}")
+        private String mp;
+        @Value("${pc:app}")
+        private String app;
+        @Value("${pc:h5}")
+        private String h5;
+    }
 }

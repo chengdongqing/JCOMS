@@ -1,5 +1,6 @@
 package top.chengdongqing.common.payment.wxpay.v2.reqpay;
 
+import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.TradeType;
 import top.chengdongqing.common.payment.entity.PayReqEntity;
@@ -17,13 +18,11 @@ public class MBReqPay extends WxV2ReqPay {
     protected void addSpecialParams(Map<String, String> params, PayReqEntity entity) {
         params.put("appid", constants.getAppId().getMb());
         params.put("trade_type", TradeType.MWEB.name());
-        // 场景信息
-        params.put("scene_info", "{\"h5_info\": {\"type\":\"Wap\",\"wap_url\": \"" + constants.getWebDomain() + "\",\"wap_name\": \"" + constants.getWebTitle() + "\"}}");
+        params.put("scene_info", Kv.go("h5_info", Kv.go("type", "Wap")).toJson());
     }
 
     @Override
     protected Ret packageData(Map<String, String> resultMap) {
-        // 调起微信支付的跳转链接
         return Ret.ok(resultMap.get("mweb_url"));
     }
 }

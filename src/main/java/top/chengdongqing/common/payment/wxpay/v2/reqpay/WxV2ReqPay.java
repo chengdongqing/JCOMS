@@ -20,7 +20,6 @@ import top.chengdongqing.common.transformer.StrToBytes;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,33 +42,34 @@ public abstract class WxV2ReqPay implements IReqPay {
     @Override
     public Ret requestPayment(PayReqEntity entity) {
         // 封装请求参数
-        Map<String, String> params = new HashMap<>();
-        params.put("mch_id", constants.getMchId());
-        params.put("nonce_str", StrKit.getRandomUUID());
-        params.put("body", constants.getWebTitle());
-        params.put("detail", getGoodsDetail(entity.getItems()));
-        params.put("out_trade_no", entity.getOrderNo());
-        params.put("total_fee", entity.getAmount().multiply(BigDecimal.valueOf(100)).intValue() + "");
-        params.put("spbill_create_ip", entity.getIp());
-        String timeExpire = LocalDateTime.now().plusMinutes(30).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-        params.put("time_expire", timeExpire);
-        params.put("notify_url", v2constants.getNotifyUrl());
-        params.put("key", v2constants.getSecretKey());
-        params.put("sign_type", v2constants.getSignType());
+        Kv<String, String> params = Kv.go("mch_id", constants.getMchId())
+                .add("nonce_str", StrKit.getRandomUUID())
+                .add("body", constants.getWebTitle())
+                .add("detail", getGoodsDetail(entity.getItems()))
+                .add("out_trade_no", entity.getOrderNo())
+                .add("total_fee", entity.getAmount().multiply(BigDecimal.valueOf(100)).intValue() + "")
+                .add("spbill_create_ip", entity.getIp())
+                .add("time_expire", LocalDateTime.now()
+                        .plusMinutes(constants.getPayDuration())
+                        .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
+                .add("notify_url", v2constants.getNotifyUrl())
+                .add("key", v2constants.getSecretKey())
+                .add("sign_type", v2constants.getSignType());
         // 不同客户端添加不同的参数
         addSpecialParams(params, entity);
         // 执行签名
-        BytesToStr sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256, StrKit.buildQueryStr(params),
+        BytesToStr sign = DigitalSigner.signature(
+                SignatureAlgorithm.HMAC_SHA256,
+                StrKit.buildQueryStr(params),
                 StrToBytes.of(v2constants.getSecretKey()).fromHex());
-        params.put("sign", sign.toHex());
+        params.add("sign", sign.toHex());
         params.remove("key");
 
         // 转换数据类型
         String xml = XmlKit.mapToXml(params);
         // 发送请求
-        log.info("发送付款请求：{}", xml);
         String result = HttpKit.post(v2constants.getPaymentUrl(), xml).body();
-        log.info("请求付款结果：{}", result);
+        log.info("请求付款参数：{}, \n请求付款结果：{}", xml, result);
 
         // 转换结果格式
         Map<String, String> resultMap = XmlKit.xmlToMap(result);
@@ -84,8 +84,8 @@ public abstract class WxV2ReqPay implements IReqPay {
      * @param items 商品列表
      * @return 商品详情JSON字符串
      */
-    private static String getGoodsDetail(List<PayReqEntity.OrderItem> items) {
-        // 给微信的商品详情对象
+    private String getGoodsDetail(List<PayReqEntity.OrderItem> items) {
+        // 商品详情
         @Data
         @AllArgsConstructor
         class GoodsDetail {
@@ -98,7 +98,8 @@ public abstract class WxV2ReqPay implements IReqPay {
             return new GoodsDetail(item.getId(), item.getName(), price, item.getQuantity());
         }).collect(Collectors.toList());
         // 转JSON字符串
-        return JSON.toJSONString(goodsDetails, JsonKit.getSnakeCaseConfig());
+        String detail = JSON.toJSONString(goodsDetails, JsonKit.getSnakeCaseConfig());
+        return Kv.go("goods_detail", detail).toJson();
     }
 
     /**

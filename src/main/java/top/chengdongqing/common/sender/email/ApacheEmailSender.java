@@ -42,7 +42,7 @@ public class ApacheEmailSender extends EmailSender {
             he.send();
             log.info("发送邮件成功：{}", he);
         } catch (EmailException e) {
-            log.warn("发送邮件失败：{}", he, e);
+            log.warn("发送邮件失败", e);
             throw new SendEmailException(ErrorMsg.SEND_FAILED);
         }
     }

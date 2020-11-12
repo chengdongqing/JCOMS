@@ -1,6 +1,7 @@
 package top.chengdongqing.common.payment.wxpay;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,18 @@ public class WxConstants {
      * 商户号
      */
     private String mchId;
+
+    /**
+     * 下单后允许付款时长，单位：分钟
+     */
+    @Value("${pay-duration:30}")
+    private Long payDuration;
+
+    /**
+     * 微信支付域名
+     */
+    @Value("${wx-domain:https://api.mch.weixin.qq.com}")
+    private String wxDomain;
 
     /**
      * 网站标题
