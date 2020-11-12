@@ -71,8 +71,7 @@ public class CaptchaGenerator implements ImageGenerator {
      * @return 键值对实体
      */
     public CaptchaEntity getCaptchaEntity() {
-        captchaEntity = new CaptchaRandom(type, randomLength).get();
-        return captchaEntity;
+        return captchaEntity = new CaptchaRandom(type, randomLength).get();
     }
 
     @Override

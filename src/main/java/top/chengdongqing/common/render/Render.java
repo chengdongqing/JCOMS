@@ -17,7 +17,8 @@ public abstract class Render {
 
     protected final HttpServletRequest request;
     protected final HttpServletResponse response;
-    protected final Charset charset = StandardCharsets.UTF_8;
+
+    protected static final Charset CHARSET = StandardCharsets.UTF_8;
 
     public Render() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();

@@ -2,7 +2,6 @@ package top.chengdongqing.common.sender.sms;
 
 import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.constant.Regexps;
-import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.sender.ISender;
 
 import java.util.regex.Pattern;
@@ -24,14 +23,14 @@ public abstract class SmsSender implements ISender<SmsEntity> {
      * 发送短信
      */
     @Override
-    public Ret<String> send(SmsEntity entity) {
+    public void send(SmsEntity entity) {
         if (StringUtils.isAnyBlank(entity.getTo(), entity.getTemplate(), entity.getContent())) {
             throw new IllegalArgumentException("The args can not be blank.");
         }
         if (!PATTERN.matcher(entity.getTo()).matches()) {
             throw new IllegalArgumentException("The phone number is error.");
         }
-        return sendSms(entity);
+        sendSms(entity);
     }
 
     /**
@@ -40,5 +39,5 @@ public abstract class SmsSender implements ISender<SmsEntity> {
      * @param entity 参数实体
      * @return 发送结果
      */
-    protected abstract Ret<String> sendSms(SmsEntity entity);
+    protected abstract void sendSms(SmsEntity entity);
 }

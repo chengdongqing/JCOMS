@@ -10,7 +10,6 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.HttpKit;
-import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
@@ -36,7 +35,7 @@ public class AliSmsSender extends SmsSender {
     private AliSmsConstants constants;
 
     @Override
-    public Ret<String> sendSms(SmsEntity entity) {
+    public void sendSms(SmsEntity entity) {
         // 封装参数
         Map<String, String> params = new HashMap<>();
         params.put("PhoneNumbers", entity.getTo());
@@ -60,15 +59,12 @@ public class AliSmsSender extends SmsSender {
                 StrToBytes.of(constants.getAccessSecret()).fromBase64());
         params.put("Signature", bytes.toBase64());
 
-        try {
-            // 发送请求
-            String result = HttpKit.get(constants.getGatewayUrl(), params).body();
-            SendResult sendResult = JSON.parseObject(result, SendResult.class);
-            log.info("发送短信参数：{}, 发送短信结果：{}", params, result);
-            return sendResult.isOk() ? Ret.ok() : Ret.fail(ErrorMsg.SEND_FAILED);
-        } catch (Exception e) {
-            log.error(ErrorMsg.SEND_FAILED, e);
-            return Ret.fail(ErrorMsg.SEND_FAILED);
+        // 发送请求
+        String result = HttpKit.get(constants.getGatewayUrl(), params).body();
+        log.info("发送短信参数：{}，结果：{}", params, result);
+        SendResult sendResult = JSON.parseObject(result, SendResult.class);
+        if (!sendResult.isOk()) {
+            throw new SendSmsException(ErrorMsg.SEND_FAILED);
         }
     }
 }

@@ -29,7 +29,7 @@ public class FileRender extends Render {
             throw new IllegalArgumentException("The filename and data cannot be null");
         }
 
-        this.filename = URLEncoder.encode(filename, charset);
+        this.filename = URLEncoder.encode(filename, CHARSET);
         this.data = data;
     }
 

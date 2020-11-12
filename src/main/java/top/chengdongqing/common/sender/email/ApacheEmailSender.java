@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
-import top.chengdongqing.common.kit.Ret;
 
 import java.nio.charset.StandardCharsets;
 
@@ -27,7 +26,7 @@ public class ApacheEmailSender extends EmailSender {
     private ApacheEmailConstants constants;
 
     @Override
-    public Ret<String> sendEmail(EmailEntity entity) {
+    public void sendEmail(EmailEntity entity) {
         // 实例化网页邮件客户端
         HtmlEmail he = new HtmlEmail();
         he.setHostName(constants.getHost());
@@ -42,10 +41,9 @@ public class ApacheEmailSender extends EmailSender {
             he.setMsg(entity.getContent());
             he.send();
             log.info("发送邮件成功：{}", he);
-            return Ret.ok();
         } catch (EmailException e) {
-            log.error(ErrorMsg.SEND_FAILED, e);
-            return Ret.fail(ErrorMsg.SEND_FAILED);
+            log.warn("发送邮件失败：{}", he, e);
+            throw new SendEmailException(ErrorMsg.SEND_FAILED);
         }
     }
 }
