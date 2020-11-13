@@ -1,15 +1,12 @@
 package top.chengdongqing.common.payment.wxpay.v3;
 
-import com.alibaba.fastjson.JSON;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-import top.chengdongqing.common.encrypt.EncryptAlgorithm;
-import top.chengdongqing.common.encrypt.Encryptor;
+import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
@@ -17,15 +14,13 @@ import top.chengdongqing.common.payment.IPayment;
 import top.chengdongqing.common.payment.TradeType;
 import top.chengdongqing.common.payment.entity.PayReqEntity;
 import top.chengdongqing.common.payment.entity.PayResEntity;
+import top.chengdongqing.common.payment.entity.RefundReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
-import top.chengdongqing.common.payment.wxpay.WxStatus;
-import top.chengdongqing.common.payment.wxpay.v3.callback.ResourceHolder;
-import top.chengdongqing.common.payment.wxpay.v3.callback.WxCallback;
+import top.chengdongqing.common.payment.wxpay.WxPayHelper;
+import top.chengdongqing.common.payment.wxpay.v3.callback.WxV3Callback;
+import top.chengdongqing.common.payment.wxpay.v3.callback.payment.PayCallbackEntity;
 import top.chengdongqing.common.payment.wxpay.v3.reqpay.ReqPayContext;
-import top.chengdongqing.common.transformer.StrToBytes;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,7 +38,7 @@ public class WxV3Payment implements IPayment {
     @Autowired
     private WxConstants constants;
     @Autowired
-    private WxV3Constants v3constants;
+    private WxV3Constants v3Constants;
     @Autowired
     private WxV3Helper helper;
 
@@ -54,65 +49,50 @@ public class WxV3Payment implements IPayment {
 
     @Override
     public Ret handleCallback(Kv<String, String> params) {
-        if (params.isEmpty()) return toFailJson("参数错误");
-        log.info("微信支付回调V3参数: {}", params);
-        // 将弱类型MAP转强类型对象
-        WxCallback callback = WxCallback.of(params);
+        if (params == null || params.isEmpty()) {
+            throw new IllegalArgumentException("wx callback params cannot be null");
+        }
+        log.info("微信支付V3回调参数: {}", params);
+        WxV3Callback callback = WxV3Callback.of(params);
 
         // 验证签名
-        boolean verify = WxV3Signer.verify(callback, v3constants.getPublicKey());
-        if (!verify) return toFailJson("验签失败");
+        boolean verify = helper.verify(callback.getSerialNo(),
+                v3Constants.getPublicKey(),
+                callback.getSign(),
+                callback.getTimestamp(),
+                callback.getNonceStr(),
+                callback.getBody());
+        if (!verify) return WxV3Helper.buildFailRes("验签失败");
 
-        // 获取请求体中的加密数据
-        String resourceHolderJson = JSON.parseObject(callback.getBody()).getString("resource");
-        ResourceHolder resourceHolder = JSON.parseObject(resourceHolderJson, ResourceHolder.class);
-        // 获取密文、随机数、关联数据
-        byte[] ciphertext = StrToBytes.of(resourceHolder.getCiphertext()).fromBase64();
-        byte[] iv = resourceHolder.getNonce().getBytes();
-        String associatedData = resourceHolder.getAssociatedData();
         // 解密数据
-        String resourceJson = Encryptor.decrypt(EncryptAlgorithm.AES_GCM_NoPadding,
-                ByteUtils.concatenate(iv, ciphertext),
-                constants.getMchId(), associatedData).toText();
-        log.info("微信支付回调数据解密后：{}", resourceJson);
-        ResourceHolder.Resource resource = JSON.parseObject(resourceJson, ResourceHolder.Resource.class);
+        PayCallbackEntity payCallback = WxV3Helper.decryptData(callback.getBody(), v3Constants.getSecretKey(), PayCallbackEntity.class);
+        log.info("支付回调解密后的数据：{}", payCallback);
 
         // 判断支付结果
-        if (!resource.isTradeSuccess()) return toFailJson("交易失败");
+        if (!payCallback.isTradeSuccess()) return WxV3Helper.buildFailRes("交易失败");
 
         // 封装支付信息
-        PayResEntity payDetails = PayResEntity.builder()
-                .orderNo(resource.getOutTradeNo())
-                .paymentNo(resource.getTransactionId())
+        PayResEntity payResEntity = PayResEntity.builder()
+                .orderNo(payCallback.getOutTradeNo())
+                .paymentNo(payCallback.getTransactionId())
                 // 将单位从分转为元
-                .paymentAmount(new BigDecimal(resource.getAmount().getPayerTotal()).divide(BigDecimal.valueOf(100), RoundingMode.HALF_DOWN))
+                .paymentAmount(WxPayHelper.convertAmount(payCallback.getAmount().getPayerTotal()))
                 // 转换支付时间
-                .paymentTime(LocalDateTime.parse(resource.getSuccessTime(), DateTimeFormatter.ISO_ZONED_DATE_TIME))
+                .paymentTime(LocalDateTime.parse(payCallback.getSuccessTime(), DateTimeFormatter.ISO_ZONED_DATE_TIME))
                 .build();
         // 返回回调结果
-        return Ret.ok(CallbackResponseEntity.builder()
-                .json(Kv.go("code", WxStatus.SUCCESS).toJson())
-                .details(payDetails)
-                .build()
-        );
-    }
-
-    /**
-     * 获取回调处理失败响应给微信服务器的JSON
-     *
-     * @param errorMsg 错误信息
-     * @return 带JSON的响应对象
-     */
-    private Ret toFailJson(String errorMsg) {
-        return Ret.fail(Kv.go("code", WxStatus.FAIL).add("message", errorMsg).toJson());
+        return Ret.ok(PayCallbackResEntity.builder()
+                .response(WxV3Helper.buildSuccessMsg())
+                .payResEntity(payResEntity)
+                .build());
     }
 
     @Override
     public Ret requestClose(String orderNo) {
-        // 获取请求头
-        String apiPath = WxV3Helper.getTradeApi(v3constants.getCloseUrl().formatted(orderNo));
+        // 构建请求头
+        String apiPath = WxV3Helper.getTradeApi(v3Constants.getCloseUrl().formatted(orderNo));
         String body = Kv.go("mchid", constants.getMchId()).toJson();
-        Kv<String, String> headers = helper.getAuthorization(HttpMethod.POST, apiPath, body);
+        Kv<String, String> headers = helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
         // 发送请求
         String requestUrl = helper.getRequestUrl(apiPath);
@@ -122,27 +102,80 @@ public class WxV3Payment implements IPayment {
                 headers,
                 body,
                 response);
-        return response.statusCode() == 204 ? Ret.ok() : Ret.fail();
+        return response.statusCode() == 204 ? Ret.ok() : Ret.fail(switch (response.statusCode()) {
+            case 202 -> "用户支付中";
+            case 400 -> "订单已关闭";
+            case 401 -> "签名错误";
+            case 404 -> "订单不存在";
+            default -> ErrorMsg.REQUEST_FAILED;
+        });
     }
 
     @Override
-    public Ret requestRefund(String orderNo, String refundNo, BigDecimal totalAmount, BigDecimal refundAmount) {
+    public Ret requestRefund(RefundReqEntity entity) {
+        // 构建请求体
+        String body = Kv.go("sub_mchid", v3Constants.getSubMchId())
+                .add("sp_appid", v3Constants.getSpAppId())
+                .add("sub_appid", v3Constants.getSubAppId())
+                .add("out_trade_no", entity.getOrderNo())
+                .add("out_refund_no", entity.getRefundNo())
+                .add("reason", entity.getReason())
+                .add("amount", buildRefundAmount(entity))
+                .add("notify_url", v3Constants.getRefundNotifyUrl())
+                .toJson();
+
+        // 构建请求头
+        String apiPath = v3Constants.getRefundUrl();
+        Kv<String, String> headers = helper.buildHeaders(HttpMethod.POST, apiPath, body);
+
+        // 发送退款请求
+        String requestUrl = helper.getRequestUrl(apiPath);
+        HttpResponse<String> response = HttpKit.post(requestUrl, headers, body);
+        log.info("请求订单退款：{}，\n请求头：{}，\n请求体：{}，响应结果：{}",
+                requestUrl,
+                headers,
+                body,
+                response);
+        return response.statusCode() == 200 ? Ret.ok() : Ret.fail(switch (response.statusCode()) {
+            case 400 -> "参数错误";
+            case 401 -> "签名错误";
+            case 403 -> "余额不足";
+            case 404 -> "订单不存在";
+            default -> ErrorMsg.REQUEST_FAILED;
+        });
+    }
+
+    /**
+     * 构建退款金额JSON
+     *
+     * @param entity 参数实体
+     * @return 退款金额JSON字符串
+     */
+    private String buildRefundAmount(RefundReqEntity entity) {
+        return Kv.go().add("refund", WxPayHelper.convertAmount(entity.getRefundAmount()))
+                .add("total", WxPayHelper.convertAmount(entity.getTotalAmount()))
+                .add("currency", v3Constants.getCurrency())
+                .toJson();
+    }
+
+    @Override
+    public Ret queryOrder(String orderNo) {
         return null;
     }
 
     /**
-     * 支付回调响应对象
+     * 支付回调响应实体
      */
     @Data
     @Builder
-    public static class CallbackResponseEntity {
+    public static class PayCallbackResEntity {
         /**
-         * 返回给微信服务器的json
+         * 响应数据
          */
-        private String json;
+        private String response;
         /**
-         * 收集的支付详情
+         * 支付详情
          */
-        private PayResEntity details;
+        private PayResEntity payResEntity;
     }
 }

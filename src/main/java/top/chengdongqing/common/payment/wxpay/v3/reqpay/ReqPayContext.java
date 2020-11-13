@@ -1,32 +1,35 @@
 package top.chengdongqing.common.payment.wxpay.v3.reqpay;
 
+import org.springframework.context.support.ApplicationObjectSupport;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IReqPay;
 import top.chengdongqing.common.payment.TradeType;
 import top.chengdongqing.common.payment.entity.PayReqEntity;
 
 /**
+ * 请求付款实例上下文
+ * v3
+ *
  * @author Luyao
  */
-public class ReqPayContext {
+public class ReqPayContext extends ApplicationObjectSupport {
 
     private IReqPay strategy;
 
     /**
      * 根据请求客户端获取请求实例
      *
-     * @param tradeType 请求支付客户端
+     * @param tradeType 交易类型
      */
     public ReqPayContext(TradeType tradeType) {
-        if (tradeType == TradeType.NATIVE) {
-            strategy = new PCReqPay();
-        } else if (tradeType == TradeType.APP) {
-            strategy = new APPReqPay();
-        } else if (tradeType == TradeType.JSAPI) {
-            strategy = new MPReqPay();
-        } else if (tradeType == TradeType.MWEB) {
-            strategy = new MBReqPay();
-        }
+        Class<? extends IReqPay> clazz = switch (tradeType) {
+            case APP -> APPReqPay.class;
+            case MWEB -> MBReqPay.class;
+            case JSAPI -> MPReqPay.class;
+            case NATIVE -> PCReqPay.class;
+            default -> throw new IllegalArgumentException("The tradeType is not supported now.");
+        };
+        strategy = super.getApplicationContext().getBean(clazz);
     }
 
     /**

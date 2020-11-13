@@ -10,6 +10,7 @@ import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.payment.IReqPay;
 import top.chengdongqing.common.payment.entity.PayReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
+import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.payment.wxpay.v2.WxV2Constants;
 import top.chengdongqing.common.payment.wxpay.v2.WxV2Payment;
 import top.chengdongqing.common.signature.DigitalSigner;
@@ -17,7 +18,6 @@ import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.BytesToStr;
 import top.chengdongqing.common.transformer.StrToBytes;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -47,11 +47,9 @@ public abstract class WxV2ReqPay implements IReqPay {
                 .add("body", constants.getWebTitle())
                 .add("detail", getGoodsDetail(entity.getItems()))
                 .add("out_trade_no", entity.getOrderNo())
-                .add("total_fee", entity.getAmount().multiply(BigDecimal.valueOf(100)).intValue() + "")
+                .add("total_fee", WxPayHelper.convertAmount(entity.getAmount()) + "")
                 .add("spbill_create_ip", entity.getIp())
-                .add("time_expire", LocalDateTime.now()
-                        .plusMinutes(constants.getPayDuration())
-                        .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
+                .add("time_expire", getExpireTime(constants.getPayDuration()))
                 .add("notify_url", v2constants.getNotifyUrl())
                 .add("key", v2constants.getSecretKey())
                 .add("sign_type", v2constants.getSignType());
@@ -79,6 +77,18 @@ public abstract class WxV2ReqPay implements IReqPay {
     }
 
     /**
+     * 获取过期时间
+     *
+     * @param duration 下单后允许付款时长，单位：分钟
+     * @return 指定格式的过期时间字符串
+     */
+    private static String getExpireTime(long duration) {
+        return LocalDateTime.now()
+                .plusMinutes(duration)
+                .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+    }
+
+    /**
      * 获取商品详情
      *
      * @param items 商品列表
@@ -93,10 +103,12 @@ public abstract class WxV2ReqPay implements IReqPay {
             private Integer quantity;
         }
         // 构建商品详情列表
-        List<GoodsDetail> goodsDetails = items.stream().map(item -> {
-            String price = item.getPrice().multiply(BigDecimal.valueOf(100)).intValue() + "";
-            return new GoodsDetail(item.getId(), item.getName(), price, item.getQuantity());
-        }).collect(Collectors.toList());
+        List<GoodsDetail> goodsDetails = items.stream().map(item -> new GoodsDetail(
+                item.getId(),
+                item.getName(),
+                WxPayHelper.convertAmount(item.getPrice()) + "",
+                item.getQuantity()))
+                .collect(Collectors.toList());
         // 转JSON字符串
         String detail = JSON.toJSONString(goodsDetails, JsonKit.getSnakeCaseConfig());
         return Kv.go("goods_detail", detail).toJson();

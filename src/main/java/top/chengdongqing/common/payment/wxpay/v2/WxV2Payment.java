@@ -12,7 +12,9 @@ import top.chengdongqing.common.payment.IPayment;
 import top.chengdongqing.common.payment.TradeType;
 import top.chengdongqing.common.payment.entity.PayReqEntity;
 import top.chengdongqing.common.payment.entity.PayResEntity;
+import top.chengdongqing.common.payment.entity.RefundReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
+import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
 import top.chengdongqing.common.payment.wxpay.v2.reqpay.ReqPayContext;
 import top.chengdongqing.common.signature.DigitalSigner;
@@ -20,7 +22,6 @@ import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -49,8 +50,8 @@ public class WxV2Payment implements IPayment {
 
     @Override
     public Ret handleCallback(Kv<String, String> params) {
-        if (params.isEmpty() || StringUtils.isBlank(params.get("sign"))) {
-            return toFailXml("参数错误");
+        if (params == null || params.isEmpty() || StringUtils.isBlank(params.get("sign"))) {
+            throw new IllegalArgumentException("wx callback params is error");
         }
 
         // 验证签名
@@ -59,24 +60,24 @@ public class WxV2Payment implements IPayment {
                 StrKit.buildQueryStr(params),
                 StrToBytes.of(v2constants.getSecretKey()).fromHex(),
                 StrToBytes.of(params.get("sign")).fromHex());
-        if (!isOk) return toFailXml("验签失败");
+        if (!isOk) return buildFailXml("验签失败");
 
         // 判断支付结果
-        if (!WxStatus.isOk(params.get("result_code"))) return toFailXml("支付失败");
+        if (!WxStatus.isOk(params.get("result_code"))) return buildFailXml("支付失败");
 
         // 封装支付信息
         PayResEntity payDetails = PayResEntity.builder()
                 .orderNo(params.get("out_trade_no"))
                 .paymentNo(params.get("transaction_id"))
                 // 将单位从分转为元
-                .paymentAmount(new BigDecimal(params.get("total_fee")).divide(BigDecimal.valueOf(100), RoundingMode.HALF_DOWN))
+                .paymentAmount(WxPayHelper.convertAmount(Integer.parseInt(params.get("total_fee"))))
                 // 转换支付时间
-                .paymentTime(LocalDateTime.parse(params.get("time_end"), DateTimeFormatter.ISO_ZONED_DATE_TIME))
+                .paymentTime(LocalDateTime.parse(params.get("time_end"), DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
                 .build();
         // 返回回调结果
         Kv<String, String> map = Kv.go("return_code", WxStatus.SUCCESS);
         return Ret.ok(CallbackResponseEntity.builder()
-                .xml(XmlKit.mapToXml(map))
+                .response(XmlKit.mapToXml(map))
                 .details(payDetails)
                 .build()
         );
@@ -89,7 +90,7 @@ public class WxV2Payment implements IPayment {
      * @param errorMsg 错误信息
      * @return 带xml的处理结果
      */
-    private Ret toFailXml(String errorMsg) {
+    private Ret buildFailXml(String errorMsg) {
         Kv<String, String> map = Kv.go("return_code", WxStatus.FAIL).add("return_msg", errorMsg);
         return Ret.fail(XmlKit.mapToXml(map));
     }
@@ -115,29 +116,28 @@ public class WxV2Payment implements IPayment {
         String xml = XmlKit.mapToXml(params);
         // 发送请求
         String result = HttpKit.post(v2constants.getCloseUrl(), xml).body();
-        log.info("请求关闭订单参数：{}，\n结果：{}", xml, result);
+        log.info("请求订单关闭，参数：{}，\n结果：{}", xml, result);
         // 判断结果
         return getResult(XmlKit.xmlToMap(result));
     }
 
     @Override
-    public Ret requestRefund(String orderNo, String refundNo, BigDecimal totalAmount, BigDecimal refundAmount) {
+    public Ret requestRefund(RefundReqEntity entity) {
         // 将金额的单位从元转为分
-        String totalFee = String.valueOf(totalAmount.multiply(BigDecimal.valueOf(100)).intValue());
-        String refundFee = String.valueOf(refundAmount.multiply(BigDecimal.valueOf(100)).intValue());
+        int totalFee = entity.getTotalAmount().multiply(BigDecimal.valueOf(100)).intValue();
+        int refundFee = entity.getRefundAmount().multiply(BigDecimal.valueOf(100)).intValue();
 
         // 封装请求参数
         Kv<String, String> params = Kv.go("appid", constants.getAppId().getMp())
                 .add("mch_id", constants.getMchId())
                 .add("nonce_str", StrKit.getRandomUUID())
-                .add("out_trade_no", orderNo)
-                .add("out_refund_no", refundNo)
-                .add("total_fee", totalFee)
-                .add("refund_fee", refundFee)
+                .add("out_trade_no", entity.getOrderNo())
+                .add("out_refund_no", entity.getRefundNo())
+                .add("total_fee", totalFee + "")
+                .add("refund_fee", refundFee + "")
                 .add("key", v2constants.getSecretKey())
                 .add("sign_type", v2constants.getSignType());
-        String sign = DigitalSigner.signature(
-                SignatureAlgorithm.HMAC_SHA256,
+        String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(params),
                 StrToBytes.of(v2constants.getSecretKey()).fromHex())
                 .toHex();
@@ -152,12 +152,17 @@ public class WxV2Payment implements IPayment {
             byte[] certBytes = Files.readAllBytes(Paths.get(v2constants.getCertPath()));
             // 发送请求
             String result = HttpKit.post(v2constants.getRefundUrl(), xml, certBytes, constants.getMchId()).body();
-            log.info("请求订单退款参数：{}，\n结果：{}", xml, result);
+            log.info("请求订单退款，参数：{}，\n结果：{}", xml, result);
             // 判断结果
             return getResult(XmlKit.xmlToMap(result));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Ret queryOrder(String orderNo) {
+        return null;
     }
 
     /**
@@ -179,9 +184,9 @@ public class WxV2Payment implements IPayment {
     @Builder
     public static class CallbackResponseEntity {
         /**
-         * 返回给微信服务器的xml
+         * 响应数据
          */
-        private String xml;
+        private String response;
         /**
          * 收集的支付详情
          */

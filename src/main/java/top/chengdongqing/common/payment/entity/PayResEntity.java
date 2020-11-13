@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
+ * 支付响应数据实体
+ *
  * @author Luyao
  */
 @Data
@@ -18,7 +20,7 @@ public class PayResEntity {
      */
     private String orderNo;
     /**
-     * 付款单号
+     * 平台支付单号
      */
     private String paymentNo;
     /**

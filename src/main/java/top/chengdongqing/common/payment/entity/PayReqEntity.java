@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 支付请求实体
+ * 支付请求参数实体
  *
  * @author Luyao
  */

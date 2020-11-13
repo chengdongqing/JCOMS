@@ -1,7 +1,6 @@
 package top.chengdongqing.common.payment.wxpay.v3.reqpay;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +15,7 @@ import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IReqPay;
 import top.chengdongqing.common.payment.entity.PayReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
+import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.payment.wxpay.v3.WxV3Constants;
 import top.chengdongqing.common.payment.wxpay.v3.WxV3Helper;
 
@@ -48,16 +48,16 @@ public abstract class WxV3ReqPay implements IReqPay {
                 .add("description", constants.getWebTitle())
                 .add("out_trade_no", entity.getOrderNo())
                 .add("time_expire", WxV3Helper.getExpireTime(constants.getPayDuration()))
-                .add("notify_url", v3Constants.getNotifyUrl())
+                .add("notify_url", v3Constants.getPayNotifyUrl())
                 .add("amount", getAmount(entity.getAmount()))
                 .add("detail", getGoodsDetail(entity.getItems()))
                 .add("scene_info", getSceneInfo(entity.getIp()));
         addSpecialParams(params, entity);
 
-        // 获取请求头
+        // 构建请求头
         String apiPath = WxV3Helper.getTradeApi(getPayType());
         String body = params.toJson();
-        Kv<String, String> headers = helper.getAuthorization(HttpMethod.POST, apiPath, body);
+        Kv<String, String> headers = helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
         // 发送支付请求
         String requestUrl = helper.getRequestUrl(apiPath);
@@ -87,15 +87,9 @@ public abstract class WxV3ReqPay implements IReqPay {
      * @return 订单金额JSON字符串
      */
     private String getAmount(BigDecimal amount) {
-        // 订单金额
-        @Data
-        @AllArgsConstructor
-        class Amount {
-            private String currency;
-            private Integer total;
-        }
-        int total = amount.multiply(BigDecimal.valueOf(100)).intValue();
-        return JSON.toJSONString(new Amount("CNY", total));
+        return Kv.go().add("currency", v3Constants.getCurrency())
+                .add("total", WxPayHelper.convertAmount(amount))
+                .toJson();
     }
 
     /**
@@ -113,15 +107,15 @@ public abstract class WxV3ReqPay implements IReqPay {
             private Integer quantity, unitPrice;
         }
         // 构建商品详情列表
-        List<GoodsDetail> goodsDetails = items.stream().map(item -> {
-            int price = item.getPrice().multiply(BigDecimal.valueOf(100)).intValue();
-            return new GoodsDetail(item.getId(), item.getName(), price, item.getQuantity());
-        }).collect(Collectors.toList());
+        List<GoodsDetail> goodsDetails = items.stream().map(item -> new GoodsDetail(
+                item.getId(),
+                item.getName(),
+                WxPayHelper.convertAmount(item.getPrice()),
+                item.getQuantity()))
+                .collect(Collectors.toList());
         // 转JSON字符串
         String goodsDetail = JSON.toJSONString(goodsDetails, JsonKit.getSnakeCaseConfig());
-        JSONObject detail = new JSONObject();
-        detail.put("goods_detail", goodsDetail);
-        return detail.toJSONString();
+        return Kv.go("goods_detail", goodsDetail).toJson();
     }
 
     /**
