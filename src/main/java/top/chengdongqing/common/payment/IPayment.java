@@ -1,10 +1,10 @@
 package top.chengdongqing.common.payment;
 
+import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.entity.PayReqEntity;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 /**
  * 支付顶层接口
@@ -16,7 +16,7 @@ public interface IPayment {
     /**
      * 发起付款
      *
-     * @param entity 参数实体
+     * @param entity    参数实体
      * @param tradeType 客户端类型
      * @return 响应数据
      */
@@ -28,7 +28,7 @@ public interface IPayment {
      * @param params 回调携带的参数
      * @return 响应数据
      */
-    Ret handleCallback(Map<String, String> params);
+    Ret handleCallback(Kv<String, String> params);
 
     /**
      * 请求关闭订单

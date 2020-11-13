@@ -25,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -49,13 +48,13 @@ public class WxV2Payment implements IPayment {
     }
 
     @Override
-    public Ret handleCallback(Map<String, String> params) {
+    public Ret handleCallback(Kv<String, String> params) {
         if (params.isEmpty() || StringUtils.isBlank(params.get("sign"))) {
             return toFailXml("参数错误");
         }
 
         // 验证签名
-        params.put("key", v2constants.getSecretKey());
+        params.add("key", v2constants.getSecretKey());
         boolean isOk = DigitalSigner.verify(SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(params),
                 StrToBytes.of(v2constants.getSecretKey()).fromHex(),
@@ -75,8 +74,7 @@ public class WxV2Payment implements IPayment {
                 .paymentTime(LocalDateTime.parse(params.get("time_end"), DateTimeFormatter.ISO_ZONED_DATE_TIME))
                 .build();
         // 返回回调结果
-        Map<String, String> map = new HashMap<>();
-        map.put("return_code", WxStatus.SUCCESS);
+        Kv<String, String> map = Kv.go("return_code", WxStatus.SUCCESS);
         return Ret.ok(CallbackResponseEntity.builder()
                 .xml(XmlKit.mapToXml(map))
                 .details(payDetails)
@@ -92,8 +90,8 @@ public class WxV2Payment implements IPayment {
      * @return 带xml的处理结果
      */
     private Ret toFailXml(String errorMsg) {
-        Kv<String, String> params = Kv.go("return_code", WxStatus.FAIL).add("return_msg", errorMsg);
-        return Ret.fail(XmlKit.mapToXml(params));
+        Kv<String, String> map = Kv.go("return_code", WxStatus.FAIL).add("return_msg", errorMsg);
+        return Ret.fail(XmlKit.mapToXml(map));
     }
 
     @Override

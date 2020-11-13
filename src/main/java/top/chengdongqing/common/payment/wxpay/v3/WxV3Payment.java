@@ -29,7 +29,6 @@ import java.math.RoundingMode;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 /**
  * 微信支付
@@ -54,18 +53,18 @@ public class WxV3Payment implements IPayment {
     }
 
     @Override
-    public Ret handleCallback(Map<String, String> params) {
+    public Ret handleCallback(Kv<String, String> params) {
         if (params.isEmpty()) return toFailJson("参数错误");
         log.info("微信支付回调V3参数: {}", params);
         // 将弱类型MAP转强类型对象
-        WxCallback wxCallback = WxCallback.of(params);
+        WxCallback callback = WxCallback.of(params);
 
         // 验证签名
-        boolean verify = WxV3Signer.verify(wxCallback, v3constants.getPublicKey());
+        boolean verify = WxV3Signer.verify(callback, v3constants.getPublicKey());
         if (!verify) return toFailJson("验签失败");
 
         // 获取请求体中的加密数据
-        String resourceHolderJson = JSON.parseObject(wxCallback.getBody()).getString("resource");
+        String resourceHolderJson = JSON.parseObject(callback.getBody()).getString("resource");
         ResourceHolder resourceHolder = JSON.parseObject(resourceHolderJson, ResourceHolder.class);
         // 获取密文、随机数、关联数据
         byte[] ciphertext = StrToBytes.of(resourceHolder.getCiphertext()).fromBase64();
@@ -105,10 +104,7 @@ public class WxV3Payment implements IPayment {
      * @return 带JSON的响应对象
      */
     private Ret toFailJson(String errorMsg) {
-        return Ret.fail(Kv
-                .go("code", WxStatus.FAIL)
-                .add("message", errorMsg)
-                .toJson());
+        return Ret.fail(Kv.go("code", WxStatus.FAIL).add("message", errorMsg).toJson());
     }
 
     @Override

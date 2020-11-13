@@ -2,11 +2,13 @@ package top.chengdongqing.common.payment.wxpay.v3.callback;
 
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.HashMap;
-import java.util.Map;
+import top.chengdongqing.common.kit.Kv;
 
 /**
+ * 微信回调数据
+ * 仅为了兼容原有的请求支付接口的参数传输方式，类似适配器的作用
+ * 针对V3
+ *
  * @author Luyao
  */
 @Data
@@ -15,7 +17,13 @@ public class WxCallback {
 
     private String sign, timestamp, nonceStr, body;
 
-    public static WxCallback of(Map<String, String> params) {
+    /**
+     * 将map转对象
+     *
+     * @param params 参数map
+     * @return WxCallback对象
+     */
+    public static WxCallback of(Kv<String, String> params) {
         return builder()
                 .sign(params.get("sign"))
                 .timestamp(params.get("timestamp"))
@@ -24,12 +32,15 @@ public class WxCallback {
                 .build();
     }
 
-    public Map<String, String> toMap() {
-        Map<String, String> params = new HashMap<>();
-        params.put("sign", this.getSign());
-        params.put("timestamp", this.getTimestamp());
-        params.put("nonceStr", this.getNonceStr());
-        params.put("body", this.getBody());
-        return params;
+    /**
+     * 将对象转map
+     *
+     * @return 当前对象map
+     */
+    public Kv<String, String> toMap() {
+        return Kv.go("sign", this.getSign())
+                .add("timestamp", this.getTimestamp())
+                .add("nonceStr", this.getNonceStr())
+                .add("body", this.getBody());
     }
 }
