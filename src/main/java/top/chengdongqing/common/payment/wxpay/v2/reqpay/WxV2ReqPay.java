@@ -45,11 +45,11 @@ public abstract class WxV2ReqPay implements IReqPay {
         Kv<String, String> params = Kv.go("mch_id", constants.getMchId())
                 .add("nonce_str", StrKit.getRandomUUID())
                 .add("body", constants.getWebTitle())
-                .add("detail", getGoodsDetail(entity.getItems()))
+                .add("detail", buildGoodsDetail(entity.getItems()))
                 .add("out_trade_no", entity.getOrderNo())
                 .add("total_fee", WxPayHelper.convertAmount(entity.getAmount()) + "")
                 .add("spbill_create_ip", entity.getIp())
-                .add("time_expire", getExpireTime(constants.getPayDuration()))
+                .add("time_expire", buildExpireTime(constants.getPayDuration()))
                 .add("notify_url", v2constants.getNotifyUrl())
                 .add("key", v2constants.getSecretKey())
                 .add("sign_type", v2constants.getSignType());
@@ -73,7 +73,7 @@ public abstract class WxV2ReqPay implements IReqPay {
         Map<String, String> resultMap = XmlKit.xmlToMap(result);
         // 判断处理结果是否成功
         Ret verifyResult = WxV2Payment.getResult(resultMap);
-        return verifyResult.isOk() ? packageData(resultMap) : verifyResult;
+        return verifyResult.isOk() ? buildResponse(resultMap) : verifyResult;
     }
 
     /**
@@ -82,7 +82,7 @@ public abstract class WxV2ReqPay implements IReqPay {
      * @param duration 下单后允许付款时长，单位：分钟
      * @return 指定格式的过期时间字符串
      */
-    private static String getExpireTime(long duration) {
+    private static String buildExpireTime(long duration) {
         return LocalDateTime.now()
                 .plusMinutes(duration)
                 .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
@@ -94,7 +94,7 @@ public abstract class WxV2ReqPay implements IReqPay {
      * @param items 商品列表
      * @return 商品详情JSON字符串
      */
-    private String getGoodsDetail(List<PayReqEntity.OrderItem> items) {
+    private String buildGoodsDetail(List<PayReqEntity.OrderItem> items) {
         // 商品详情
         @Data
         @AllArgsConstructor
@@ -120,7 +120,7 @@ public abstract class WxV2ReqPay implements IReqPay {
      * @param params 被填充的参数map
      * @param entity 请求付款的参数实体
      */
-    protected abstract void addSpecialParams(Map<String, String> params, PayReqEntity entity);
+    protected abstract void addSpecialParams(Kv<String, String> params, PayReqEntity entity);
 
     /**
      * 封装返回的数据
@@ -128,5 +128,5 @@ public abstract class WxV2ReqPay implements IReqPay {
      * @param resultMap 微信响应的数据
      * @return 返回的数据
      */
-    protected abstract Ret packageData(Map<String, String> resultMap);
+    protected abstract Ret buildResponse(Map<String, String> resultMap);
 }

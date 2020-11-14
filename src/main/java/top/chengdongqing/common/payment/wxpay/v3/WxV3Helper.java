@@ -14,8 +14,9 @@ import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
+import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
-import top.chengdongqing.common.payment.wxpay.v3.callback.EncryptResource;
+import top.chengdongqing.common.payment.wxpay.v3.callback.entity.EncryptResource;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
@@ -49,7 +50,7 @@ public class WxV3Helper {
      */
     public Kv<String, String> buildHeaders(HttpMethod method, String apiPath, String body) {
         // 时间戳
-        String timestamp = getTimestamp();
+        String timestamp = WxPayHelper.getTimestamp();
         // 随机数
         String nonceStr = StrKit.getRandomUUID();
         // 数字签名
@@ -69,7 +70,7 @@ public class WxV3Helper {
                         .concat(item.getValue())
                         .concat("\""))
                 .collect(Collectors.joining(","));
-        return HttpKit.buildJSONHeaders().add("Authorization", v3Constants.getAuthSchema().concat(" ") + token);
+        return HttpKit.buildJSONHeaders().add("Authorization", v3Constants.getAuthSchema().concat(" ").concat(token));
     }
 
     /**
@@ -78,7 +79,7 @@ public class WxV3Helper {
      * @param path 业务路径
      * @return 包含前缀的接口路径
      */
-    public static String getTradeApi(String path) {
+    public static String buildTradeApi(String path) {
         return "/v3/pay/transactions".concat(path);
     }
 
@@ -88,17 +89,8 @@ public class WxV3Helper {
      * @param path 请求路径
      * @return 完整请求地址
      */
-    public String getRequestUrl(String path) {
+    public String buildRequestUrl(String path) {
         return constants.getWxDomain().concat(path);
-    }
-
-    /**
-     * 获取当前时间戳，精确到秒
-     *
-     * @return 时间戳
-     */
-    public static String getTimestamp() {
-        return System.currentTimeMillis() / 1000 + "";
     }
 
     /**
@@ -107,7 +99,7 @@ public class WxV3Helper {
      * @param duration 下单后允许付款时长，单位：分钟
      * @return 指定格式的过期时间字符串
      */
-    public static String getExpireTime(long duration) {
+    public static String buildExpireTime(long duration) {
         return LocalDateTime.now().plusMinutes(duration)
                 .atZone(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
@@ -210,5 +202,15 @@ public class WxV3Helper {
                 secretKey, associatedData)
                 .toText();
         return JSON.parseObject(resourceJson, clazz);
+    }
+
+    /**
+     * 转换时间
+     *
+     * @param time 时间字符串
+     * @return LocalDateTime对象
+     */
+    public static LocalDateTime convertTime(String time) {
+        return LocalDateTime.parse(time, DateTimeFormatter.ISO_ZONED_DATE_TIME);
     }
 }

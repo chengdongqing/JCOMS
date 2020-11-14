@@ -1,9 +1,10 @@
-package top.chengdongqing.common.payment.wxpay.v3.callback;
+package top.chengdongqing.common.payment.wxpay.v3.callback.entity;
 
 import lombok.Data;
 
 /**
- * 微信支付回调加密信息
+ * 回调加密相关数据
+ * v3
  *
  * @author Luyao
  */

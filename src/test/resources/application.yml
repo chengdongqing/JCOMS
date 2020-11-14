@@ -19,7 +19,3 @@ upload:
     endpoint: xx
     access-id: xx
     access-secret: xx
-
-payment:
-  wx:
-    active: V2

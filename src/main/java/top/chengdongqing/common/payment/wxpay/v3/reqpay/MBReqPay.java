@@ -12,7 +12,7 @@ import top.chengdongqing.common.payment.entity.PayReqEntity;
 public class MBReqPay extends WxV3ReqPay {
 
     @Override
-    protected String getPayType() {
+    protected String getTradeType() {
         return v3Constants.getPaymentUrl().getH5();
     }
 
@@ -27,7 +27,7 @@ public class MBReqPay extends WxV3ReqPay {
     }
 
     @Override
-    protected Ret packageData(Kv<String, String> resultMap) {
+    protected Ret buildResponse(Kv<String, String> resultMap) {
         return Ret.ok(resultMap.get("h5_url"));
     }
 }

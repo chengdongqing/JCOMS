@@ -5,12 +5,11 @@ import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.payment.TradeType;
 import top.chengdongqing.common.payment.entity.PayReqEntity;
+import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.transformer.BytesToStr;
 import top.chengdongqing.common.transformer.StrToBytes;
 
-import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -21,10 +20,10 @@ import java.util.Map;
 public class MPReqPay extends WxV2ReqPay {
 
     @Override
-    protected void addSpecialParams(Map<String, String> params, PayReqEntity entity) {
-        params.put("appid", constants.getAppId().getMp());
-        params.put("trade_type", TradeType.JSAPI.name());
-        params.put("openid", entity.getOpenId());
+    protected void addSpecialParams(Kv<String, String> params, PayReqEntity entity) {
+        params.add("appid", constants.getAppId().getMp());
+        params.add("trade_type", TradeType.JSAPI.name());
+        params.add("openid", entity.getOpenId());
     }
 
     /**
@@ -34,18 +33,19 @@ public class MPReqPay extends WxV2ReqPay {
      * @return 调起小程序支付需要的数据
      */
     @Override
-    protected Ret packageData(Map<String, String> resultMap) {
+    protected Ret buildResponse(Map<String, String> resultMap) {
         Kv<String, String> data = Kv.go("appId", constants.getAppId().getMp())
-                .add("timeStamp", Instant.now().getEpochSecond() + "")
+                .add("timeStamp", WxPayHelper.getTimestamp())
                 .add("nonceStr", StrKit.getRandomUUID())
                 .add("package", "prepay_id=" + resultMap.get("prepay_id"))
                 .add("signType", v2constants.getSignType());
         // 获取签名
-        BytesToStr sign = DigitalSigner.signature(
+        String sign = DigitalSigner.signature(
                 SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(data),
-                StrToBytes.of(v2constants.getSecretKey()).fromHex());
-        data.put("paySign", sign.toHex());
+                StrToBytes.of(v2constants.getSecretKey()).fromHex())
+                .toHex();
+        data.add("paySign", sign);
         return Ret.ok(data);
     }
 }

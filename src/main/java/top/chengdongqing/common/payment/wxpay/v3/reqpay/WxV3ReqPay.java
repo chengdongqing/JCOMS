@@ -39,7 +39,7 @@ public abstract class WxV3ReqPay implements IReqPay {
     @Autowired
     protected WxV3Constants v3Constants;
     @Autowired
-    private WxV3Helper helper;
+    protected WxV3Helper helper;
 
     @Override
     public Ret requestPayment(PayReqEntity entity) {
@@ -47,20 +47,20 @@ public abstract class WxV3ReqPay implements IReqPay {
         Kv<String, String> params = Kv.go("mchid", constants.getMchId())
                 .add("description", constants.getWebTitle())
                 .add("out_trade_no", entity.getOrderNo())
-                .add("time_expire", WxV3Helper.getExpireTime(constants.getPayDuration()))
+                .add("time_expire", WxV3Helper.buildExpireTime(constants.getPayDuration()))
                 .add("notify_url", v3Constants.getPayNotifyUrl())
-                .add("amount", getAmount(entity.getAmount()))
-                .add("detail", getGoodsDetail(entity.getItems()))
-                .add("scene_info", getSceneInfo(entity.getIp()));
+                .add("amount", buildAmount(entity.getAmount()))
+                .add("detail", buildGoodsDetail(entity.getItems()))
+                .add("scene_info", buildSceneInfo(entity.getIp()));
         addSpecialParams(params, entity);
 
         // 构建请求头
-        String apiPath = WxV3Helper.getTradeApi(getPayType());
+        String apiPath = WxV3Helper.buildTradeApi(getTradeType());
         String body = params.toJson();
         Kv<String, String> headers = helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
         // 发送支付请求
-        String requestUrl = helper.getRequestUrl(apiPath);
+        String requestUrl = helper.buildRequestUrl(apiPath);
         HttpResponse<String> response = HttpKit.post(requestUrl, headers, body);
         log.info("请求订单付款：{}，\n请求头：{}，\n请求体：{}，响应结果：{}",
                 requestUrl,
@@ -70,35 +70,35 @@ public abstract class WxV3ReqPay implements IReqPay {
         if (response.statusCode() != 200) return Ret.fail(ErrorMsg.REQUEST_FAILED);
 
         // 返回封装后的响应数据
-        return packageData(JSON.parseObject(response.body(), Kv.class));
+        return buildResponse(JSON.parseObject(response.body(), Kv.class));
     }
 
     /**
-     * 获取支付类型
+     * 获取交易类型
      *
      * @return 支付类型
      */
-    protected abstract String getPayType();
+    protected abstract String getTradeType();
 
     /**
-     * 获取订单金额
+     * 构建订单金额
      *
      * @param amount 订单金额
      * @return 订单金额JSON字符串
      */
-    private String getAmount(BigDecimal amount) {
+    private String buildAmount(BigDecimal amount) {
         return Kv.go().add("currency", v3Constants.getCurrency())
                 .add("total", WxPayHelper.convertAmount(amount))
                 .toJson();
     }
 
     /**
-     * 获取商品详情
+     * 构建商品详情
      *
      * @param items 商品列表
      * @return 商品详情JSON字符串
      */
-    private String getGoodsDetail(List<PayReqEntity.OrderItem> items) {
+    private String buildGoodsDetail(List<PayReqEntity.OrderItem> items) {
         // 商品详情
         @Data
         @AllArgsConstructor
@@ -119,12 +119,12 @@ public abstract class WxV3ReqPay implements IReqPay {
     }
 
     /**
-     * 获取支付场景描述
+     * 构建支付场景描述
      *
      * @param ip 客户端ip
      * @return 场景信息JSON字符串
      */
-    private String getSceneInfo(String ip) {
+    private String buildSceneInfo(String ip) {
         Kv<String, String> sceneInfo = Kv.go("payer_client_ip", ip);
         addSceneInfo(sceneInfo);
         return sceneInfo.toJson();
@@ -147,10 +147,10 @@ public abstract class WxV3ReqPay implements IReqPay {
     protected abstract void addSpecialParams(Kv<String, String> params, PayReqEntity entity);
 
     /**
-     * 封装返回的数据
+     * 构建响应数据
      *
      * @param resultMap 微信响应的数据
      * @return 返回的数据
      */
-    protected abstract Ret packageData(Kv<String, String> resultMap);
+    protected abstract Ret buildResponse(Kv<String, String> resultMap);
 }

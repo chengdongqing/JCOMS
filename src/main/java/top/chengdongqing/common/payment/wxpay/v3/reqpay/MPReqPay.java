@@ -4,8 +4,7 @@ import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.payment.entity.PayReqEntity;
-import top.chengdongqing.common.payment.wxpay.v3.WxV3Helper;
-import top.chengdongqing.common.payment.wxpay.v3.WxV3Signer;
+import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 
 /**
  * 微信小程序或微信浏览器内支付
@@ -15,7 +14,7 @@ import top.chengdongqing.common.payment.wxpay.v3.WxV3Signer;
 public class MPReqPay extends WxV3ReqPay {
 
     @Override
-    protected String getPayType() {
+    protected String getTradeType() {
         return v3Constants.getPaymentUrl().getMp();
     }
 
@@ -26,11 +25,11 @@ public class MPReqPay extends WxV3ReqPay {
     }
 
     @Override
-    protected Ret packageData(Kv<String, String> resultMap) {
+    protected Ret buildResponse(Kv<String, String> resultMap) {
         // 预支付id
         String prepayId = resultMap.get("prepay_id");
         // 时间戳
-        String timestamp = WxV3Helper.getTimestamp();
+        String timestamp = WxPayHelper.getTimestamp();
         // 随机数
         String nonceStr = StrKit.getRandomUUID();
         // 封装参数
@@ -52,6 +51,6 @@ public class MPReqPay extends WxV3ReqPay {
      * @return 数字签名
      */
     private String getPaySign(String prepayId, String timestamp, String nonceStr) {
-        return WxV3Signer.signature(constants.getAppId().getMp(), timestamp, nonceStr, "prepay_id=" + prepayId);
+        return helper.signature(v3Constants.getPrivateKey(), constants.getAppId().getMp(), timestamp, nonceStr, "prepay_id=" + prepayId);
     }
 }

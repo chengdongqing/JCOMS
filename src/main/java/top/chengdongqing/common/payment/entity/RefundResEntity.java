@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * 退款响应数据实体
@@ -29,7 +30,7 @@ public class RefundResEntity {
     /**
      * 退款成功时间
      */
-    private String refundTime;
+    private LocalDateTime refundTime;
     /**
      * 退款金额
      */

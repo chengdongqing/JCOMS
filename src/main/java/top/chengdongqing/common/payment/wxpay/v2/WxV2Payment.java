@@ -48,41 +48,6 @@ public class WxV2Payment implements IPayment {
         return new ReqPayContext(tradeType).request(entity);
     }
 
-    @Override
-    public Ret handleCallback(Kv<String, String> params) {
-        if (params == null || params.isEmpty() || StringUtils.isBlank(params.get("sign"))) {
-            throw new IllegalArgumentException("wx callback params is error");
-        }
-
-        // 验证签名
-        params.add("key", v2constants.getSecretKey());
-        boolean isOk = DigitalSigner.verify(SignatureAlgorithm.HMAC_SHA256,
-                StrKit.buildQueryStr(params),
-                StrToBytes.of(v2constants.getSecretKey()).fromHex(),
-                StrToBytes.of(params.get("sign")).fromHex());
-        if (!isOk) return buildFailXml("验签失败");
-
-        // 判断支付结果
-        if (!WxStatus.isOk(params.get("result_code"))) return buildFailXml("支付失败");
-
-        // 封装支付信息
-        PayResEntity payDetails = PayResEntity.builder()
-                .orderNo(params.get("out_trade_no"))
-                .paymentNo(params.get("transaction_id"))
-                // 将单位从分转为元
-                .paymentAmount(WxPayHelper.convertAmount(Integer.parseInt(params.get("total_fee"))))
-                // 转换支付时间
-                .paymentTime(LocalDateTime.parse(params.get("time_end"), DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
-                .build();
-        // 返回回调结果
-        Kv<String, String> map = Kv.go("return_code", WxStatus.SUCCESS);
-        return Ret.ok(CallbackResponseEntity.builder()
-                .response(XmlKit.mapToXml(map))
-                .details(payDetails)
-                .build()
-        );
-    }
-
     /**
      * 获取微信回调失败需要响应的xml
      * 只有回调校验失败才调用
@@ -161,8 +126,47 @@ public class WxV2Payment implements IPayment {
     }
 
     @Override
-    public Ret queryOrder(String orderNo) {
+    public Ret requestQuery(String orderNo) {
         return null;
+    }
+
+    /**
+     * 处理支付回调
+     *
+     * @param params 回调数据
+     * @return 处理结果
+     */
+    public Ret handlePayCallback(Kv<String, String> params) {
+        if (params == null || params.isEmpty() || StringUtils.isBlank(params.get("sign"))) {
+            throw new IllegalArgumentException("wx callback params is error");
+        }
+
+        // 验证签名
+        params.add("key", v2constants.getSecretKey());
+        boolean isOk = DigitalSigner.verify(SignatureAlgorithm.HMAC_SHA256,
+                StrKit.buildQueryStr(params),
+                StrToBytes.of(v2constants.getSecretKey()).fromHex(),
+                StrToBytes.of(params.get("sign")).fromHex());
+        if (!isOk) return buildFailXml("验签失败");
+
+        // 判断支付结果
+        if (!WxStatus.isOk(params.get("result_code"))) return buildFailXml("支付失败");
+
+        // 封装支付信息
+        PayResEntity payResEntity = PayResEntity.builder()
+                .orderNo(params.get("out_trade_no"))
+                .paymentNo(params.get("transaction_id"))
+                // 将单位从分转为元
+                .paymentAmount(WxPayHelper.convertAmount(Integer.parseInt(params.get("total_fee"))))
+                // 转换支付时间
+                .paymentTime(LocalDateTime.parse(params.get("time_end"), DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
+                .build();
+        // 返回回调结果
+        Kv<String, String> map = Kv.go("return_code", WxStatus.SUCCESS);
+        return Ret.ok(PayCallbackResEntity.builder()
+                .response(XmlKit.mapToXml(map))
+                .payResEntity(payResEntity)
+                .build());
     }
 
     /**
@@ -178,11 +182,11 @@ public class WxV2Payment implements IPayment {
 
 
     /**
-     * 支付回调响应对象
+     * 支付回调响应实体
      */
     @Data
     @Builder
-    public static class CallbackResponseEntity {
+    public static class PayCallbackResEntity {
         /**
          * 响应数据
          */
@@ -190,6 +194,6 @@ public class WxV2Payment implements IPayment {
         /**
          * 收集的支付详情
          */
-        private PayResEntity details;
+        private PayResEntity payResEntity;
     }
 }

@@ -1,4 +1,4 @@
-package top.chengdongqing.common.payment.wxpay.v3.callback.payment;
+package top.chengdongqing.common.payment.wxpay.v3.callback.entity;
 
 import lombok.Data;
 import top.chengdongqing.common.payment.wxpay.WxStatus;

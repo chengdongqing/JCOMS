@@ -14,7 +14,7 @@ import top.chengdongqing.common.payment.entity.PayReqEntity;
  */
 public class ReqPayContext extends ApplicationObjectSupport {
 
-    private IReqPay strategy;
+    private final IReqPay strategy;
 
     /**
      * 根据请求客户端获取请求实例
@@ -27,7 +27,6 @@ public class ReqPayContext extends ApplicationObjectSupport {
             case MWEB -> MBReqPay.class;
             case JSAPI -> MPReqPay.class;
             case NATIVE -> PCReqPay.class;
-            default -> throw new IllegalArgumentException("The tradeType is not supported now.");
         };
         strategy = super.getApplicationContext().getBean(clazz);
     }

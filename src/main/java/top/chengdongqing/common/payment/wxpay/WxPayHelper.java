@@ -28,4 +28,14 @@ public class WxPayHelper {
     public static BigDecimal convertAmount(int amount) {
         return BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(100));
     }
+
+    /**
+     * 获取时间戳
+     * 即从1970年1月1日00:00:00至今的秒数
+     *
+     * @return 时间戳
+     */
+    public static String getTimestamp() {
+        return System.currentTimeMillis() / 1000 + "";
+    }
 }

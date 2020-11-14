@@ -13,7 +13,7 @@ import top.chengdongqing.common.payment.entity.PayReqEntity;
 public class PCReqPay extends WxV3ReqPay {
 
     @Override
-    protected String getPayType() {
+    protected String getTradeType() {
         return v3Constants.getPaymentUrl().getPc();
     }
 
@@ -23,7 +23,7 @@ public class PCReqPay extends WxV3ReqPay {
     }
 
     @Override
-    protected Ret packageData(Kv<String, String> resultMap) {
+    protected Ret buildResponse(Kv<String, String> resultMap) {
         return Ret.ok(resultMap.get("code_url"));
     }
 }

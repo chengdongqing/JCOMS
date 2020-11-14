@@ -1,7 +1,5 @@
 package top.chengdongqing.common.payment.wxpay.v3;
 
-import lombok.Builder;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -13,17 +11,12 @@ import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IPayment;
 import top.chengdongqing.common.payment.TradeType;
 import top.chengdongqing.common.payment.entity.PayReqEntity;
-import top.chengdongqing.common.payment.entity.PayResEntity;
 import top.chengdongqing.common.payment.entity.RefundReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
-import top.chengdongqing.common.payment.wxpay.v3.callback.WxV3Callback;
-import top.chengdongqing.common.payment.wxpay.v3.callback.payment.PayCallbackEntity;
 import top.chengdongqing.common.payment.wxpay.v3.reqpay.ReqPayContext;
 
 import java.net.http.HttpResponse;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * 微信支付
@@ -49,53 +42,18 @@ public class WxV3Payment implements IPayment {
 
     @Override
     public Ret handleCallback(Kv<String, String> params) {
-        if (params == null || params.isEmpty()) {
-            throw new IllegalArgumentException("wx callback params cannot be null");
-        }
-        log.info("微信支付V3回调参数: {}", params);
-        WxV3Callback callback = WxV3Callback.of(params);
-
-        // 验证签名
-        boolean verify = helper.verify(callback.getSerialNo(),
-                v3Constants.getPublicKey(),
-                callback.getSign(),
-                callback.getTimestamp(),
-                callback.getNonceStr(),
-                callback.getBody());
-        if (!verify) return WxV3Helper.buildFailRes("验签失败");
-
-        // 解密数据
-        PayCallbackEntity payCallback = WxV3Helper.decryptData(callback.getBody(), v3Constants.getSecretKey(), PayCallbackEntity.class);
-        log.info("支付回调解密后的数据：{}", payCallback);
-
-        // 判断支付结果
-        if (!payCallback.isTradeSuccess()) return WxV3Helper.buildFailRes("交易失败");
-
-        // 封装支付信息
-        PayResEntity payResEntity = PayResEntity.builder()
-                .orderNo(payCallback.getOutTradeNo())
-                .paymentNo(payCallback.getTransactionId())
-                // 将单位从分转为元
-                .paymentAmount(WxPayHelper.convertAmount(payCallback.getAmount().getPayerTotal()))
-                // 转换支付时间
-                .paymentTime(LocalDateTime.parse(payCallback.getSuccessTime(), DateTimeFormatter.ISO_ZONED_DATE_TIME))
-                .build();
-        // 返回回调结果
-        return Ret.ok(PayCallbackResEntity.builder()
-                .response(WxV3Helper.buildSuccessMsg())
-                .payResEntity(payResEntity)
-                .build());
+        return null;
     }
 
     @Override
     public Ret requestClose(String orderNo) {
         // 构建请求头
-        String apiPath = WxV3Helper.getTradeApi(v3Constants.getCloseUrl().formatted(orderNo));
+        String apiPath = WxV3Helper.buildTradeApi(v3Constants.getCloseUrl().formatted(orderNo));
         String body = Kv.go("mchid", constants.getMchId()).toJson();
         Kv<String, String> headers = helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
         // 发送请求
-        String requestUrl = helper.getRequestUrl(apiPath);
+        String requestUrl = helper.buildRequestUrl(apiPath);
         HttpResponse<String> response = HttpKit.post(requestUrl, headers, body);
         log.info("请求关闭订单：{}，\n请求头：{}，\n请求体：{}，响应结果：{}",
                 requestUrl,
@@ -129,7 +87,7 @@ public class WxV3Payment implements IPayment {
         Kv<String, String> headers = helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
         // 发送退款请求
-        String requestUrl = helper.getRequestUrl(apiPath);
+        String requestUrl = helper.buildRequestUrl(apiPath);
         HttpResponse<String> response = HttpKit.post(requestUrl, headers, body);
         log.info("请求订单退款：{}，\n请求头：{}，\n请求体：{}，响应结果：{}",
                 requestUrl,
@@ -161,21 +119,5 @@ public class WxV3Payment implements IPayment {
     @Override
     public Ret queryOrder(String orderNo) {
         return null;
-    }
-
-    /**
-     * 支付回调响应实体
-     */
-    @Data
-    @Builder
-    public static class PayCallbackResEntity {
-        /**
-         * 响应数据
-         */
-        private String response;
-        /**
-         * 支付详情
-         */
-        private PayResEntity payResEntity;
     }
 }

@@ -1,10 +1,9 @@
-package top.chengdongqing.common.payment.wxpay.v3.callback;
+package top.chengdongqing.common.payment.wxpay.v3.callback.entity;
 
 import lombok.Builder;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.kit.HttpKit;
-import top.chengdongqing.common.kit.Kv;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Data
 @Builder
-public class WxV3Callback {
+public class CallbackEntity {
 
     /**
      * 时间戳
@@ -40,12 +39,12 @@ public class WxV3Callback {
     private String serialNo;
 
     /**
-     * 自动构建回调对象
+     * 自动构建回调数据对象
      *
      * @param request 请求对象
      * @return 回调对象
      */
-    public static WxV3Callback buildAuto(HttpServletRequest request) {
+    public static CallbackEntity buildAuto(HttpServletRequest request) {
         // 时间戳
         String timestamp = request.getHeader("Wechatpay-Timestamp");
         // 随机数
@@ -69,32 +68,5 @@ public class WxV3Callback {
                 .sign(sign)
                 .body(body)
                 .build();
-    }
-
-    /**
-     * 将map转对象
-     *
-     * @param params 参数map
-     * @return WxCallback对象
-     */
-    public static WxV3Callback of(Kv<String, String> params) {
-        return builder()
-                .sign(params.get("sign"))
-                .timestamp(params.get("timestamp"))
-                .nonceStr(params.get("nonceStr"))
-                .body(params.get("body"))
-                .build();
-    }
-
-    /**
-     * 将对象转map
-     *
-     * @return 当前对象map
-     */
-    public Kv<String, String> toMap() {
-        return Kv.go("sign", this.getSign())
-                .add("timestamp", this.getTimestamp())
-                .add("nonceStr", this.getNonceStr())
-                .add("body", this.getBody());
     }
 }
