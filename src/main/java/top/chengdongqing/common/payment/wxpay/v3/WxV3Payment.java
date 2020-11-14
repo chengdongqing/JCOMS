@@ -14,6 +14,7 @@ import top.chengdongqing.common.payment.entity.PayReqEntity;
 import top.chengdongqing.common.payment.entity.RefundReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
+import top.chengdongqing.common.payment.wxpay.v3.callback.ICallbackHandler;
 import top.chengdongqing.common.payment.wxpay.v3.reqpay.ReqPayContext;
 
 import java.net.http.HttpResponse;
@@ -34,6 +35,8 @@ public class WxV3Payment implements IPayment {
     private WxV3Constants v3Constants;
     @Autowired
     private WxV3Helper helper;
+    @Autowired
+    private ICallbackHandler callbackHandler;
 
     @Override
     public Ret requestPayment(PayReqEntity entity, TradeType tradeType) {
@@ -114,5 +117,16 @@ public class WxV3Payment implements IPayment {
     @Override
     public Ret requestQuery(String orderNo) {
         return null;
+    }
+
+    /**
+     * 获取回调处理器
+     * - 支付回调
+     * - 退款回调
+     *
+     * @return 回调处理器
+     */
+    public ICallbackHandler getCallbackHandler() {
+        return callbackHandler;
     }
 }

@@ -22,7 +22,6 @@ import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
@@ -91,20 +90,6 @@ public class WxV3Helper {
      */
     public String buildRequestUrl(String path) {
         return constants.getWxDomain().concat(path);
-    }
-
-    /**
-     * 获取过期时间
-     *
-     * @param duration 下单后允许付款时长，单位：分钟
-     * @return 指定格式的过期时间字符串
-     */
-    public static String buildExpireTime(long duration) {
-        return LocalDateTime.now().plusMinutes(duration)
-                .atZone(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
-                // 去除秒后面的时间信息
-                .replaceAll("\\.\\d+", "");
     }
 
     /**

@@ -21,6 +21,9 @@ import top.chengdongqing.common.payment.wxpay.v3.WxV3Helper;
 
 import java.math.BigDecimal;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,7 +50,7 @@ public abstract class WxV3ReqPay implements IReqPay {
         Kv<String, String> params = Kv.go("mchid", constants.getMchId())
                 .add("description", constants.getWebTitle())
                 .add("out_trade_no", entity.getOrderNo())
-                .add("time_expire", WxV3Helper.buildExpireTime(constants.getPayDuration()))
+                .add("time_expire", buildExpireTime(constants.getPayDuration()))
                 .add("notify_url", v3Constants.getPayNotifyUrl())
                 .add("amount", buildAmount(entity.getAmount()))
                 .add("detail", buildGoodsDetail(entity.getItems()))
@@ -74,11 +77,18 @@ public abstract class WxV3ReqPay implements IReqPay {
     }
 
     /**
-     * 获取交易类型
+     * 构建过期时间
      *
-     * @return 支付类型
+     * @param duration 下单后允许付款时长，单位：分钟
+     * @return 指定格式的过期时间字符串
      */
-    protected abstract String getTradeType();
+    private static String buildExpireTime(long duration) {
+        return LocalDateTime.now().plusMinutes(duration)
+                .atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
+                // 去除秒后面的时间信息
+                .replaceAll("\\.\\d+", "");
+    }
 
     /**
      * 构建订单金额
@@ -145,6 +155,13 @@ public abstract class WxV3ReqPay implements IReqPay {
      * @param entity 请求付款的参数实体
      */
     protected abstract void addSpecialParams(Kv<String, String> params, PayReqEntity entity);
+
+    /**
+     * 获取交易类型
+     *
+     * @return 支付类型
+     */
+    protected abstract String getTradeType();
 
     /**
      * 构建响应数据
