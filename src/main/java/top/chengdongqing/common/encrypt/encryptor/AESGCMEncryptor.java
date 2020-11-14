@@ -15,7 +15,7 @@ import java.security.SecureRandom;
  * GCM可以提供对消息的加密和完整性校验，另外，它还可以提供附加消息的完整性校验。
  * @author Luyao
  */
-public class AESGCMEncrypt implements IEncryptor {
+public class AESGCMEncryptor implements IEncryptor {
 
     private static final int IV_LENGTH_BIT = 16;
     private static final int TAG_LENGTH_BIT = 128;

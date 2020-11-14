@@ -1,7 +1,7 @@
 package top.chengdongqing.common.encrypt;
 
 import top.chengdongqing.common.encrypt.encryptor.AESCBCEncryptor;
-import top.chengdongqing.common.encrypt.encryptor.AESGCMEncrypt;
+import top.chengdongqing.common.encrypt.encryptor.AESGCMEncryptor;
 import top.chengdongqing.common.encrypt.encryptor.AESPBEEncryptor;
 import top.chengdongqing.common.encrypt.encryptor.RSAEncryptor;
 import top.chengdongqing.common.transformer.BytesToStr;
@@ -12,7 +12,7 @@ import top.chengdongqing.common.transformer.BytesToStr;
  * @author Luyao
  * @see RSAEncryptor
  * @see AESCBCEncryptor
- * @see AESGCMEncrypt
+ * @see AESGCMEncryptor
  * @see AESPBEEncryptor
  */
 public interface IEncryptor {
