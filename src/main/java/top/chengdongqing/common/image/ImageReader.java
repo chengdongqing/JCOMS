@@ -1,5 +1,7 @@
 package top.chengdongqing.common.image;
 
+import top.chengdongqing.common.transformer.BytesToStr;
+
 /**
  * 图片识别器
  *
@@ -13,5 +15,5 @@ public interface ImageReader {
      * @param image 图片二进制数据
      * @return 图片内容
      */
-    String read(byte[] image);
+    BytesToStr read(byte[] image);
 }
