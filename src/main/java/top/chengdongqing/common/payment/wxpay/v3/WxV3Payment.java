@@ -41,11 +41,6 @@ public class WxV3Payment implements IPayment {
     }
 
     @Override
-    public Ret handleCallback(Kv<String, String> params) {
-        return null;
-    }
-
-    @Override
     public Ret requestClose(String orderNo) {
         // 构建请求头
         String apiPath = WxV3Helper.buildTradeApi(v3Constants.getCloseUrl().formatted(orderNo));
@@ -117,7 +112,7 @@ public class WxV3Payment implements IPayment {
     }
 
     @Override
-    public Ret queryOrder(String orderNo) {
+    public Ret requestQuery(String orderNo) {
         return null;
     }
 }
