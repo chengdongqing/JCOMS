@@ -21,7 +21,6 @@ import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
 
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -88,18 +87,14 @@ public class WxV2Payment implements IPayment {
 
     @Override
     public Ret requestRefund(RefundReqEntity entity) {
-        // 将金额的单位从元转为分
-        int totalFee = entity.getTotalAmount().multiply(BigDecimal.valueOf(100)).intValue();
-        int refundFee = entity.getRefundAmount().multiply(BigDecimal.valueOf(100)).intValue();
-
         // 封装请求参数
         Kv<String, String> params = Kv.go("appid", constants.getAppId().getMp())
                 .add("mch_id", constants.getMchId())
                 .add("nonce_str", StrKit.getRandomUUID())
                 .add("out_trade_no", entity.getOrderNo())
                 .add("out_refund_no", entity.getRefundNo())
-                .add("total_fee", totalFee + "")
-                .add("refund_fee", refundFee + "")
+                .add("total_fee", WxPayHelper.convertAmount(entity.getTotalAmount()) + "")
+                .add("refund_fee", WxPayHelper.convertAmount(entity.getRefundAmount()) + "")
                 .add("key", v2constants.getSecretKey())
                 .add("sign_type", v2constants.getSignType());
         String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
@@ -109,7 +104,6 @@ public class WxV2Payment implements IPayment {
         params.add("sign", sign);
         params.remove("key");
 
-        // 获取证书文件流
         try {
             // 转换数据类型
             String xml = XmlKit.mapToXml(params);
