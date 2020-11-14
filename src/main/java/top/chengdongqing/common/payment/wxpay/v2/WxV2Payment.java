@@ -133,16 +133,19 @@ public class WxV2Payment implements IPayment {
     /**
      * 处理支付回调
      *
-     * @param params 回调数据
+     * @param xml 回调数据
      * @return 处理结果
      */
-    public Ret handlePayCallback(Kv<String, String> params) {
+    public Ret handlePayCallback(String xml) {
+        // 将xml转为map
+        Map<String, String> params = XmlKit.xmlToMap(xml);
+        // 判断参数是否为空
         if (params == null || params.isEmpty() || StringUtils.isBlank(params.get("sign"))) {
             throw new IllegalArgumentException("wx callback params is error");
         }
 
         // 验证签名
-        params.add("key", v2constants.getSecretKey());
+        params.put("key", v2constants.getSecretKey());
         boolean isOk = DigitalSigner.verify(SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(params),
                 StrToBytes.of(v2constants.getSecretKey()).fromHex(),
