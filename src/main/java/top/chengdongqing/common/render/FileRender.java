@@ -45,6 +45,7 @@ public class FileRender extends Render {
         // 定义响应头
         response.setBufferSize(bufferSize);
         response.setContentLength(data.length);
+        response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "filename=" + filename);
         try (OutputStream os = response.getOutputStream();
              InputStream is = new BufferedInputStream(new ByteArrayInputStream(data))) {
