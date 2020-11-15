@@ -124,7 +124,7 @@ public class WxV3Payment implements IPayment {
         // 构建请求头
         Kv<String, String> params = Kv.go("mchid", constants.getMchId());
         String apiPath = WxV3Helper.buildTradeApi(v3Constants.getQueryUrl().formatted(orderNo), params);
-        Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.POST, apiPath, "");
+        Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.GET, apiPath, "");
 
         // 发送请求
         String requestUrl = helper.buildRequestUrl(apiPath);
