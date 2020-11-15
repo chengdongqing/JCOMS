@@ -23,7 +23,7 @@ public class Test {
 
     private static void test1(String content) {
         SignatureAlgorithm algorithm = SignatureAlgorithm.EdDSA_ED25519;
-        System.out.println("基于%s的数字签名----------------".formatted(algorithm.getAlgorithm()));
+        System.out.printf("基于%s的数字签名----------------%n", algorithm.getAlgorithm());
         SecretKeyPair keyPair = SecretKeyGenerator.generateKeyPair(algorithm);
         System.out.println("私钥：" + keyPair.privateKey());
         System.out.println("公钥：" + keyPair.publicKey());
@@ -37,7 +37,7 @@ public class Test {
 
     private static void test2(String content) {
         SignatureAlgorithm algorithm = SignatureAlgorithm.HMAC_SHA256;
-        System.out.println("\n基于%s的数字签名----------------".formatted(algorithm.getAlgorithm()));
+        System.out.printf("\n基于%s的数字签名----------------%n", algorithm.getAlgorithm());
         BytesToStr key = SecretKeyGenerator.generateKey(algorithm);
         System.out.println("密钥（16进制字符串）：" + key.toHex());
         System.out.println("密钥（base64字符串）：" + key.toBase64());
@@ -51,7 +51,7 @@ public class Test {
 
     private static void test3(String content) {
         SignatureAlgorithm algorithm = SignatureAlgorithm.SHA256;
-        System.out.println("\n基于%s的数字签名----------------".formatted(algorithm.getAlgorithm()));
+        System.out.printf("\n基于%s的数字签名----------------%n", algorithm.getAlgorithm());
         BytesToStr sign = DigitalSigner.signature(algorithm, content, null);
         System.out.println("签名（16进制字符串）：" + sign.toHex());
         System.out.println("签名（base64字符串）：" + sign.toBase64());

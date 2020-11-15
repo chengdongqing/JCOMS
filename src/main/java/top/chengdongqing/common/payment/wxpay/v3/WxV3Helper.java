@@ -16,7 +16,7 @@ import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
-import top.chengdongqing.common.payment.wxpay.v3.callback.entity.EncryptResource;
+import top.chengdongqing.common.payment.wxpay.v3.callback.entities.EncryptResource;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
@@ -73,23 +73,24 @@ public class WxV3Helper {
     }
 
     /**
-     * 获取域名后的接口路径
+     * 构建除域名外的交易接口
      *
      * @param path 业务路径
-     * @return 包含前缀的接口路径
+     * @return 包含前缀的交易接口地址
      */
     public static String buildTradeApi(String path) {
         return "/v3/pay/transactions".concat(path);
     }
 
     /**
-     * 获取完整请求地址
+     * 构建除域名外的交易接口
      *
-     * @param path 请求路径
-     * @return 完整请求地址
+     * @param path   业务路径
+     * @param params 查询参数
+     * @return 除域名外的完整交易接口地址
      */
-    public String buildRequestUrl(String path) {
-        return constants.getWxDomain().concat(path);
+    public static String buildTradeApi(String path, Kv<String, String> params) {
+        return buildTradeApi(path).concat("?").concat(StrKit.buildQueryStr(params));
     }
 
     /**
@@ -101,8 +102,8 @@ public class WxV3Helper {
      * @return 数字签名
      */
     public String signature(String key, String... params) {
-        // 获取待签名字符串
-        String content = getContent(params);
+        // 构建待签名字符串
+        String content = buildContent(params);
         // 生成签名
         return DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256,
                 content,
@@ -123,8 +124,8 @@ public class WxV3Helper {
         // 验证序列号
         // TODO
 
-        // 获取待签名字符串
-        String content = getContent(params);
+        // 构建待签名字符串
+        String content = buildContent(params);
         // 验证签名
         return DigitalSigner.verify(SignatureAlgorithm.RSA_SHA256,
                 content,
@@ -133,13 +134,13 @@ public class WxV3Helper {
     }
 
     /**
-     * 获取待签名字符串
+     * 构建待签名字符串
      * 主要是每个参数后加一个换行符，包括最后一行
      *
      * @param params 待签名字符数组
      * @return 待签名字符串
      */
-    private static String getContent(String... params) {
+    private static String buildContent(String... params) {
         if (StringUtils.isAnyBlank(params)) {
             throw new IllegalArgumentException("The params can not be null or empty.");
         }
@@ -149,21 +150,21 @@ public class WxV3Helper {
     }
 
     /**
-     * 构建成功响应信息
+     * 构建回调成功响应信息
      *
      * @return 成功JSON字符串
      */
-    public static String buildSuccessMsg() {
+    public static String getSuccessCallback() {
         return Kv.go("code", WxStatus.SUCCESS).toJson();
     }
 
     /**
-     * 构建失败响应信息
+     * 构建回调失败响应信息
      *
      * @param errorMsg 错误信息
      * @return 失败JSON字符串
      */
-    public static Ret buildFailRes(String errorMsg) {
+    public static <T> Ret<T> buildFailCallback(String errorMsg) {
         return Ret.fail(Kv.go("code", WxStatus.FAIL).add("message", errorMsg).toJson());
     }
 

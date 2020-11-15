@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.payment.IReqPay;
-import top.chengdongqing.common.payment.entity.PayReqEntity;
+import top.chengdongqing.common.payment.entities.PayReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.payment.wxpay.v2.WxV2Constants;
-import top.chengdongqing.common.payment.wxpay.v2.WxV2Payment;
+import top.chengdongqing.common.payment.wxpay.v2.WxV2Helper;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.BytesToStr;
@@ -38,9 +38,11 @@ public abstract class WxV2ReqPay implements IReqPay {
     protected WxConstants constants;
     @Autowired
     protected WxV2Constants v2constants;
+    @Autowired
+    private WxPayHelper helper;
 
     @Override
-    public Ret requestPayment(PayReqEntity entity) {
+    public Ret<Object> requestPayment(PayReqEntity entity) {
         // 封装请求参数
         Kv<String, String> params = Kv.go("mch_id", constants.getMchId())
                 .add("nonce_str", StrKit.getRandomUUID())
@@ -66,25 +68,25 @@ public abstract class WxV2ReqPay implements IReqPay {
         // 转换数据类型
         String xml = XmlKit.mapToXml(params);
         // 发送请求
-        String result = HttpKit.post(v2constants.getPaymentUrl(), xml).body();
+        String requestUrl = helper.buildRequestUrl(v2constants.getPaymentUrl());
+        String result = HttpKit.post(requestUrl, xml).body();
         log.info("请求付款参数：{}, \n请求付款结果：{}", xml, result);
 
         // 转换结果格式
         Map<String, String> resultMap = XmlKit.xmlToMap(result);
         // 判断处理结果是否成功
-        Ret verifyResult = WxV2Payment.getResult(resultMap);
+        Ret<Object> verifyResult = WxV2Helper.getResult(resultMap);
         return verifyResult.isOk() ? buildResponse(resultMap) : verifyResult;
     }
 
     /**
-     * 获取过期时间
+     * 构建过期时间
      *
      * @param duration 下单后允许付款时长，单位：分钟
      * @return 指定格式的过期时间字符串
      */
     private static String buildExpireTime(long duration) {
-        return LocalDateTime.now()
-                .plusMinutes(duration)
+        return LocalDateTime.now().plusMinutes(duration)
                 .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     }
 
@@ -128,5 +130,5 @@ public abstract class WxV2ReqPay implements IReqPay {
      * @param resultMap 微信响应的数据
      * @return 返回的数据
      */
-    protected abstract Ret buildResponse(Map<String, String> resultMap);
+    protected abstract Ret<Object> buildResponse(Map<String, String> resultMap);
 }

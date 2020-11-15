@@ -3,8 +3,8 @@ package top.chengdongqing.common.payment.wxpay.v2.reqpay;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
-import top.chengdongqing.common.payment.TradeType;
-import top.chengdongqing.common.payment.entity.PayReqEntity;
+import top.chengdongqing.common.payment.entities.PayReqEntity;
+import top.chengdongqing.common.payment.enums.TradeType;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
@@ -26,7 +26,7 @@ public class APPReqPay extends WxV2ReqPay {
     }
 
     @Override
-    protected Ret buildResponse(Map<String, String> resultMap) {
+    protected Ret<Object> buildResponse(Map<String, String> resultMap) {
         Kv<String, String> data = Kv.go("appid", constants.getAppId().getApp())
                 .add("partnerid", constants.getMchId())
                 .add("prepayid", resultMap.get("prepay_id"))

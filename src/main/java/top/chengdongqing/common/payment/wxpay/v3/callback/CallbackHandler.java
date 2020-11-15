@@ -1,20 +1,18 @@
 package top.chengdongqing.common.payment.wxpay.v3.callback;
 
-import lombok.Builder;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.payment.entity.PayResEntity;
-import top.chengdongqing.common.payment.entity.RefundResEntity;
+import top.chengdongqing.common.payment.entities.PayResEntity;
+import top.chengdongqing.common.payment.entities.RefundResEntity;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
 import top.chengdongqing.common.payment.wxpay.v3.WxV3Constants;
 import top.chengdongqing.common.payment.wxpay.v3.WxV3Helper;
-import top.chengdongqing.common.payment.wxpay.v3.callback.entity.CallbackEntity;
-import top.chengdongqing.common.payment.wxpay.v3.callback.entity.PayCallbackEntity;
-import top.chengdongqing.common.payment.wxpay.v3.callback.entity.RefundCallbackEntity;
+import top.chengdongqing.common.payment.wxpay.v3.callback.entities.CallbackEntity;
+import top.chengdongqing.common.payment.wxpay.v3.callback.entities.PayCallbackEntity;
+import top.chengdongqing.common.payment.wxpay.v3.callback.entities.RefundCallbackEntity;
 
 /**
  * 回调处理器
@@ -31,7 +29,7 @@ public class CallbackHandler implements ICallbackHandler {
     private WxV3Helper helper;
 
     @Override
-    public Ret handlePayCallback(CallbackEntity callback) {
+    public Ret<PayResEntity> handlePayCallback(CallbackEntity callback) {
         // 验证签名
         boolean verify = helper.verify(callback.getSerialNo(),
                 v3Constants.getPublicKey(),
@@ -39,14 +37,14 @@ public class CallbackHandler implements ICallbackHandler {
                 callback.getTimestamp(),
                 callback.getNonceStr(),
                 callback.getBody());
-        if (!verify) return WxV3Helper.buildFailRes("验签失败");
+        if (!verify) return WxV3Helper.buildFailCallback("验签失败");
 
         // 解密数据
         PayCallbackEntity payCallback = WxV3Helper.decryptData(callback.getBody(), v3Constants.getSecretKey(), PayCallbackEntity.class);
         log.info("支付回调解密后的数据：{}", payCallback);
 
         // 判断支付结果
-        if (!payCallback.isTradeSuccess()) return WxV3Helper.buildFailRes("交易失败");
+        if (!payCallback.isTradeSuccess()) return WxV3Helper.buildFailCallback("交易失败");
 
         // 封装支付信息
         PayResEntity payResEntity = PayResEntity.builder()
@@ -58,14 +56,11 @@ public class CallbackHandler implements ICallbackHandler {
                 .paymentTime(WxV3Helper.convertTime(payCallback.getSuccessTime()))
                 .build();
         // 返回回调结果
-        return Ret.ok(PayCallbackResEntity.builder()
-                .response(WxV3Helper.buildSuccessMsg())
-                .payResEntity(payResEntity)
-                .build());
+        return Ret.ok(payResEntity, WxV3Helper.getSuccessCallback());
     }
 
     @Override
-    public Ret handleRefundCallback(CallbackEntity callback) {
+    public Ret<RefundResEntity> handleRefundCallback(CallbackEntity callback) {
         // 验证签名
         boolean verify = helper.verify(callback.getSerialNo(),
                 v3Constants.getPublicKey(),
@@ -73,7 +68,7 @@ public class CallbackHandler implements ICallbackHandler {
                 callback.getTimestamp(),
                 callback.getNonceStr(),
                 callback.getBody());
-        if (!verify) return WxV3Helper.buildFailRes("验签失败");
+        if (!verify) return WxV3Helper.buildFailCallback("验签失败");
 
         // 解密数据
         RefundCallbackEntity refundCallback = WxV3Helper.decryptData(callback.getBody(), v3Constants.getSecretKey(), RefundCallbackEntity.class);
@@ -88,41 +83,6 @@ public class CallbackHandler implements ICallbackHandler {
                 .refundTime(WxV3Helper.convertTime(refundCallback.getSuccessTime()))
                 .success(WxStatus.isOk(refundCallback.getRefundStatus().name()))
                 .build();
-        return Ret.ok(RefundCallbackResEntity.builder()
-                .response(WxV3Helper.buildSuccessMsg())
-                .refundResEntity(refundResEntity)
-                .build());
-    }
-
-    /**
-     * 支付回调响应实体
-     */
-    @Data
-    @Builder
-    public static class PayCallbackResEntity {
-        /**
-         * 响应数据
-         */
-        private String response;
-        /**
-         * 支付详情
-         */
-        private PayResEntity payResEntity;
-    }
-
-    /**
-     * 退款回调响应实体
-     */
-    @Data
-    @Builder
-    public static class RefundCallbackResEntity {
-        /**
-         * 响应数据
-         */
-        private String response;
-        /**
-         * 退款详情
-         */
-        private RefundResEntity refundResEntity;
+        return Ret.ok(refundResEntity, WxV3Helper.getSuccessCallback());
     }
 }

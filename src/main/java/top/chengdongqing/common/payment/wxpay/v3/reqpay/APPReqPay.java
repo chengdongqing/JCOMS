@@ -3,7 +3,7 @@ package top.chengdongqing.common.payment.wxpay.v3.reqpay;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
-import top.chengdongqing.common.payment.entity.PayReqEntity;
+import top.chengdongqing.common.payment.entities.PayReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 
 /**
@@ -24,7 +24,7 @@ public class APPReqPay extends WxV3ReqPay {
     }
 
     @Override
-    protected Ret buildResponse(Kv<String, String> resultMap) {
+    protected Ret<Object> buildResponse(Kv<String, String> resultMap) {
         // 预支付id
         String prepayId = resultMap.get("prepay_id");
         // 时间戳
@@ -51,6 +51,6 @@ public class APPReqPay extends WxV3ReqPay {
      * @return 数字签名
      */
     private String buildSign(String prepayId, String timestamp, String nonceStr) {
-        return helper.signature(v3Constants.getPrivateKey(), constants.getAppId().getApp(), timestamp, nonceStr, prepayId);
+        return v3Helper.signature(v3Constants.getPrivateKey(), constants.getAppId().getApp(), timestamp, nonceStr, prepayId);
     }
 }

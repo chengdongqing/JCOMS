@@ -2,8 +2,8 @@ package top.chengdongqing.common.payment.wxpay.v2.reqpay;
 
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.payment.TradeType;
-import top.chengdongqing.common.payment.entity.PayReqEntity;
+import top.chengdongqing.common.payment.entities.PayReqEntity;
+import top.chengdongqing.common.payment.enums.TradeType;
 
 import java.util.Map;
 
@@ -22,7 +22,7 @@ public class MBReqPay extends WxV2ReqPay {
     }
 
     @Override
-    protected Ret buildResponse(Map<String, String> resultMap) {
+    protected Ret<Object> buildResponse(Map<String, String> resultMap) {
         return Ret.ok(resultMap.get("mweb_url"));
     }
 }

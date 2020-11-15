@@ -2,7 +2,7 @@ package top.chengdongqing.common.jwt;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 
 import java.time.LocalDateTime;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  *
  * @author Luyao
  */
-@Getter
+@Data
 @Builder
 public class JwtInfo {
 

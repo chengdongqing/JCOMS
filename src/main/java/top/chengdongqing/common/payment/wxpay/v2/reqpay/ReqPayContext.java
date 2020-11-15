@@ -3,8 +3,8 @@ package top.chengdongqing.common.payment.wxpay.v2.reqpay;
 import org.springframework.context.support.ApplicationObjectSupport;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IReqPay;
-import top.chengdongqing.common.payment.TradeType;
-import top.chengdongqing.common.payment.entity.PayReqEntity;
+import top.chengdongqing.common.payment.entities.PayReqEntity;
+import top.chengdongqing.common.payment.enums.TradeType;
 
 /**
  * 请求付款实例上下文
@@ -37,7 +37,7 @@ public class ReqPayContext extends ApplicationObjectSupport {
      * @param entity 参数实体
      * @return 请求响应
      */
-    public Ret request(PayReqEntity entity) {
+    public Ret<Object> request(PayReqEntity entity) {
         return strategy.requestPayment(entity);
     }
 }

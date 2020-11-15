@@ -28,7 +28,7 @@ public class Test {
 
     private static void test1(byte[] content) {
         EncryptAlgorithm algorithm = EncryptAlgorithm.RSA_DEFAULT;
-        System.out.println("基于%s的加密算法------------------".formatted(algorithm.getAlgorithm()));
+        System.out.printf("基于%s的加密算法------------------%n", algorithm.getAlgorithm());
         SecretKeyPair keyPair = SecretKeyGenerator.generateKeyPair(SignatureAlgorithm.RSA_SHA256);
         System.out.println("公钥：" + keyPair.publicKey());
         System.out.println("私钥：" + keyPair.privateKey());
@@ -40,7 +40,7 @@ public class Test {
 
     private static void test2(byte[] content) {
         EncryptAlgorithm algorithm = EncryptAlgorithm.RSA_ECB_OAEP;
-        System.out.println("\n基于%s的加密算法------------------".formatted(algorithm.getAlgorithm()));
+        System.out.printf("%n基于%s的加密算法------------------%n", algorithm.getAlgorithm());
         SecretKeyPair keyPair = SecretKeyGenerator.generateKeyPair(SignatureAlgorithm.RSA_SHA256);
         System.out.println("公钥：" + keyPair.publicKey());
         System.out.println("私钥：" + keyPair.privateKey());
@@ -52,7 +52,7 @@ public class Test {
 
     private static void test3(byte[] content) {
         EncryptAlgorithm algorithm = EncryptAlgorithm.AES_CBC_PKCS7;
-        System.out.println("\n基于%s的加密算法------------------".formatted(algorithm.getAlgorithm()));
+        System.out.printf("%n基于%s的加密算法------------------%n", algorithm.getAlgorithm());
         String key = StrKit.getRandomUUID();
         System.out.println("密钥：" + key);
         BytesToStr ciphertext = Encryptor.encrypt(algorithm, content, key, null);
@@ -63,7 +63,7 @@ public class Test {
 
     private static void test4(byte[] content) {
         EncryptAlgorithm algorithm = EncryptAlgorithm.AES_GCM_NoPadding;
-        System.out.println("\n基于%s的加密算法------------------".formatted(algorithm.getAlgorithm()));
+        System.out.printf("%n基于%s的加密算法------------------%n", algorithm.getAlgorithm());
         String key = StrKit.getRandomUUID();
         String associatedData = StrKit.getRandomUUID();
         System.out.println("密钥：" + key);
@@ -76,7 +76,7 @@ public class Test {
 
     private static void test5(byte[] content) {
         EncryptAlgorithm algorithm = EncryptAlgorithm.AES_PBE;
-        System.out.println("\n基于%s的加密算法------------------".formatted(algorithm.getAlgorithm()));
+        System.out.printf("%n基于%s的加密算法------------------%n", algorithm.getAlgorithm());
         String key = StrKit.getRandomUUID();
         String password = StrKit.getRandomUUID();
         System.out.println("密钥：" + key);

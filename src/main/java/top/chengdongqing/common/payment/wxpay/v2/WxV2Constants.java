@@ -18,19 +18,27 @@ public class WxV2Constants {
     /**
      * 订单请求支付地址
      */
+    @Value("${payment-url:/pay/unifiedorder}")
     private String paymentUrl;
-    /**
-     * 支付成功通知地址
-     */
-    private String notifyUrl;
     /**
      * 关闭订单请求地址
      */
+    @Value("${payment-url:/pay/closeorder}")
     private String closeUrl;
     /**
      * 订单退款请求地址
      */
+    @Value("${payment-url:/secapi/pay/refund}")
     private String refundUrl;
+    /**
+     * 订单查询请求地址
+     */
+    private String queryUrl;
+
+    /**
+     * 支付成功通知地址
+     */
+    private String notifyUrl;
 
     /**
      * 签名用的密钥

@@ -2,7 +2,7 @@ package top.chengdongqing.common.payment.wxpay.v3.reqpay;
 
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.payment.entity.PayReqEntity;
+import top.chengdongqing.common.payment.entities.PayReqEntity;
 
 /**
  * 微信外手机浏览器调起微信客户端支付
@@ -27,7 +27,7 @@ public class MBReqPay extends WxV3ReqPay {
     }
 
     @Override
-    protected Ret buildResponse(Kv<String, String> resultMap) {
+    protected Ret<Object> buildResponse(Kv<String, String> resultMap) {
         return Ret.ok(resultMap.get("h5_url"));
     }
 }

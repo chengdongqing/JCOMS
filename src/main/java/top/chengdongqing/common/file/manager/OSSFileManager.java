@@ -126,7 +126,7 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
     }
 
     @Override
-    public void moveFiles(List<String> fileUrls, FilePath targetPath) throws Exception {
+    public void moveFiles(List<String> fileUrls, FilePath targetPath) {
         for (String fileUrl : fileUrls) {
             moveFile(fileUrl, targetPath);
         }

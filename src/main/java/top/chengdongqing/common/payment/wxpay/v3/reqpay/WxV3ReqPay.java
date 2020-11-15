@@ -13,7 +13,7 @@ import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IReqPay;
-import top.chengdongqing.common.payment.entity.PayReqEntity;
+import top.chengdongqing.common.payment.entities.PayReqEntity;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.payment.wxpay.v3.WxV3Constants;
@@ -42,10 +42,12 @@ public abstract class WxV3ReqPay implements IReqPay {
     @Autowired
     protected WxV3Constants v3Constants;
     @Autowired
-    protected WxV3Helper helper;
+    private WxPayHelper helper;
+    @Autowired
+    protected WxV3Helper v3Helper;
 
     @Override
-    public Ret requestPayment(PayReqEntity entity) {
+    public Ret<Object> requestPayment(PayReqEntity entity) {
         // 封装请求参数
         Kv<String, String> params = Kv.go("mchid", constants.getMchId())
                 .add("description", constants.getWebTitle())
@@ -60,12 +62,12 @@ public abstract class WxV3ReqPay implements IReqPay {
         // 构建请求头
         String apiPath = WxV3Helper.buildTradeApi(getTradeType());
         String body = params.toJson();
-        Kv<String, String> headers = helper.buildHeaders(HttpMethod.POST, apiPath, body);
+        Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
         // 发送支付请求
         String requestUrl = helper.buildRequestUrl(apiPath);
         HttpResponse<String> response = HttpKit.post(requestUrl, headers, body);
-        log.info("请求订单付款：{}，\n请求头：{}，\n请求体：{}，响应结果：{}",
+        log.info("请求订单付款：{}，\n请求头：{}，\n请求体：{}，\n响应结果：{}",
                 requestUrl,
                 headers,
                 body,
@@ -85,9 +87,7 @@ public abstract class WxV3ReqPay implements IReqPay {
     private static String buildExpireTime(long duration) {
         return LocalDateTime.now().plusMinutes(duration)
                 .atZone(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
-                // 去除秒后面的时间信息
-                .replaceAll("\\.\\d+", "");
+                .format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
     }
 
     /**
@@ -169,5 +169,5 @@ public abstract class WxV3ReqPay implements IReqPay {
      * @param resultMap 微信响应的数据
      * @return 返回的数据
      */
-    protected abstract Ret buildResponse(Kv<String, String> resultMap);
+    protected abstract Ret<Object> buildResponse(Kv<String, String> resultMap);
 }

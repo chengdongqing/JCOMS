@@ -34,7 +34,7 @@ public class ImageController {
     @PostMapping("/qrcode/read")
     @ApiOperation("识别二维码内容")
     public String readQrCode(@ApiParam("二维码图片") @RequestPart MultipartFile file) throws IOException {
-        return new QRCodeReader().read(file.getBytes());
+        return new QRCodeReader().read(file.getBytes()).toText();
     }
 
     @GetMapping("/captcha")

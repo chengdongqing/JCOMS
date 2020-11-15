@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Luyao
@@ -29,7 +29,7 @@ public class ExcelController {
         LinkedHashMap<String, String> titles = new LinkedHashMap<>() {{
             put("name", "名字");
         }};
-        List<JSONObject> data = Arrays.asList("张三", "王五", "里奇").stream().map(item -> {
+        List<JSONObject> data = Stream.of("张三", "王五", "里奇").map(item -> {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("name", item);
             return jsonObject;

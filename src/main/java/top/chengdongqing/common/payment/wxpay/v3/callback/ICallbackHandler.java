@@ -1,7 +1,9 @@
 package top.chengdongqing.common.payment.wxpay.v3.callback;
 
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.payment.wxpay.v3.callback.entity.CallbackEntity;
+import top.chengdongqing.common.payment.entities.PayResEntity;
+import top.chengdongqing.common.payment.entities.RefundResEntity;
+import top.chengdongqing.common.payment.wxpay.v3.callback.entities.CallbackEntity;
 
 /**
  * 微信v3回调处理器
@@ -16,7 +18,7 @@ public interface ICallbackHandler {
      * @param entity 回调数据实体
      * @return 处理结果
      */
-    Ret handlePayCallback(CallbackEntity entity);
+    Ret<PayResEntity> handlePayCallback(CallbackEntity entity);
 
     /**
      * 处理退款回调
@@ -24,5 +26,5 @@ public interface ICallbackHandler {
      * @param entity 回调数据实体
      * @return 处理结果
      */
-    Ret handleRefundCallback(CallbackEntity entity);
+    Ret<RefundResEntity> handleRefundCallback(CallbackEntity entity);
 }

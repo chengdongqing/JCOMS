@@ -37,7 +37,6 @@ public abstract class SmsSender implements ISender<SmsEntity> {
      * 具体发送短信细节
      *
      * @param entity 参数实体
-     * @return 发送结果
      */
     protected abstract void sendSms(SmsEntity entity);
 }

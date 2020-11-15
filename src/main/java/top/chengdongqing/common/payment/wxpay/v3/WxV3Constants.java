@@ -56,6 +56,12 @@ public class WxV3Constants {
     @Value("${close-url:/out-trade-no/%s/close}")
     private String closeUrl;
     /**
+     * 订单查询请求地址
+     */
+    @Value("${refund-url:/out-trade-no/%s}")
+    private String queryUrl;
+
+    /**
      * 订单退款请求地址
      */
     @Value("${refund-url:/v3/ecommerce/refunds/apply}")
@@ -84,13 +90,13 @@ public class WxV3Constants {
     @ConfigurationProperties("pay.wx.v3.pay-url")
     public static class PaymentUrl {
 
-        @Value("${pc:native}")
+        @Value("${pc:/native}")
         private String pc;
-        @Value("${pc:jsapi}")
+        @Value("${pc:/jsapi}")
         private String mp;
-        @Value("${pc:app}")
+        @Value("${pc:/app}")
         private String app;
-        @Value("${pc:h5}")
+        @Value("${pc:/h5}")
         private String h5;
     }
 }

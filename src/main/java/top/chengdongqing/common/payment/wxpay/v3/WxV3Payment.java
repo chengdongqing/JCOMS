@@ -1,5 +1,6 @@
 package top.chengdongqing.common.payment.wxpay.v3;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -9,9 +10,11 @@ import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IPayment;
-import top.chengdongqing.common.payment.TradeType;
-import top.chengdongqing.common.payment.entity.PayReqEntity;
-import top.chengdongqing.common.payment.entity.RefundReqEntity;
+import top.chengdongqing.common.payment.entities.PayReqEntity;
+import top.chengdongqing.common.payment.entities.QueryResEntity;
+import top.chengdongqing.common.payment.entities.RefundReqEntity;
+import top.chengdongqing.common.payment.enums.TradeMode;
+import top.chengdongqing.common.payment.enums.TradeType;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.payment.wxpay.v3.callback.ICallbackHandler;
@@ -34,26 +37,28 @@ public class WxV3Payment implements IPayment {
     @Autowired
     private WxV3Constants v3Constants;
     @Autowired
-    private WxV3Helper helper;
+    private WxPayHelper helper;
+    @Autowired
+    private WxV3Helper v3Helper;
     @Autowired
     private ICallbackHandler callbackHandler;
 
     @Override
-    public Ret requestPayment(PayReqEntity entity, TradeType tradeType) {
+    public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
         return new ReqPayContext(tradeType).request(entity);
     }
 
     @Override
-    public Ret requestClose(String orderNo) {
+    public Ret<Boolean> requestClose(String orderNo) {
         // 构建请求头
         String apiPath = WxV3Helper.buildTradeApi(v3Constants.getCloseUrl().formatted(orderNo));
         String body = Kv.go("mchid", constants.getMchId()).toJson();
-        Kv<String, String> headers = helper.buildHeaders(HttpMethod.POST, apiPath, body);
+        Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
         // 发送请求
         String requestUrl = helper.buildRequestUrl(apiPath);
         HttpResponse<String> response = HttpKit.post(requestUrl, headers, body);
-        log.info("请求关闭订单：{}，\n请求头：{}，\n请求体：{}，响应结果：{}",
+        log.info("请求关闭订单：{}，\n请求头：{}，\n请求体：{}，\n响应结果：{}",
                 requestUrl,
                 headers,
                 body,
@@ -68,7 +73,7 @@ public class WxV3Payment implements IPayment {
     }
 
     @Override
-    public Ret requestRefund(RefundReqEntity entity) {
+    public Ret<Boolean> requestRefund(RefundReqEntity entity) {
         // 构建请求体
         String body = Kv.go("sub_mchid", v3Constants.getSubMchId())
                 .add("sp_appid", v3Constants.getSpAppId())
@@ -82,12 +87,12 @@ public class WxV3Payment implements IPayment {
 
         // 构建请求头
         String apiPath = v3Constants.getRefundUrl();
-        Kv<String, String> headers = helper.buildHeaders(HttpMethod.POST, apiPath, body);
+        Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
         // 发送退款请求
         String requestUrl = helper.buildRequestUrl(apiPath);
         HttpResponse<String> response = HttpKit.post(requestUrl, headers, body);
-        log.info("请求订单退款：{}，\n请求头：{}，\n请求体：{}，响应结果：{}",
+        log.info("请求订单退款：{}，\n请求头：{}，\n请求体：{}，\n响应结果：{}",
                 requestUrl,
                 headers,
                 body,
@@ -115,8 +120,41 @@ public class WxV3Payment implements IPayment {
     }
 
     @Override
-    public Ret requestQuery(String orderNo) {
-        return null;
+    public Ret<QueryResEntity> requestQuery(String orderNo) {
+        // 构建请求头
+        Kv<String, String> params = Kv.go("mchid", constants.getMchId());
+        String apiPath = WxV3Helper.buildTradeApi(v3Constants.getQueryUrl().formatted(orderNo), params);
+        Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.POST, apiPath, "");
+
+        // 发送请求
+        String requestUrl = helper.buildRequestUrl(apiPath);
+        HttpResponse<String> response = HttpKit.get(requestUrl, params, headers);
+        log.info("请求关闭订单：{}，\n请求头：{}，\n响应结果：{}",
+                requestUrl,
+                headers,
+                response);
+        if (response.statusCode() != 200) {
+            return Ret.fail(switch (response.statusCode()) {
+                case 202 -> "用户支付中";
+                case 400 -> "参数错误";
+                case 401 -> "签名错误";
+                case 404 -> "订单不存在";
+                default -> ErrorMsg.REQUEST_FAILED;
+            });
+        }
+
+        // 封装响应数据
+        Kv<String, String> resultMap = JSON.parseObject(response.body(), Kv.class);
+        QueryResEntity queryResEntity = QueryResEntity.builder()
+                .orderNo(resultMap.get("out_trade_no"))
+                .paymentNo(resultMap.get("transaction_id"))
+                .paymentTime(WxV3Helper.convertTime(resultMap.get("success_time")))
+                .tradeAmount(WxPayHelper.convertAmount(JSON.parseObject(resultMap.get("amount")).getInteger("total")))
+                .tradeMode(TradeMode.WXPAY)
+                .tradeType(WxPayHelper.getTradeType(resultMap.get("trade_type")))
+                .tradeState(WxPayHelper.getTradeState(resultMap.get("trade_state")))
+                .build();
+        return Ret.ok(queryResEntity);
     }
 
     /**

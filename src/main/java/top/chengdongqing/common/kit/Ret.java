@@ -12,19 +12,23 @@ import java.io.Serializable;
  */
 public record Ret<T>(int code, T data, String msg) implements Serializable {
 
-    public static Ret<String> ok() {
-        return new Ret<>(RetCode.OK, null, null);
+    public static <T> Ret<T> ok() {
+        return ok(null);
     }
 
     public static <T> Ret<T> ok(T data) {
-        return new Ret<>(RetCode.OK, data, null);
+        return ok(data, null);
     }
 
-    public static Ret<String> fail() {
-        return new Ret<>(RetCode.FAIL, null, null);
+    public static <T> Ret<T> ok(T data, String msg) {
+        return new Ret<>(RetCode.OK, data, msg);
     }
 
-    public static Ret<String> fail(String msg) {
+    public static <T> Ret<T> fail() {
+        return fail(null);
+    }
+
+    public static <T> Ret<T> fail(String msg) {
         return new Ret<>(RetCode.FAIL, null, msg);
     }
 

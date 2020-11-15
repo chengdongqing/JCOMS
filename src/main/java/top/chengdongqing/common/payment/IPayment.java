@@ -1,8 +1,10 @@
 package top.chengdongqing.common.payment;
 
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.payment.entity.PayReqEntity;
-import top.chengdongqing.common.payment.entity.RefundReqEntity;
+import top.chengdongqing.common.payment.entities.PayReqEntity;
+import top.chengdongqing.common.payment.entities.QueryResEntity;
+import top.chengdongqing.common.payment.entities.RefundReqEntity;
+import top.chengdongqing.common.payment.enums.TradeType;
 
 /**
  * 支付顶层接口
@@ -18,7 +20,7 @@ public interface IPayment {
      * @param tradeType 交易类型
      * @return 响应数据
      */
-    Ret requestPayment(PayReqEntity entity, TradeType tradeType);
+    Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType);
 
     /**
      * 请求关闭订单
@@ -26,7 +28,7 @@ public interface IPayment {
      * @param orderNo 订单号
      * @return 关闭结果
      */
-    Ret requestClose(String orderNo);
+    Ret<Boolean> requestClose(String orderNo);
 
     /**
      * 请求订单退款
@@ -34,7 +36,7 @@ public interface IPayment {
      * @param entity 参数实体
      * @return 退款结果
      */
-    Ret requestRefund(RefundReqEntity entity);
+    Ret<Boolean> requestRefund(RefundReqEntity entity);
 
     /**
      * 请求查询订单
@@ -42,5 +44,5 @@ public interface IPayment {
      * @param orderNo 订单号
      * @return 查询结果
      */
-    Ret requestQuery(String orderNo);
+    Ret<QueryResEntity> requestQuery(String orderNo);
 }

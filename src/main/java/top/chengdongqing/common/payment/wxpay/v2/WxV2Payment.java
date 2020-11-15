@@ -1,18 +1,17 @@
 package top.chengdongqing.common.payment.wxpay.v2;
 
-import lombok.Builder;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.payment.IPayment;
-import top.chengdongqing.common.payment.TradeType;
-import top.chengdongqing.common.payment.entity.PayReqEntity;
-import top.chengdongqing.common.payment.entity.PayResEntity;
-import top.chengdongqing.common.payment.entity.RefundReqEntity;
+import top.chengdongqing.common.payment.entities.PayReqEntity;
+import top.chengdongqing.common.payment.entities.PayResEntity;
+import top.chengdongqing.common.payment.entities.QueryResEntity;
+import top.chengdongqing.common.payment.entities.RefundReqEntity;
+import top.chengdongqing.common.payment.enums.TradeMode;
+import top.chengdongqing.common.payment.enums.TradeType;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
@@ -23,8 +22,6 @@ import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 /**
@@ -41,26 +38,16 @@ public class WxV2Payment implements IPayment {
     private WxConstants constants;
     @Autowired
     private WxV2Constants v2constants;
+    @Autowired
+    private WxPayHelper helper;
 
     @Override
-    public Ret requestPayment(PayReqEntity entity, TradeType tradeType) {
+    public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
         return new ReqPayContext(tradeType).request(entity);
     }
 
-    /**
-     * 获取微信回调失败需要响应的xml
-     * 只有回调校验失败才调用
-     *
-     * @param errorMsg 错误信息
-     * @return 带xml的处理结果
-     */
-    private Ret buildFailXml(String errorMsg) {
-        Kv<String, String> map = Kv.go("return_code", WxStatus.FAIL).add("return_msg", errorMsg);
-        return Ret.fail(XmlKit.mapToXml(map));
-    }
-
     @Override
-    public Ret requestClose(String orderNo) {
+    public Ret<Boolean> requestClose(String orderNo) {
         // 封装请求参数
         Kv<String, String> params = Kv.go("appid", constants.getAppId().getMp())
                 .add("mch_id", constants.getMchId())
@@ -79,14 +66,15 @@ public class WxV2Payment implements IPayment {
         // 转换数据类型
         String xml = XmlKit.mapToXml(params);
         // 发送请求
-        String result = HttpKit.post(v2constants.getCloseUrl(), xml).body();
+        String requestUrl = helper.buildRequestUrl(v2constants.getCloseUrl());
+        String result = HttpKit.post(requestUrl, xml).body();
         log.info("请求订单关闭，参数：{}，\n结果：{}", xml, result);
         // 判断结果
-        return getResult(XmlKit.xmlToMap(result));
+        return WxV2Helper.getResult(XmlKit.xmlToMap(result));
     }
 
     @Override
-    public Ret requestRefund(RefundReqEntity entity) {
+    public Ret<Boolean> requestRefund(RefundReqEntity entity) {
         // 封装请求参数
         Kv<String, String> params = Kv.go("appid", constants.getAppId().getMp())
                 .add("mch_id", constants.getMchId())
@@ -110,18 +98,56 @@ public class WxV2Payment implements IPayment {
             // 读取证书
             byte[] certBytes = Files.readAllBytes(Paths.get(v2constants.getCertPath()));
             // 发送请求
-            String result = HttpKit.post(v2constants.getRefundUrl(), xml, certBytes, constants.getMchId()).body();
+            String requestUrl = helper.buildRequestUrl(v2constants.getRefundUrl());
+            String result = HttpKit.post(requestUrl, xml, certBytes, constants.getMchId()).body();
             log.info("请求订单退款，参数：{}，\n结果：{}", xml, result);
             // 判断结果
-            return getResult(XmlKit.xmlToMap(result));
+            return WxV2Helper.getResult(XmlKit.xmlToMap(result));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public Ret requestQuery(String orderNo) {
-        return null;
+    public Ret<QueryResEntity> requestQuery(String orderNo) {
+        // 封装请求参数
+        Kv<String, String> params = Kv.go("appid", constants.getAppId().getMp())
+                .add("mch_id", constants.getMchId())
+                .add("nonce_str", StrKit.getRandomUUID())
+                .add("out_trade_no", orderNo)
+                .add("key", v2constants.getSecretKey())
+                .add("sign_type", v2constants.getSignType());
+        String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
+                StrKit.buildQueryStr(params),
+                StrToBytes.of(v2constants.getSecretKey()).fromHex())
+                .toHex();
+        params.add("sign", sign);
+        params.remove("key");
+
+        // 转换数据类型
+        String xml = XmlKit.mapToXml(params);
+        // 发送请求
+        String requestUrl = helper.buildRequestUrl(v2constants.getQueryUrl());
+        String result = HttpKit.post(requestUrl, xml).body();
+        log.info("请求查询订单，参数：{}，\n结果：{}", xml, result);
+
+        // 转换数据类型
+        Map<String, String> resultMap = XmlKit.xmlToMap(result);
+        // 判断请求结果
+        Ret<QueryResEntity> queryResult = WxV2Helper.getResult(resultMap);
+        if (queryResult.isFail()) return queryResult;
+
+        // 封装响应数据
+        QueryResEntity queryResEntity = QueryResEntity.builder()
+                .orderNo(resultMap.get("out_trade_no"))
+                .paymentNo(resultMap.get("transaction_id"))
+                .paymentTime(WxV2Helper.convertTime(resultMap.get("time_end")))
+                .tradeAmount(WxPayHelper.convertAmount(Integer.parseInt(resultMap.get("total_fee"))))
+                .tradeMode(TradeMode.WXPAY)
+                .tradeType(WxPayHelper.getTradeType(resultMap.get("trade_type")))
+                .tradeState(WxPayHelper.getTradeState(resultMap.get("trade_state")))
+                .build();
+        return Ret.ok(queryResEntity);
     }
 
     /**
@@ -130,7 +156,7 @@ public class WxV2Payment implements IPayment {
      * @param xml 回调数据
      * @return 处理结果
      */
-    public Ret handlePayCallback(String xml) {
+    public Ret<PayResEntity> handlePayCallback(String xml) {
         // 将xml转为map
         Map<String, String> params = XmlKit.xmlToMap(xml);
         // 判断参数是否为空
@@ -144,10 +170,10 @@ public class WxV2Payment implements IPayment {
                 StrKit.buildQueryStr(params),
                 StrToBytes.of(v2constants.getSecretKey()).fromHex(),
                 StrToBytes.of(params.get("sign")).fromHex());
-        if (!isOk) return buildFailXml("验签失败");
+        if (!isOk) return buildFailCallback("验签失败");
 
         // 判断支付结果
-        if (!WxStatus.isOk(params.get("result_code"))) return buildFailXml("支付失败");
+        if (!WxStatus.isOk(params.get("result_code"))) return buildFailCallback("支付失败");
 
         // 封装支付信息
         PayResEntity payResEntity = PayResEntity.builder()
@@ -156,41 +182,21 @@ public class WxV2Payment implements IPayment {
                 // 将单位从分转为元
                 .paymentAmount(WxPayHelper.convertAmount(Integer.parseInt(params.get("total_fee"))))
                 // 转换支付时间
-                .paymentTime(LocalDateTime.parse(params.get("time_end"), DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
+                .paymentTime(WxV2Helper.convertTime(params.get("time_end")))
                 .build();
         // 返回回调结果
         Kv<String, String> map = Kv.go("return_code", WxStatus.SUCCESS);
-        return Ret.ok(PayCallbackResEntity.builder()
-                .response(XmlKit.mapToXml(map))
-                .payResEntity(payResEntity)
-                .build());
+        return Ret.ok(payResEntity, XmlKit.mapToXml(map));
     }
 
     /**
-     * 验证请求结果
+     * 构建失败回调响应
      *
-     * @param resultMap 响应信息
-     * @return 验证结果
+     * @param errorMsg 错误信息
+     * @return 带xml的处理结果
      */
-    public static Ret getResult(Map<String, String> resultMap) {
-        boolean isOk = WxStatus.isOk(resultMap.get("return_code")) && WxStatus.isOk(resultMap.get("result_code"));
-        return isOk ? Ret.ok() : Ret.fail(ErrorMsg.REQUEST_FAILED);
-    }
-
-
-    /**
-     * 支付回调响应实体
-     */
-    @Data
-    @Builder
-    public static class PayCallbackResEntity {
-        /**
-         * 响应数据
-         */
-        private String response;
-        /**
-         * 收集的支付详情
-         */
-        private PayResEntity payResEntity;
+    private Ret<PayResEntity> buildFailCallback(String errorMsg) {
+        Kv<String, String> map = Kv.go("return_code", WxStatus.FAIL).add("return_msg", errorMsg);
+        return Ret.fail(XmlKit.mapToXml(map));
     }
 }

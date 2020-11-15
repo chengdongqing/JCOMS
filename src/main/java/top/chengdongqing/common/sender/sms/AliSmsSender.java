@@ -1,7 +1,6 @@
 package top.chengdongqing.common.sender.sms;
 
 import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,17 +9,15 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.HttpKit;
+import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.transformer.BytesToStr;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.Instant;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 基于阿里云的短信发送器
@@ -37,27 +34,23 @@ public class AliSmsSender extends SmsSender {
     @Override
     public void sendSms(SmsEntity entity) {
         // 封装参数
-        Map<String, String> params = new HashMap<>();
-        params.put("PhoneNumbers", entity.getTo());
-        params.put("AccessKeyId", constants.getAccessKeyId());
-        params.put("Action", constants.getAction());
-        params.put("Version", constants.getVersion());
-        params.put("Format", constants.getFormat());
-        params.put("SignatureMethod", constants.getSignatureMethod());
-        params.put("SignatureVersion", constants.getSignatureVersion());
-        params.put("SignatureNonce", StrKit.getRandomUUID());
-        // 时间戳，按照ISO8601 标准表示，并需要使用UTC时间
-        String timestamp = Instant.now().atZone(ZoneId.of("GMT"))
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
-        params.put("Timestamp", timestamp);
-        params.put("SignName", constants.getSignName());
-        params.put("TemplateCode", entity.getTemplate());
-        // 放到模板的参数，JSON格式
-        params.put("TemplateParam", entity.getContent());
-        String content = StrKit.buildQueryStr(params, true);
-        BytesToStr bytes = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA1, content,
-                StrToBytes.of(constants.getAccessSecret()).fromBase64());
-        params.put("Signature", bytes.toBase64());
+        Kv<String, String> params = Kv.go("PhoneNumbers", entity.getTo())
+                .add("AccessKeyId", constants.getAccessKeyId())
+                .add("Action", constants.getAction())
+                .add("Version", constants.getVersion())
+                .add("Format", constants.getFormat())
+                .add("SignatureMethod", constants.getSignatureMethod())
+                .add("SignatureVersion", constants.getSignatureVersion())
+                .add("SignatureNonce", StrKit.getRandomUUID())
+                .add("Timestamp", getTimestamp())
+                .add("SignName", constants.getSignName())
+                .add("TemplateCode", entity.getTemplate())
+                .add("TemplateParam", entity.getContent());
+        String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA1,
+                StrKit.buildQueryStr(params, true),
+                StrToBytes.of(constants.getAccessSecret()).fromBase64())
+                .toBase64();
+        params.add("Signature", sign);
 
         // 发送请求
         String result = HttpKit.get(constants.getGatewayUrl(), params).body();
@@ -67,6 +60,18 @@ public class AliSmsSender extends SmsSender {
             throw new SendSmsException(ErrorMsg.SEND_FAILED);
         }
     }
+
+    /**
+     * 获取时间戳
+     * ISO8601 标准
+     * UTC时间（世界标准时间）
+     *
+     * @return 时间戳
+     */
+    private String getTimestamp() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        return Instant.now().atOffset(ZoneOffset.UTC).format(formatter);
+    }
 }
 
 /**
@@ -75,7 +80,7 @@ public class AliSmsSender extends SmsSender {
 @Data
 @Component
 @RefreshScope
-@ConfigurationProperties(prefix = "send.sms.aliyun")
+@ConfigurationProperties(prefix = "send.sms.ali")
 class AliSmsConstants {
 
     /**
@@ -125,7 +130,6 @@ class SendResult {
     /**
      * 结果代码
      */
-    @JsonProperty("Code")
     private String code;
 
     /**
