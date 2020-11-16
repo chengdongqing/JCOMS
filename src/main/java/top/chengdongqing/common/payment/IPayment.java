@@ -28,7 +28,7 @@ public interface IPayment {
      * @param orderNo 订单号
      * @return 关闭结果
      */
-    Ret<Boolean> requestClose(String orderNo);
+    Ret<Void> requestClose(String orderNo);
 
     /**
      * 请求订单退款
@@ -36,7 +36,7 @@ public interface IPayment {
      * @param entity 参数实体
      * @return 退款结果
      */
-    Ret<Boolean> requestRefund(RefundReqEntity entity);
+    Ret<Void> requestRefund(RefundReqEntity entity);
 
     /**
      * 请求查询订单

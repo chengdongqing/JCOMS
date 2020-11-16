@@ -47,7 +47,7 @@ public class WxV2Payment implements IPayment {
     }
 
     @Override
-    public Ret<Boolean> requestClose(String orderNo) {
+    public Ret<Void> requestClose(String orderNo) {
         // 封装请求参数
         Kv<String, String> params = Kv.go("appid", constants.getAppId().getMp())
                 .add("mch_id", constants.getMchId())
@@ -74,7 +74,7 @@ public class WxV2Payment implements IPayment {
     }
 
     @Override
-    public Ret<Boolean> requestRefund(RefundReqEntity entity) {
+    public Ret<Void> requestRefund(RefundReqEntity entity) {
         // 封装请求参数
         Kv<String, String> params = Kv.go("appid", constants.getAppId().getMp())
                 .add("mch_id", constants.getMchId())

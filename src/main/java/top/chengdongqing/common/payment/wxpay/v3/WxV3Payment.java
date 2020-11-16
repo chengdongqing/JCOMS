@@ -49,7 +49,7 @@ public class WxV3Payment implements IPayment {
     }
 
     @Override
-    public Ret<Boolean> requestClose(String orderNo) {
+    public Ret<Void> requestClose(String orderNo) {
         // 构建请求头
         String apiPath = WxV3Helper.buildTradeApi(v3Constants.getCloseUrl().formatted(orderNo));
         String body = Kv.go("mchid", constants.getMchId()).toJson();
@@ -73,7 +73,7 @@ public class WxV3Payment implements IPayment {
     }
 
     @Override
-    public Ret<Boolean> requestRefund(RefundReqEntity entity) {
+    public Ret<Void> requestRefund(RefundReqEntity entity) {
         // 构建请求体
         String body = Kv.go("sub_mchid", v3Constants.getSubMchId())
                 .add("sp_appid", v3Constants.getSpAppId())
