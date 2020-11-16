@@ -32,7 +32,7 @@ public class AESPBEEncryptor implements IEncryptor {
             PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algorithm.getAlgorithm());
             SecretKey secretKey = secretKeyFactory.generateSecret(keySpec);
-            PBEParameterSpec parameterSpec = new PBEParameterSpec(Base64.getDecoder().decode(key), 1000);
+            PBEParameterSpec parameterSpec = new PBEParameterSpec(key.getBytes(), 1000);
             Cipher cipher = Cipher.getInstance(algorithm.getAlgorithm());
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
             return BytesToStr.of(cipher.doFinal(data));
@@ -47,7 +47,7 @@ public class AESPBEEncryptor implements IEncryptor {
             PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algorithm.getAlgorithm());
             SecretKey secretKey = secretKeyFactory.generateSecret(keySpec);
-            PBEParameterSpec parameterSpec = new PBEParameterSpec(Base64.getDecoder().decode(key), 1000);
+            PBEParameterSpec parameterSpec = new PBEParameterSpec(key.getBytes(), 1000);
             Cipher cipher = Cipher.getInstance(algorithm.getAlgorithm());
             cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
             return BytesToStr.of(cipher.doFinal(data));
