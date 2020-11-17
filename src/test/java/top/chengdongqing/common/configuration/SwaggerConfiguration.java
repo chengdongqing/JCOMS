@@ -20,16 +20,16 @@ import springfox.documentation.spring.web.plugins.Docket;
 public class SwaggerConfiguration {
 
     @Bean
-    public Docket createRestApi() {
+    public Docket buildDocket() {
         return new Docket(DocumentationType.OAS_30)
-                .apiInfo(getApiInfo())
+                .apiInfo(buildApiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
                 .paths(PathSelectors.any())
                 .build();
     }
 
-    private ApiInfo getApiInfo() {
+    private ApiInfo buildApiInfo() {
         return new ApiInfoBuilder()
                 .description("测试接口文档")
                 .contact(new Contact("路遥", "https://zwmall.chengdongqing.top", "1912525497@qq.com"))
