@@ -21,7 +21,7 @@ public class MPReqPay extends WxV3ReqPay {
     @Override
     protected void addSpecialParams(Kv<String, String> params, PayReqEntity entity) {
         params.add("appid", constants.getAppId().getMp());
-        params.add("payer", Kv.go("openid", entity.getOpenId()).toJson());
+        params.add("payer", Kv.of("openid", entity.getOpenId()).toJson());
     }
 
     @Override
@@ -33,7 +33,7 @@ public class MPReqPay extends WxV3ReqPay {
         // 随机数
         String nonceStr = StrKit.getRandomUUID();
         // 封装参数
-        Kv<String, String> data = Kv.go("appid", constants.getAppId().getApp())
+        Kv<String, String> data = Kv.of("appid", constants.getAppId().getApp())
                 .add("timestamp", timestamp)
                 .add("noncestr", nonceStr)
                 .add("package", "prepay_id=" + prepayId)

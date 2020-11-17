@@ -17,7 +17,7 @@ public class Kv<K, V> extends HashMap<K, V> {
      *
      * @return Kv实例
      */
-    public static Kv<Object, Object> go() {
+    public static Kv<Object, Object> of() {
         return new Kv<>();
     }
 
@@ -30,7 +30,7 @@ public class Kv<K, V> extends HashMap<K, V> {
      * @param <V>   值类型，根据第一个值的数据类型自动决定整体的值类型
      * @return Kv实例
      */
-    public static <K, V> Kv<K, V> go(K key, V value) {
+    public static <K, V> Kv<K, V> of(K key, V value) {
         return new Kv<K, V>().add(key, value);
     }
 

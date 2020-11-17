@@ -28,7 +28,7 @@ public class QRCodeReader implements ImageReader {
             MultiFormatReader formatReader = new MultiFormatReader();
             BufferedImage bufferedImage = ImageIO.read(is);
             BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(bufferedImage)));
-            Kv<DecodeHintType, Charset> hints = Kv.go(DecodeHintType.CHARACTER_SET, StandardCharsets.UTF_8);
+            Kv<DecodeHintType, Charset> hints = Kv.of(DecodeHintType.CHARACTER_SET, StandardCharsets.UTF_8);
             Result result = formatReader.decode(binaryBitmap, hints);
             return BytesToStr.of(result.getRawBytes());
         } catch (NotFoundException e) {

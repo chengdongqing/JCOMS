@@ -59,7 +59,7 @@ public class WxV3Helper {
         // 证书序列号
         String serialNo = v3Constants.getCertSerialNo();
         // 构建签名信息
-        String token = Kv.go("mchid", mchId)
+        String token = Kv.of("mchid", mchId)
                 .add("nonce_str", nonceStr)
                 .add("timestamp", timestamp)
                 .add("serial_no", serialNo)
@@ -155,7 +155,7 @@ public class WxV3Helper {
      * @return 成功JSON字符串
      */
     public static String getSuccessCallback() {
-        return Kv.go("code", WxStatus.SUCCESS).toJson();
+        return Kv.of("code", WxStatus.SUCCESS).toJson();
     }
 
     /**
@@ -165,7 +165,7 @@ public class WxV3Helper {
      * @return 失败JSON字符串
      */
     public static <T> Ret<T> buildFailCallback(String errorMsg) {
-        return Ret.fail(Kv.go("code", WxStatus.FAIL).add("message", errorMsg).toJson());
+        return Ret.fail(Kv.of("code", WxStatus.FAIL).add("message", errorMsg).toJson());
     }
 
     /**

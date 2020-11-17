@@ -44,7 +44,7 @@ public abstract class WxV2ReqPay implements IReqPay {
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity) {
         // 封装请求参数
-        Kv<String, String> params = Kv.go("mch_id", constants.getMchId())
+        Kv<String, String> params = Kv.of("mch_id", constants.getMchId())
                 .add("nonce_str", StrKit.getRandomUUID())
                 .add("body", constants.getWebTitle())
                 .add("detail", buildGoodsDetail(entity.getItems()))
@@ -113,7 +113,7 @@ public abstract class WxV2ReqPay implements IReqPay {
                 .collect(Collectors.toList());
         // 转JSON字符串
         String detail = JSON.toJSONString(goodsDetails, JsonKit.getSnakeCaseConfig());
-        return Kv.go("goods_detail", detail).toJson();
+        return Kv.of("goods_detail", detail).toJson();
     }
 
     /**

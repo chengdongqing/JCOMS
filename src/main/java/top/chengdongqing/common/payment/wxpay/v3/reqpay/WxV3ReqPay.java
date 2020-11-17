@@ -49,7 +49,7 @@ public abstract class WxV3ReqPay implements IReqPay {
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity) {
         // 封装请求参数
-        Kv<String, String> params = Kv.go("mchid", constants.getMchId())
+        Kv<String, String> params = Kv.of("mchid", constants.getMchId())
                 .add("description", constants.getWebTitle())
                 .add("out_trade_no", entity.getOrderNo())
                 .add("time_expire", buildExpireTime(constants.getPayDuration()))
@@ -97,7 +97,7 @@ public abstract class WxV3ReqPay implements IReqPay {
      * @return 订单金额JSON字符串
      */
     private String buildAmount(BigDecimal amount) {
-        return Kv.go().add("currency", v3Constants.getCurrency())
+        return Kv.of().add("currency", v3Constants.getCurrency())
                 .add("total", WxPayHelper.convertAmount(amount))
                 .toJson();
     }
@@ -125,7 +125,7 @@ public abstract class WxV3ReqPay implements IReqPay {
                 .collect(Collectors.toList());
         // 转JSON字符串
         String goodsDetail = JSON.toJSONString(goodsDetails, JsonKit.getSnakeCaseConfig());
-        return Kv.go("goods_detail", goodsDetail).toJson();
+        return Kv.of("goods_detail", goodsDetail).toJson();
     }
 
     /**
@@ -135,7 +135,7 @@ public abstract class WxV3ReqPay implements IReqPay {
      * @return 场景信息JSON字符串
      */
     private String buildSceneInfo(String ip) {
-        Kv<String, String> sceneInfo = Kv.go("payer_client_ip", ip);
+        Kv<String, String> sceneInfo = Kv.of("payer_client_ip", ip);
         addSceneInfo(sceneInfo);
         return sceneInfo.toJson();
     }

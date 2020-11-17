@@ -32,7 +32,7 @@ public class APPReqPay extends WxV3ReqPay {
         // 随机数
         String nonceStr = StrKit.getRandomUUID();
         // 封装参数
-        Kv<String, String> data = Kv.go("appid", constants.getAppId().getApp())
+        Kv<String, String> data = Kv.of("appid", constants.getAppId().getApp())
                 .add("partnerid", constants.getMchId())
                 .add("prepayid", prepayId)
                 .add("package", "Sign=WXPay")

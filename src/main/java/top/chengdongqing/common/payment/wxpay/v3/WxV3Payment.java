@@ -52,7 +52,7 @@ public class WxV3Payment implements IPayment {
     public Ret<Void> requestClose(String orderNo) {
         // 构建请求头
         String apiPath = WxV3Helper.buildTradeApi(v3Constants.getCloseUrl().formatted(orderNo));
-        String body = Kv.go("mchid", constants.getMchId()).toJson();
+        String body = Kv.of("mchid", constants.getMchId()).toJson();
         Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
         // 发送请求
@@ -75,7 +75,7 @@ public class WxV3Payment implements IPayment {
     @Override
     public Ret<Void> requestRefund(RefundReqEntity entity) {
         // 构建请求体
-        String body = Kv.go("sub_mchid", v3Constants.getSubMchId())
+        String body = Kv.of("sub_mchid", v3Constants.getSubMchId())
                 .add("sp_appid", v3Constants.getSpAppId())
                 .add("sub_appid", v3Constants.getSubAppId())
                 .add("out_trade_no", entity.getOrderNo())
@@ -113,7 +113,7 @@ public class WxV3Payment implements IPayment {
      * @return 退款金额JSON字符串
      */
     private String buildRefundAmount(RefundReqEntity entity) {
-        return Kv.go().add("refund", WxPayHelper.convertAmount(entity.getRefundAmount()))
+        return Kv.of().add("refund", WxPayHelper.convertAmount(entity.getRefundAmount()))
                 .add("total", WxPayHelper.convertAmount(entity.getTotalAmount()))
                 .add("currency", v3Constants.getCurrency())
                 .toJson();
@@ -122,7 +122,7 @@ public class WxV3Payment implements IPayment {
     @Override
     public Ret<QueryResEntity> requestQuery(String orderNo) {
         // 构建请求头
-        Kv<String, String> params = Kv.go("mchid", constants.getMchId());
+        Kv<String, String> params = Kv.of("mchid", constants.getMchId());
         String apiPath = WxV3Helper.buildTradeApi(v3Constants.getQueryUrl().formatted(orderNo), params);
         Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.GET, apiPath, "");
 

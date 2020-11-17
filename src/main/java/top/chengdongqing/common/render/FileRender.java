@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.util.Objects;
 
 /**
  * 文件渲染器
@@ -25,8 +26,9 @@ public class FileRender extends Render {
     private final byte[] data;
 
     public FileRender(String filename, byte[] data) {
-        if (StringUtils.isBlank(filename) || data == null) {
-            throw new IllegalArgumentException("The filename and data cannot be null");
+        Objects.requireNonNull(data);
+        if (StringUtils.isBlank(filename)) {
+            throw new IllegalArgumentException("The filename cannot be blank.");
         }
 
         this.filename = URLEncoder.encode(filename, CHARSET);

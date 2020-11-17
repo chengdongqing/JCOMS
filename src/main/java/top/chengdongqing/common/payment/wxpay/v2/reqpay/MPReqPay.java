@@ -34,7 +34,7 @@ public class MPReqPay extends WxV2ReqPay {
      */
     @Override
     protected Ret<Object> buildResponse(Map<String, String> resultMap) {
-        Kv<String, String> data = Kv.go("appId", constants.getAppId().getMp())
+        Kv<String, String> data = Kv.of("appId", constants.getAppId().getMp())
                 .add("timeStamp", WxPayHelper.getTimestamp())
                 .add("nonceStr", StrKit.getRandomUUID())
                 .add("package", "prepay_id=" + resultMap.get("prepay_id"))

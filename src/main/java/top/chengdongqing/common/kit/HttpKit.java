@@ -219,6 +219,6 @@ public class HttpKit {
      */
     public static Kv<String, String> buildJSONHeaders() {
         String type = "application/json";
-        return Kv.go("Content-Type", type).add("Accept", type);
+        return Kv.of("Content-Type", type).add("Accept", type);
     }
 }

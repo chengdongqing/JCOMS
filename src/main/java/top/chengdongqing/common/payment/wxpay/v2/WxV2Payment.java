@@ -49,7 +49,7 @@ public class WxV2Payment implements IPayment {
     @Override
     public Ret<Void> requestClose(String orderNo) {
         // 封装请求参数
-        Kv<String, String> params = Kv.go("appid", constants.getAppId().getMp())
+        Kv<String, String> params = Kv.of("appid", constants.getAppId().getMp())
                 .add("mch_id", constants.getMchId())
                 .add("nonce_str", StrKit.getRandomUUID())
                 .add("out_trade_no", orderNo)
@@ -76,7 +76,7 @@ public class WxV2Payment implements IPayment {
     @Override
     public Ret<Void> requestRefund(RefundReqEntity entity) {
         // 封装请求参数
-        Kv<String, String> params = Kv.go("appid", constants.getAppId().getMp())
+        Kv<String, String> params = Kv.of("appid", constants.getAppId().getMp())
                 .add("mch_id", constants.getMchId())
                 .add("nonce_str", StrKit.getRandomUUID())
                 .add("out_trade_no", entity.getOrderNo())
@@ -111,7 +111,7 @@ public class WxV2Payment implements IPayment {
     @Override
     public Ret<QueryResEntity> requestQuery(String orderNo) {
         // 封装请求参数
-        Kv<String, String> params = Kv.go("appid", constants.getAppId().getMp())
+        Kv<String, String> params = Kv.of("appid", constants.getAppId().getMp())
                 .add("mch_id", constants.getMchId())
                 .add("nonce_str", StrKit.getRandomUUID())
                 .add("out_trade_no", orderNo)
@@ -185,7 +185,7 @@ public class WxV2Payment implements IPayment {
                 .paymentTime(WxV2Helper.convertTime(params.get("time_end")))
                 .build();
         // 返回回调结果
-        Kv<String, String> map = Kv.go("return_code", WxStatus.SUCCESS);
+        Kv<String, String> map = Kv.of("return_code", WxStatus.SUCCESS);
         return Ret.ok(payResEntity, XmlKit.mapToXml(map));
     }
 
@@ -196,7 +196,7 @@ public class WxV2Payment implements IPayment {
      * @return 带xml的处理结果
      */
     private Ret<PayResEntity> buildFailCallback(String errorMsg) {
-        Kv<String, String> map = Kv.go("return_code", WxStatus.FAIL).add("return_msg", errorMsg);
+        Kv<String, String> map = Kv.of("return_code", WxStatus.FAIL).add("return_msg", errorMsg);
         return Ret.fail(XmlKit.mapToXml(map));
     }
 }

@@ -23,7 +23,7 @@ public class MBReqPay extends WxV3ReqPay {
 
     @Override
     protected void addSceneInfo(Kv<String, String> sceneInfo) {
-        super.addSceneInfo(sceneInfo.add("h5_info", Kv.go("type", "Wap").toJson()));
+        super.addSceneInfo(sceneInfo.add("h5_info", Kv.of("type", "Wap").toJson()));
     }
 
     @Override

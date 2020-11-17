@@ -27,7 +27,7 @@ public class APPReqPay extends WxV2ReqPay {
 
     @Override
     protected Ret<Object> buildResponse(Map<String, String> resultMap) {
-        Kv<String, String> data = Kv.go("appid", constants.getAppId().getApp())
+        Kv<String, String> data = Kv.of("appid", constants.getAppId().getApp())
                 .add("partnerid", constants.getMchId())
                 .add("prepayid", resultMap.get("prepay_id"))
                 .add("package", "Sign=WXPay")

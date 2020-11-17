@@ -18,7 +18,7 @@ public class MBReqPay extends WxV2ReqPay {
     protected void addSpecialParams(Kv<String, String> params, PayReqEntity entity) {
         params.add("appid", constants.getAppId().getMb());
         params.add("trade_type", TradeType.MWEB.name());
-        params.add("scene_info", Kv.go("h5_info", Kv.go("type", "Wap")).toJson());
+        params.add("scene_info", Kv.of("h5_info", Kv.of("type", "Wap")).toJson());
     }
 
     @Override

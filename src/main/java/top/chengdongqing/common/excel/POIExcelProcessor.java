@@ -60,12 +60,19 @@ public class POIExcelProcessor implements ExcelProcessor {
              ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             // 创建表格
             XSSFSheet sheet = workbook.createSheet();
-
-            // 定义列宽
+            // 列宽
             sheet.setDefaultColumnWidth(20);
+
+            // 定义单元格样式
+            CellStyle titleCellStyle = workbook.createCellStyle();
+            CellStyle valueCellStyle = workbook.createCellStyle();
             // 单元格内容居中
-            CellStyle cellStyle = workbook.createCellStyle();
-            cellStyle.setAlignment(HorizontalAlignment.CENTER);
+            titleCellStyle.setAlignment(HorizontalAlignment.CENTER);
+            valueCellStyle.setAlignment(HorizontalAlignment.CENTER);
+            // 标题行字体加粗
+            Font font = workbook.createFont();
+            font.setBold(true);
+            titleCellStyle.setFont(font);
 
             // 创建标题行
             XSSFRow titleRow = sheet.createRow(0);
@@ -73,7 +80,7 @@ public class POIExcelProcessor implements ExcelProcessor {
             for (String title : titles.values()) {
                 Cell cell = titleRow.createCell(cellIndex);
                 cell.setCellValue(title);
-                cell.setCellStyle(cellStyle);
+                cell.setCellStyle(titleCellStyle);
                 cellIndex++;
             }
 
@@ -89,7 +96,7 @@ public class POIExcelProcessor implements ExcelProcessor {
                 for (String key : titles.keySet()) {
                     Cell cell = row.createCell(cellIndex);
                     cell.setCellValue(item.getString(key));
-                    cell.setCellStyle(cellStyle);
+                    cell.setCellStyle(valueCellStyle);
                     cellIndex++;
                 }
             }

@@ -34,7 +34,7 @@ public class AliSmsSender extends SmsSender {
     @Override
     public void sendSms(SmsEntity entity) {
         // 封装参数
-        Kv<String, String> params = Kv.go("PhoneNumbers", entity.getTo())
+        Kv<String, String> params = Kv.of("PhoneNumbers", entity.getTo())
                 .add("AccessKeyId", constants.getAccessKeyId())
                 .add("Action", constants.getAction())
                 .add("Version", constants.getVersion())
