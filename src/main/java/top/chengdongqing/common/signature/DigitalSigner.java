@@ -2,9 +2,6 @@ package top.chengdongqing.common.signature;
 
 import top.chengdongqing.common.transformer.BytesToStr;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * 数字签名器
  * 统一入口
@@ -12,11 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Luyao
  */
 public class DigitalSigner {
-
-    /**
-     * 签名器实例缓存
-     */
-    private static final Map<Class<? extends IDigitalSigner>, IDigitalSigner> signerCache = new ConcurrentHashMap<>();
 
     /**
      * 执行签名
@@ -51,16 +43,7 @@ public class DigitalSigner {
      */
     private static IDigitalSigner getInstance(SignatureAlgorithm algorithm) {
         try {
-            Class<? extends IDigitalSigner> clazz = algorithm.getSigner();
-            if (signerCache.containsKey(clazz)) {
-                // 从缓存中获取实例，避免频繁地创建和销毁对象，提高性能
-                return signerCache.get(clazz);
-            } else {
-                // 没有缓存的实例则实例化后缓存
-                IDigitalSigner signer = clazz.getDeclaredConstructor().newInstance();
-                signerCache.put(clazz, signer);
-                return signer;
-            }
+            return algorithm.getSigner().getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
