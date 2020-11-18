@@ -31,6 +31,11 @@ public class AliSmsSender extends SmsSender {
     @Autowired
     private AliSmsConstants constants;
 
+    /**
+     * 默认时间格式
+     */
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
     @Override
     public void sendSms(SmsEntity entity) {
         // 封装参数
@@ -69,8 +74,7 @@ public class AliSmsSender extends SmsSender {
      * @return 时间戳
      */
     private String getTimestamp() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        return Instant.now().atOffset(ZoneOffset.UTC).format(formatter);
+        return Instant.now().atOffset(ZoneOffset.UTC).format(FORMATTER);
     }
 }
 

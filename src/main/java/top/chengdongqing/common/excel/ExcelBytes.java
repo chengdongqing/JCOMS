@@ -35,7 +35,7 @@ public record ExcelBytes(byte[] bytes) {
      * @param name excel名称
      */
     public void renderWithDate(String name) {
-        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         render(String.join("-", name, date));
     }
 }

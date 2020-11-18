@@ -16,13 +16,18 @@ import java.util.Map;
 public class WxV2Helper {
 
     /**
+     * 默认时间格式
+     */
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+    /**
      * 转换时间
      *
      * @param time 时间字符串
      * @return LocalDateTime对象
      */
     public static LocalDateTime convertTime(String time) {
-        return LocalDateTime.parse(time, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        return LocalDateTime.parse(time, FORMATTER);
     }
 
     /**

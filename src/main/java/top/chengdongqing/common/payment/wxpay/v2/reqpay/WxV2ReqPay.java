@@ -19,7 +19,6 @@ import top.chengdongqing.common.transformer.BytesToStr;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -86,8 +85,7 @@ public abstract class WxV2ReqPay implements IReqPay {
      * @return 指定格式的过期时间字符串
      */
     private static String buildExpireTime(long duration) {
-        return LocalDateTime.now().plusMinutes(duration)
-                .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        return LocalDateTime.now().plusMinutes(duration).format(WxV2Helper.FORMATTER);
     }
 
     /**
