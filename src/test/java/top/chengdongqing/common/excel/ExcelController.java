@@ -6,13 +6,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Lkv;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Arrays;
 
 /**
  * @author Luyao
@@ -24,19 +21,17 @@ public class ExcelController {
 
     @GetMapping("/render")
     @ApiOperation("输出excel文件")
-    public void render() {
+    public void render(@ApiParam("用户姓名列表，逗号分隔") @RequestParam String[] usernames) {
         Lkv<String, String> titles = Lkv.of("name", "名字");
-        List<Kv> data = Stream.of("张三", "王五", "里奇").map(item -> Kv.of("name", item)).collect(Collectors.toList());
         JSONArray rows = new JSONArray();
-        rows.addAll(data);
-        ExcelProcessor.getInstance().write(titles, rows).renderWithDate("用户名称列表");
+        rows.addAll(Arrays.asList(usernames));
+        ExcelProcessor.getInstance().write(titles, rows).renderWithDate("用户姓名列表");
     }
 
     @PostMapping("/read")
     @ApiOperation("读取excel文件")
     public String read(@ApiParam("excel文件") @RequestPart MultipartFile file) throws IOException {
-        Kv<String, String> titles = Kv.of("名字", "name");
-        ExcelRows rows = ExcelProcessor.getInstance().read(titles, file.getOriginalFilename(), file.getBytes());
+        ExcelRows rows = ExcelProcessor.getInstance().read(null, file.getOriginalFilename(), file.getBytes());
         return rows.toJSON();
     }
 }

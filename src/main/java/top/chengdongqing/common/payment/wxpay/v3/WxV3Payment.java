@@ -1,12 +1,12 @@
 package top.chengdongqing.common.payment.wxpay.v3;
 
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.HttpKit;
+import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IPayment;
@@ -144,12 +144,13 @@ public class WxV3Payment implements IPayment {
         }
 
         // 封装响应数据
-        Kv<String, String> resultMap = JSON.parseObject(response.body(), Kv.class);
+        Kv<String, String> resultMap = JsonKit.parseKv(response.body());
+        int totalAmount = JsonKit.parseKv(resultMap.get("amount")).getAs("total");
         QueryResEntity queryResEntity = QueryResEntity.builder()
                 .orderNo(resultMap.get("out_trade_no"))
                 .paymentNo(resultMap.get("transaction_id"))
                 .paymentTime(WxV3Helper.convertTime(resultMap.get("success_time")))
-                .tradeAmount(WxPayHelper.convertAmount(JSON.parseObject(resultMap.get("amount")).getInteger("total")))
+                .tradeAmount(WxPayHelper.convertAmount(totalAmount))
                 .tradeMode(TradeMode.WXPAY)
                 .tradeType(WxPayHelper.getTradeType(resultMap.get("trade_type")))
                 .tradeState(WxPayHelper.getTradeState(resultMap.get("trade_state")))

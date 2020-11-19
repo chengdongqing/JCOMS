@@ -10,8 +10,6 @@ import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
 
-import java.util.Map;
-
 /**
  * 微信小程序或微信浏览器内支付
  *
@@ -33,7 +31,7 @@ public class MPReqPay extends WxV2ReqPay {
      * @return 调起小程序支付需要的数据
      */
     @Override
-    protected Ret<Object> buildResponse(Map<String, String> resultMap) {
+    protected Ret<Object> buildResponse(Kv<String, String> resultMap) {
         Kv<String, String> data = Kv.of("appId", constants.getAppId().getMp())
                 .add("timeStamp", WxPayHelper.getTimestamp())
                 .add("nonceStr", StrKit.getRandomUUID())

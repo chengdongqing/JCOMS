@@ -1,25 +1,5 @@
 ### excel处理器
-- 支持读取excel
-- 支持写入excel
-- 支持自动渲染到客户端
-
-#### Apache POI excel处理器
-- 读取excel文件
-```
-Map<String, String> titles = new HashMap<String, String>() {{
-    put("手机号", "phoneNumber");
-    put("名称", "name");
-}};
-List<User> items = ExcelProcessor.getInstance().read(titles, fileName, excelBytes).toList(User.class);
-```
-- 写入excel文件
-```
-List<User> users = ...
-LinkedHashMap<String, String> titles = new LinkedHashMap<String, String>() {{
-    put("phoneNumber", "手机号");
-    put("name", "名称");
-}};
-JSONArray rows = new JSONArray();
-rows.addAll(users);
-ExcelProcessor.getInstance().write(titles, rows).renderWithDate("用户手机号和名称关系");
-```
+- 支持读取excel，支持xls、xlsx格式，支持中文列名对应到英文属性名，自动处理不同的数据格式
+- 支持生成excel，按顺序排列，标题栏字体加粗，单元格文字居中，支持异步处理
+- 读取的excel支持转指定类型的集合，支持获取某一项，支持转JSON字符串
+- 生成的excel支持直接渲染到客户端，支持将当前日期追加到文件名

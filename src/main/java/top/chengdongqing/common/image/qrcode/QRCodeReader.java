@@ -32,7 +32,7 @@ public class QRCodeReader implements ImageReader {
             Result result = formatReader.decode(binaryBitmap, hints);
             return BytesToStr.of(result.getRawBytes());
         } catch (NotFoundException e) {
-            return BytesToStr.of("".getBytes());
+            return null;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

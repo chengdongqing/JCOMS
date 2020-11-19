@@ -7,6 +7,8 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
+ * 图片验证码随机数
+ *
  * @author Luyao
  */
 public class CaptchaRandom {
@@ -40,7 +42,7 @@ public class CaptchaRandom {
         } else if (captchaType == CaptchaType.NUMBER_LETTER) {
             chars = ArrayUtils.addAll(LETTERS, NUMBERS);
         } else {
-            return getMathRandom();
+            return getFormula();
         }
 
         char[] randomChars = new char[randomLength];
@@ -57,7 +59,7 @@ public class CaptchaRandom {
      *
      * @return 随机数
      */
-    private static CaptchaEntity getMathRandom() {
+    private static CaptchaEntity getFormula() {
         String key, value;
 
         String a1 = NUMBERS[RANDOM.nextInt(NUMBERS.length)] + "";

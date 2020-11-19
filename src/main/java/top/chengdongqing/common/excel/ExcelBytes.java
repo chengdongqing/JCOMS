@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
+ * excel文件数据
+ *
  * @author Luyao
  */
 public record ExcelBytes(byte[] bytes) {

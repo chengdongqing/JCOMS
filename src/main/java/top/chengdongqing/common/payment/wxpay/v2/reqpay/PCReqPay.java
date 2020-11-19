@@ -5,8 +5,6 @@ import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.entities.PayReqEntity;
 import top.chengdongqing.common.payment.enums.TradeType;
 
-import java.util.Map;
-
 /**
  * 微信扫码支付
  *
@@ -21,7 +19,7 @@ public class PCReqPay extends WxV2ReqPay {
     }
 
     @Override
-    protected Ret<Object> buildResponse(Map<String, String> resultMap) {
+    protected Ret<Object> buildResponse(Kv<String, String> resultMap) {
         return Ret.ok(resultMap.get("code_url"));
     }
 }

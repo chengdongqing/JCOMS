@@ -1,7 +1,7 @@
 package top.chengdongqing.common.jwt;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import top.chengdongqing.common.kit.JsonKit;
+import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.signature.secretkey.SecretKeyGenerator;
 import top.chengdongqing.common.signature.secretkey.SecretKeyPair;
@@ -22,12 +22,11 @@ public class Test {
         constants.setPrivateKey(keyPair.privateKey());
         constants.setPublicKey(keyPair.publicKey());
         JwtOperator jwtOperator = new JwtOperator(constants);
-        JSONObject payloads = new JSONObject();
-        payloads.put("id", 100);
-        payloads.put("name", "Hello world!");
+        Kv<String, Object> payloads = new Kv<>();
+        payloads.add("id", 100).add("name", "Hello world!");
         System.out.println("生成token----------------------");
         JwtInfo jwtInfo = jwtOperator.generate(payloads);
-        System.out.println(JSON.toJSONString(jwtInfo));
+        System.out.println(JsonKit.toJson(jwtInfo));
         System.out.println("验证token----------------------");
         boolean verified = jwtOperator.verify(jwtInfo.getToken());
         System.out.println("token有效：" + verified);

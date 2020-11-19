@@ -64,13 +64,13 @@ public class WxV2Payment implements IPayment {
         params.remove("key");
 
         // 转换数据类型
-        String xml = XmlKit.mapToXml(params);
+        String xml = XmlKit.toXml(params);
         // 发送请求
         String requestUrl = helper.buildRequestUrl(v2constants.getCloseUrl());
         String result = HttpKit.post(requestUrl, xml).body();
         log.info("请求订单关闭，参数：{}，\n结果：{}", xml, result);
         // 判断结果
-        return WxV2Helper.getResult(XmlKit.xmlToMap(result));
+        return WxV2Helper.getResult(XmlKit.parseXml(result));
     }
 
     @Override
@@ -94,7 +94,7 @@ public class WxV2Payment implements IPayment {
 
         try {
             // 转换数据类型
-            String xml = XmlKit.mapToXml(params);
+            String xml = XmlKit.toXml(params);
             // 读取证书
             byte[] certBytes = Files.readAllBytes(Paths.get(v2constants.getCertPath()));
             // 发送请求
@@ -102,7 +102,7 @@ public class WxV2Payment implements IPayment {
             String result = HttpKit.post(requestUrl, xml, certBytes, constants.getMchId()).body();
             log.info("请求订单退款，参数：{}，\n结果：{}", xml, result);
             // 判断结果
-            return WxV2Helper.getResult(XmlKit.xmlToMap(result));
+            return WxV2Helper.getResult(XmlKit.parseXml(result));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -125,14 +125,14 @@ public class WxV2Payment implements IPayment {
         params.remove("key");
 
         // 转换数据类型
-        String xml = XmlKit.mapToXml(params);
+        String xml = XmlKit.toXml(params);
         // 发送请求
         String requestUrl = helper.buildRequestUrl(v2constants.getQueryUrl());
         String result = HttpKit.post(requestUrl, xml).body();
         log.info("请求查询订单，参数：{}，\n结果：{}", xml, result);
 
         // 转换数据类型
-        Map<String, String> resultMap = XmlKit.xmlToMap(result);
+        Map<String, String> resultMap = XmlKit.parseXml(result);
         // 判断请求结果
         Ret<QueryResEntity> queryResult = WxV2Helper.getResult(resultMap);
         if (queryResult.isFail()) return queryResult;
@@ -158,7 +158,7 @@ public class WxV2Payment implements IPayment {
      */
     public Ret<PayResEntity> handlePayCallback(String xml) {
         // 将xml转为map
-        Map<String, String> params = XmlKit.xmlToMap(xml);
+        Map<String, String> params = XmlKit.parseXml(xml);
         // 判断参数是否为空
         if (params == null || params.isEmpty() || StringUtils.isBlank(params.get("sign"))) {
             throw new IllegalArgumentException("wx callback params is error");
@@ -186,7 +186,7 @@ public class WxV2Payment implements IPayment {
                 .build();
         // 返回回调结果
         Kv<String, String> map = Kv.of("return_code", WxStatus.SUCCESS);
-        return Ret.ok(payResEntity, XmlKit.mapToXml(map));
+        return Ret.ok(payResEntity, XmlKit.toXml(map));
     }
 
     /**
@@ -197,6 +197,6 @@ public class WxV2Payment implements IPayment {
      */
     private Ret<PayResEntity> buildFailCallback(String errorMsg) {
         Kv<String, String> map = Kv.of("return_code", WxStatus.FAIL).add("return_msg", errorMsg);
-        return Ret.fail(XmlKit.mapToXml(map));
+        return Ret.fail(XmlKit.toXml(map));
     }
 }

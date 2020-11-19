@@ -20,7 +20,7 @@ import top.chengdongqing.common.file.upload.AbstractUploader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.ZoneId;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,9 +77,9 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
     @Override
     public List<File> getFiles(FilePath path, boolean content) throws Exception {
         List<OSSObjectSummary> objectSummaries = client.listObjects(constants.getBucket(), path.getPath()).getObjectSummaries();
-        LinkedList<File> files = new LinkedList<>();
-        for (OSSObjectSummary objectSummary : objectSummaries) {
-            files.add(getFile(objectSummary.getKey(), content));
+        ArrayList<File> files = new ArrayList<>();
+        for (OSSObjectSummary summary : objectSummaries) {
+            files.add(getFile(summary.getKey(), content));
         }
         return files;
     }

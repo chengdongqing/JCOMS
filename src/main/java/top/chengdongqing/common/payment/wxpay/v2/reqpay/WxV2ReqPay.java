@@ -1,6 +1,5 @@
 package top.chengdongqing.common.payment.wxpay.v2.reqpay;
 
-import com.alibaba.fastjson.JSON;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,6 @@ import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -65,14 +63,14 @@ public abstract class WxV2ReqPay implements IReqPay {
         params.remove("key");
 
         // 转换数据类型
-        String xml = XmlKit.mapToXml(params);
+        String xml = XmlKit.toXml(params);
         // 发送请求
         String requestUrl = helper.buildRequestUrl(v2constants.getPaymentUrl());
         String result = HttpKit.post(requestUrl, xml).body();
         log.info("请求付款参数：{}, \n请求付款结果：{}", xml, result);
 
         // 转换结果格式
-        Map<String, String> resultMap = XmlKit.xmlToMap(result);
+        Kv<String, String> resultMap = XmlKit.parseXml(result);
         // 判断处理结果是否成功
         Ret<Object> verifyResult = WxV2Helper.getResult(resultMap);
         return verifyResult.isOk() ? buildResponse(resultMap) : verifyResult;
@@ -110,7 +108,7 @@ public abstract class WxV2ReqPay implements IReqPay {
                 item.getQuantity()))
                 .collect(Collectors.toList());
         // 转JSON字符串
-        String detail = JSON.toJSONString(goodsDetails, JsonKit.getSnakeCaseConfig());
+        String detail = JsonKit.toJsonWithUnderscore(goodsDetails);
         return Kv.of("goods_detail", detail).toJson();
     }
 
@@ -128,5 +126,5 @@ public abstract class WxV2ReqPay implements IReqPay {
      * @param resultMap 微信响应的数据
      * @return 返回的数据
      */
-    protected abstract Ret<Object> buildResponse(Map<String, String> resultMap);
+    protected abstract Ret<Object> buildResponse(Kv<String, String> resultMap);
 }

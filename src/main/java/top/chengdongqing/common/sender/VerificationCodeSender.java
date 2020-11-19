@@ -1,6 +1,5 @@
 package top.chengdongqing.common.sender;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +7,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.cache.CacheKeys;
 import top.chengdongqing.common.cache.CacheTemplate;
+import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.sender.email.EmailEntity;
 import top.chengdongqing.common.sender.email.EmailTemplate;
@@ -43,13 +43,10 @@ public class VerificationCodeSender {
      */
     public void send(String to, SmsTemplate template) {
         String code = StrKit.generateRandomCode();
-        // 将随机数转成JSON字符串作为短信内容
-        JSONObject jo = new JSONObject();
-        jo.put("code", code);
         senderFactory.getSmsSender().send(SmsEntity.builder()
                 .to(to)
                 .template(template.getCode())
-                .content(jo.toJSONString())
+                .content(Kv.of("code", code).toJson())
                 .build());
         handleResult(to, code);
     }

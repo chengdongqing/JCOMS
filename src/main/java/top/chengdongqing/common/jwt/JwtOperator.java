@@ -1,7 +1,5 @@
 package top.chengdongqing.common.jwt;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,12 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
+import top.chengdongqing.common.kit.JsonKit;
+import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 
@@ -44,7 +43,7 @@ public class JwtOperator {
      * @param payloads 有效载荷
      * @return token对象
      */
-    public JwtInfo generate(JSONObject payloads) {
+    public JwtInfo generate(Kv<String, Object> payloads) {
         if (payloads == null || payloads.isEmpty()) throw new IllegalArgumentException("The payloads cannot be empty.");
 
         // 头部信息
@@ -59,17 +58,16 @@ public class JwtOperator {
         header.setExpiryTime(expiryTime.toEpochMilli());
         // 拼接待签名内容
         Base64.Encoder encoder = Base64.getUrlEncoder();
-        String content = encoder.encodeToString(header.toJson()) + "." + encoder.encodeToString(JSON.toJSONBytes(payloads));
+        String content = encoder.encodeToString(header.toJson()).concat(".") + encoder.encodeToString(JsonKit.toJsonBytes(payloads));
         // 执行签名
         String signature = DigitalSigner.signature(ALGORITHM, content,
-                StrToBytes.of(constants.getPrivateKey()).fromBase64()).toBase64();
-        content += "." + signature;
+                StrToBytes.of(constants.getPrivateKey()).fromBase64())
+                .toBase64();
+        content += ".".concat(signature);
         // 返回token详情
         return JwtInfo.builder()
                 .token(content)
-                .algorithm(ALGORITHM)
-                .issueTime(now.atZone(ZoneId.systemDefault()).toLocalDateTime())
-                .expiryTime(expiryTime.atZone(ZoneId.systemDefault()).toLocalDateTime())
+                .header(header)
                 .payloads(payloads)
                 .signature(signature)
                 .build();
@@ -94,7 +92,7 @@ public class JwtOperator {
         if (!verified) return false;
 
         // 将头部解码并转JwtHeader对象
-        JwtHeader header = JSON.parseObject(Base64.getUrlDecoder().decode(parts[0]), JwtHeader.class);
+        JwtHeader header = JsonKit.parseObject(Base64.getUrlDecoder().decode(parts[0]), JwtHeader.class);
 
         // 获取过期时间并判断是否过期
         return Instant.ofEpochMilli(header.getExpiryTime()).isAfter(Instant.now());
@@ -106,7 +104,7 @@ public class JwtOperator {
     private String[] getParts(String token) {
         if (StringUtils.isBlank(token)) throw new IllegalArgumentException("The token cannot be blank");
         String[] parts = token.split("\\.");
-        if (parts.length != 3) throw new IllegalArgumentException("The token is wrong.");
+        if (parts.length != 3) throw new IllegalArgumentException("The token is wrong, token: " + token);
         return parts;
     }
 
@@ -116,11 +114,11 @@ public class JwtOperator {
      * @param token token
      * @return 有效载荷
      */
-    public JSONObject getPayloads(String token) {
+    public Kv<String, Object> getPayloads(String token) {
         String[] parts = getParts(token);
-        JSONObject object = JSON.parseObject(new String(Base64.getUrlDecoder().decode(parts[1])));
-        if (object == null || object.isEmpty()) throw new IllegalStateException("token解析失败");
-        return object;
+        Kv<String, Object> payloads = JsonKit.parseKv(Base64.getUrlDecoder().decode(parts[1]));
+        if (payloads == null || payloads.isEmpty()) throw new IllegalStateException("parse json failed from token: " + token);
+        return payloads;
     }
 }
 
@@ -166,6 +164,6 @@ class JwtHeader {
      * @return 当前对象的JSON字节数组
      */
     public byte[] toJson() {
-        return JSON.toJSONBytes(this);
+        return JsonKit.toJsonBytes(this);
     }
 }

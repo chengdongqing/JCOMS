@@ -1,7 +1,7 @@
 package top.chengdongqing.common.image.captcha;
 
 /**
- * 验证码类型
+ * 图片验证码类型
  *
  * @author Luyao
  */
@@ -22,5 +22,5 @@ public enum CaptchaType {
     /**
      * 算术验证码
      */
-    MATH
+    FORMULA
 }

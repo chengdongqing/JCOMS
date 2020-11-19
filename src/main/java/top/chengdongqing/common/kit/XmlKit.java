@@ -18,8 +18,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * XML处理工具类
@@ -34,10 +32,10 @@ public class XmlKit {
      * @param xml xml字符串
      * @return map键值对
      */
-    public static Map<String, String> xmlToMap(String xml) {
+    public static Kv<String, String> parseXml(String xml) {
         if (StringUtils.isBlank(xml)) throw new IllegalArgumentException("The xml can not be blank");
 
-        Map<String, String> params = new HashMap<>();
+        Kv<String, String> params = new Kv<>();
         try (InputStream is = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))) {
             Document doc = newDocumentBuilder().parse(is);
             doc.getDocumentElement().normalize();
@@ -45,7 +43,7 @@ public class XmlKit {
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node node = nodes.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    params.put(node.getNodeName(), node.getTextContent());
+                    params.add(node.getNodeName(), node.getTextContent());
                 }
             }
             return params;
@@ -60,7 +58,7 @@ public class XmlKit {
      * @param map map键值对
      * @return xml字符串
      */
-    public static String mapToXml(Map<String, String> map) {
+    public static String toXml(Kv<String, String> map) {
         if (map == null || map.isEmpty()) throw new IllegalArgumentException("The map can not be null or empty");
 
         try (StringWriter writer = new StringWriter()) {

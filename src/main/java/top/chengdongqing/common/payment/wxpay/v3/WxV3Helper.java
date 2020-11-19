@@ -1,6 +1,5 @@
 package top.chengdongqing.common.payment.wxpay.v3;
 
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
@@ -9,10 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.encrypt.EncryptAlgorithm;
 import top.chengdongqing.common.encrypt.Encryptor;
-import top.chengdongqing.common.kit.HttpKit;
-import top.chengdongqing.common.kit.Kv;
-import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.kit.StrKit;
+import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
@@ -176,8 +172,8 @@ public class WxV3Helper {
      * @return 解密后的核心数据对象
      */
     public static <T> T decryptData(String body, String secretKey, Class<T> clazz) {
-        String encryptionInfoJson = JSON.parseObject(body).getString("resource");
-        EncryptResource encryptResource = JSON.parseObject(encryptionInfoJson, EncryptResource.class);
+        String encryptionInfoJson = JsonKit.parseKv(body).getAs("resource");
+        EncryptResource encryptResource = JsonKit.parseObject(encryptionInfoJson, EncryptResource.class);
         // 获取密文、随机数、关联数据
         byte[] ciphertext = StrToBytes.of(encryptResource.getCiphertext()).fromBase64();
         byte[] iv = encryptResource.getNonce().getBytes();
@@ -187,7 +183,7 @@ public class WxV3Helper {
                 ByteUtils.concatenate(iv, ciphertext),
                 secretKey, associatedData)
                 .toText();
-        return JSON.parseObject(resourceJson, clazz);
+        return JsonKit.parseObject(resourceJson, clazz);
     }
 
     /**

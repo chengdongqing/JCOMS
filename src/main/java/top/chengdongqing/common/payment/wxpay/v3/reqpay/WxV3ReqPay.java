@@ -1,6 +1,5 @@
 package top.chengdongqing.common.payment.wxpay.v3.reqpay;
 
-import com.alibaba.fastjson.JSON;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +41,7 @@ public abstract class WxV3ReqPay implements IReqPay {
     @Autowired
     protected WxV3Constants v3Constants;
     @Autowired
-    private WxPayHelper helper;
+    protected WxPayHelper helper;
     @Autowired
     protected WxV3Helper v3Helper;
 
@@ -75,7 +74,7 @@ public abstract class WxV3ReqPay implements IReqPay {
         if (response.statusCode() != 200) return Ret.fail(ErrorMsg.REQUEST_FAILED);
 
         // 返回封装后的响应数据
-        return buildResponse(JSON.parseObject(response.body(), Kv.class));
+        return buildResponse(JsonKit.parseKv(response.body()));
     }
 
     /**
@@ -124,7 +123,7 @@ public abstract class WxV3ReqPay implements IReqPay {
                 item.getQuantity()))
                 .collect(Collectors.toList());
         // 转JSON字符串
-        String goodsDetail = JSON.toJSONString(goodsDetails, JsonKit.getSnakeCaseConfig());
+        String goodsDetail = JsonKit.toJsonWithUnderscore(goodsDetails);
         return Kv.of("goods_detail", goodsDetail).toJson();
     }
 

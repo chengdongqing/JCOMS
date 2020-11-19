@@ -1,7 +1,5 @@
 package top.chengdongqing.common.kit;
 
-import com.alibaba.fastjson.JSON;
-
 import java.util.HashMap;
 
 /**
@@ -64,6 +62,6 @@ public class Kv<K, V> extends HashMap<K, V> {
      * @return 当前对象JSON
      */
     public String toJson() {
-        return JSON.toJSONString(this);
+        return JsonKit.toJson(this);
     }
 }

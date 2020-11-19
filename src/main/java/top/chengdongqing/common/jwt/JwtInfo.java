@@ -1,11 +1,8 @@
 package top.chengdongqing.common.jwt;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.Builder;
 import lombok.Data;
-import top.chengdongqing.common.signature.SignatureAlgorithm;
-
-import java.time.LocalDateTime;
+import top.chengdongqing.common.kit.Kv;
 
 /**
  * json web token info
@@ -21,21 +18,13 @@ public class JwtInfo {
      */
     private String token;
     /**
-     * 签名算法
+     * 头部信息
      */
-    private SignatureAlgorithm algorithm;
-    /**
-     * 签发时间
-     */
-    private LocalDateTime issueTime;
-    /**
-     * 过期时间
-     */
-    private LocalDateTime expiryTime;
+    private JwtHeader header;
     /**
      * 有效载荷
      */
-    private JSONObject payloads;
+    private Kv<String, Object> payloads;
     /**
      * 数字签名
      */

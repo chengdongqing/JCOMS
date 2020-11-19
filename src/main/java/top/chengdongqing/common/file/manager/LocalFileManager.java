@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.ZoneId;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,7 +69,7 @@ public class LocalFileManager extends AbstractUploader implements FileManager {
         }
 
         // 获取该文件夹下的每个文件信息
-        LinkedList<File> files = new LinkedList<>();
+        ArrayList<File> files = new ArrayList<>();
         List<Path> pathFiles = Files.list(directory).collect(Collectors.toList());
         for (Path file : pathFiles) {
             files.add(getFile(path.getPath() + file.getFileName(), content));

@@ -8,12 +8,11 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.image.ImageGenerator;
+import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.render.ImageRender;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 二维码生成器
@@ -49,13 +48,13 @@ public class QRCodeGenerator implements ImageGenerator {
 
     @Override
     public byte[] generate() {
-        Map<EncodeHintType, Object> hints = new HashMap<>();
+        Kv<EncodeHintType, Object> hints = new Kv<>();
         // 内容编码格式
-        hints.put(EncodeHintType.CHARACTER_SET, StandardCharsets.UTF_8);
+        hints.add(EncodeHintType.CHARACTER_SET, StandardCharsets.UTF_8);
         // 设置纠错等级
-        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        hints.add(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
         // 设置二维码边距
-        hints.put(EncodeHintType.MARGIN, 1);
+        hints.add(EncodeHintType.MARGIN, 1);
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             BitMatrix bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints);
             MatrixToImageWriter.writeToStream(bitMatrix, "png", os);

@@ -18,7 +18,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.ZoneId;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,7 +67,7 @@ public class MongoFileManager extends AbstractUploader implements FileManager {
     @Override
     public List<File> getFiles(FilePath path, boolean content) throws Exception {
         GridFSFindIterable gridFSFiles = gridFsTemplate.find(Query.query(Criteria.where(QUERY_KEY).alike(Example.of(path.getPath()))));
-        LinkedList<File> files = new LinkedList<>();
+        ArrayList<File> files = new ArrayList<>();
         for (GridFSFile gridFSFile : gridFSFiles) {
             files.add(getFile(gridFSFile.getFilename(), content));
         }

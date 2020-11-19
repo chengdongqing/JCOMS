@@ -10,8 +10,6 @@ import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
 
-import java.util.Map;
-
 /**
  * APP调起微信客户端支付
  *
@@ -26,7 +24,7 @@ public class APPReqPay extends WxV2ReqPay {
     }
 
     @Override
-    protected Ret<Object> buildResponse(Map<String, String> resultMap) {
+    protected Ret<Object> buildResponse(Kv<String, String> resultMap) {
         Kv<String, String> data = Kv.of("appid", constants.getAppId().getApp())
                 .add("partnerid", constants.getMchId())
                 .add("prepayid", resultMap.get("prepay_id"))

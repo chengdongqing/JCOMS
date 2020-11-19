@@ -5,8 +5,6 @@ import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.entities.PayReqEntity;
 import top.chengdongqing.common.payment.enums.TradeType;
 
-import java.util.Map;
-
 /**
  * 微信外手机浏览器调起微信客户端支付
  *
@@ -22,7 +20,7 @@ public class MBReqPay extends WxV2ReqPay {
     }
 
     @Override
-    protected Ret<Object> buildResponse(Map<String, String> resultMap) {
+    protected Ret<Object> buildResponse(Kv<String, String> resultMap) {
         return Ret.ok(resultMap.get("mweb_url"));
     }
 }

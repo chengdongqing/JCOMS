@@ -8,12 +8,12 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import top.chengdongqing.common.kit.Kv;
+import top.chengdongqing.common.kit.Lkv;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * excel处理器
@@ -24,7 +24,7 @@ import java.util.Map;
 public class POIExcelProcessor implements ExcelProcessor {
 
     @Override
-    public ExcelRows read(Map<String, String> titles, String filename, byte[] bytes) {
+    public ExcelRows read(Kv<String, String> titles, String filename, byte[] bytes) {
         try (Workbook workbook = getWorkbook(filename, bytes)) {
             // 获取表格
             Sheet sheet = workbook.getSheetAt(0);
@@ -37,16 +37,21 @@ public class POIExcelProcessor implements ExcelProcessor {
             // 遍历每一行
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
-                // 将列和标题匹配上
-                JSONObject item = new JSONObject();
-                row.cellIterator().forEachRemaining(cell -> {
-                    // 获取当前列的列名，中文
-                    String titleName = titleRow.getCell(cell.getColumnIndex()).getStringCellValue();
-                    // 获取中文名对应的英文名
-                    String titleKey = titles.get(titleName);
-                    item.put(titleKey, cell.getStringCellValue());
-                });
-                rows.add(item);
+                // 如果标题为空代表只有一列直接获取第一列的值，否则根据列名去匹配成对象
+                if (titles == null) {
+                    rows.add(getCellValue(row.getCell(0)));
+                } else {
+                    // 将列和标题匹配上
+                    JSONObject item = new JSONObject();
+                    row.cellIterator().forEachRemaining(cell -> {
+                        // 获取当前列的列名，中文
+                        String titleName = titleRow.getCell(cell.getColumnIndex()).getStringCellValue();
+                        // 获取中文名对应的英文名
+                        String titleKey = titles.get(titleName);
+                        item.put(titleKey, getCellValue(cell));
+                    });
+                    rows.add(item);
+                }
             }
             return ExcelRows.of(rows);
         } catch (Exception e) {
@@ -54,8 +59,25 @@ public class POIExcelProcessor implements ExcelProcessor {
         }
     }
 
+    /**
+     * 获取单元格的值
+     *
+     * @param cell 单元格
+     * @return 值
+     */
+    private String getCellValue(Cell cell) {
+        Object value = switch (cell.getCellType()) {
+            case STRING -> cell.getStringCellValue();
+            case NUMERIC -> cell.getNumericCellValue();
+            case BOOLEAN -> cell.getBooleanCellValue();
+            default -> "";
+        };
+        String strVal = value.toString();
+        return strVal.endsWith(".0") ? strVal.replace(".0", "") : strVal;
+    }
+
     @Override
-    public ExcelBytes write(LinkedHashMap<String, String> titles, JSONArray rows) {
+    public ExcelBytes write(Lkv<String, String> titles, JSONArray rows) {
         try (XSSFWorkbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             // 创建表格
@@ -86,23 +108,32 @@ public class POIExcelProcessor implements ExcelProcessor {
 
             // 创建数据行
             for (int i = 0; i < rows.size(); i++) {
-                // 该行数据对象
-                JSONObject item = rows.getJSONObject(i);
                 // 在表格中创建行
                 Row row = sheet.createRow(i + 1);
 
-                // 单位格索引复位
-                cellIndex = 0;
-                for (String key : titles.keySet()) {
-                    Cell cell = row.createCell(cellIndex);
-                    cell.setCellValue(item.getString(key));
+                // 如果只有一列则直接获取值，否则根据键名获取对应的值
+                if (titles.size() == 1) {
+                    Cell cell = row.createCell(0);
+                    cell.setCellValue(rows.getString(i));
                     cell.setCellStyle(valueCellStyle);
-                    cellIndex++;
+                } else {
+                    // 该行数据对象
+                    JSONObject item = rows.getJSONObject(i);
+
+                    // 单位格索引复位
+                    cellIndex = 0;
+                    for (String key : titles.keySet()) {
+                        Cell cell = row.createCell(cellIndex);
+                        cell.setCellValue(item.getString(key));
+                        cell.setCellStyle(valueCellStyle);
+                        cellIndex++;
+                    }
                 }
             }
 
             // 写入到输出流
             workbook.write(os);
+            // 将流收集为字节数组
             return ExcelBytes.of(os.toByteArray());
         } catch (Exception e) {
             throw new RuntimeException(e);

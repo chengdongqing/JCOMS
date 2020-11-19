@@ -1,6 +1,5 @@
 package top.chengdongqing.common.sender.sms;
 
-import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +8,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.HttpKit;
+import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.signature.DigitalSigner;
@@ -60,7 +60,7 @@ public class AliSmsSender extends SmsSender {
         // 发送请求
         String result = HttpKit.get(constants.getGatewayUrl(), params).body();
         log.info("发送短信参数：{}，结果：{}", params, result);
-        SendResult sendResult = JSON.parseObject(result, SendResult.class);
+        SendResult sendResult = JsonKit.parseObject(result, SendResult.class);
         if (!sendResult.isOk()) {
             throw new SendSmsException(ErrorMsg.SEND_FAILED);
         }
