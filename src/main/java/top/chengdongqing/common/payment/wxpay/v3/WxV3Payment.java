@@ -113,7 +113,7 @@ public class WxV3Payment implements IPayment {
      * @return 退款金额JSON字符串
      */
     private String buildRefundAmount(RefundReqEntity entity) {
-        return Kv.of().add("refund", WxPayHelper.convertAmount(entity.getRefundAmount()))
+        return Kv.ofAny("refund", WxPayHelper.convertAmount(entity.getRefundAmount()))
                 .add("total", WxPayHelper.convertAmount(entity.getTotalAmount()))
                 .add("currency", v3Constants.getCurrency())
                 .toJson();

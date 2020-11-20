@@ -11,12 +11,13 @@ public class Kv<K, V> extends HashMap<K, V> {
 
     /**
      * 创建实例
-     * key、value均为任意类型
      *
+     * @param key   键
+     * @param value 值
      * @return Kv实例
      */
-    public static Kv<Object, Object> of() {
-        return new Kv<>();
+    public static Kv<Object, Object> ofAny(Object key, Object value) {
+        return new Kv<>().add(key, value);
     }
 
     /**

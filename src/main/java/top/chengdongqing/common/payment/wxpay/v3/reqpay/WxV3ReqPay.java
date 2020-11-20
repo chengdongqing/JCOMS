@@ -96,7 +96,7 @@ public abstract class WxV3ReqPay implements IReqPay {
      * @return 订单金额JSON字符串
      */
     private String buildAmount(BigDecimal amount) {
-        return Kv.of().add("currency", v3Constants.getCurrency())
+        return Kv.ofAny("currency", v3Constants.getCurrency())
                 .add("total", WxPayHelper.convertAmount(amount))
                 .toJson();
     }
