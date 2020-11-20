@@ -12,7 +12,7 @@ import top.chengdongqing.common.pay.enums.TradeType;
  *
  * @author Luyao
  */
-public class AliPayer implements IPayer {
+public class Alipayer implements IPayer {
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {

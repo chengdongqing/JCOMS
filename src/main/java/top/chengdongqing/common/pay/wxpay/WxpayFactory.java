@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 @Component
 @RefreshScope
-public class WxPayFactory extends ApplicationObjectSupport {
+public class WxpayFactory extends ApplicationObjectSupport {
 
     /**
      * 使用的微信接口版本
@@ -31,7 +31,7 @@ public class WxPayFactory extends ApplicationObjectSupport {
      */
     public IPayer getPayer() throws CannotLoadBeanClassException {
         Objects.requireNonNull(active, "pay.wx.active cannot be blank.");
-        String beanName = "WxV%dPayer".formatted(active);
+        String beanName = "WxpayerV%d".formatted(active);
         return super.getApplicationContext().getBean(beanName, IPayer.class);
     }
 }

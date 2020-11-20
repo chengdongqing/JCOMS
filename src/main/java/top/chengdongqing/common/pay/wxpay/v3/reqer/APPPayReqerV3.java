@@ -4,23 +4,23 @@ import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.pay.entities.PayReqEntity;
-import top.chengdongqing.common.pay.wxpay.WxPayHelper;
+import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 
 /**
  * APP调起微信客户端支付
  *
  * @author Luyao
  */
-public class APPPayReqer extends WxV3PayReqer {
+public class APPPayReqerV3 extends WxpayReqerV3 {
 
     @Override
-    protected String getTradeType() {
-        return v3Configs.getPaymentUrl().getApp();
+    protected String getTradeApi() {
+        return v3Configs.getRequestApi().getPay().getApp();
     }
 
     @Override
     protected void addSpecialParams(Kv<String, String> params, PayReqEntity entity) {
-        params.add("appid", configs.getAppId().getApp());
+        params.add("appid", wxConfigs.getAppId().getApp());
     }
 
     @Override
@@ -28,12 +28,12 @@ public class APPPayReqer extends WxV3PayReqer {
         // 预支付id
         String prepayId = resultMap.get("prepay_id");
         // 时间戳
-        String timestamp = WxPayHelper.getTimestamp();
+        String timestamp = WxpayHelper.getTimestamp();
         // 随机数
         String nonceStr = StrKit.getRandomUUID();
         // 封装参数
-        Kv<String, String> data = Kv.of("appid", configs.getAppId().getApp())
-                .add("partnerid", configs.getMchId())
+        Kv<String, String> data = Kv.of("appid", wxConfigs.getAppId().getApp())
+                .add("partnerid", wxConfigs.getMchId())
                 .add("prepayid", prepayId)
                 .add("package", "Sign=WXPay")
                 .add("noncestr", nonceStr)
@@ -51,6 +51,6 @@ public class APPPayReqer extends WxV3PayReqer {
      * @return 数字签名
      */
     private String buildSign(String prepayId, String timestamp, String nonceStr) {
-        return v3Helper.signature(v3Configs.getPrivateKey(), configs.getAppId().getApp(), timestamp, nonceStr, prepayId);
+        return v3Helper.signature(v3Configs.getPrivateKey(), wxConfigs.getAppId().getApp(), timestamp, nonceStr, prepayId);
     }
 }

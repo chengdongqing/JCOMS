@@ -6,8 +6,8 @@ import com.aliyun.oss.model.DeleteObjectsRequest;
 import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.OSSObjectSummary;
 import com.aliyun.oss.model.SimplifiedObjectMeta;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,32 +30,24 @@ import java.util.stream.Collectors;
  * @author Luyao
  */
 @Component
-@Configuration
 public class OSSFileManager extends AbstractUploader implements FileManager {
 
     @Autowired
-    private OSSConfigs configs;
-    @Autowired
     private OSS client;
 
-    @Bean
-    public OSS ossClient() {
-        return new OSSClientBuilder().build(
-                configs.getEndpoint(),
-                configs.getAccessId(),
-                configs.getAccessSecret());
-    }
+    @Value("${upload.oss.bucket}")
+    private String bucket;
 
     @Override
     protected void upload(byte[] fileBytes, String path, String filename) throws Exception {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(fileBytes)) {
-            client.putObject(configs.getBucket(), path + filename, inputStream);
+            client.putObject(bucket, path + filename, inputStream);
         }
     }
 
     @Override
     public File getFile(String fileUrl, boolean content) throws Exception {
-        SimplifiedObjectMeta objectMeta = client.getSimplifiedObjectMeta(configs.getBucket(), fileUrl);
+        SimplifiedObjectMeta objectMeta = client.getSimplifiedObjectMeta(bucket, fileUrl);
         File file = File.builder()
                 .path(fileUrl)
                 .name(FileManager.getName(fileUrl))
@@ -66,7 +58,7 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
                 .build();
 
         if (content) {
-            OSSObject ossObject = client.getObject(configs.getBucket(), fileUrl);
+            OSSObject ossObject = client.getObject(bucket, fileUrl);
             try (InputStream stream = ossObject.getObjectContent()) {
                 file.setBytes(stream.readAllBytes());
             }
@@ -76,7 +68,7 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
 
     @Override
     public List<File> getFiles(FilePath path, boolean content) throws Exception {
-        List<OSSObjectSummary> objectSummaries = client.listObjects(configs.getBucket(), path.getPath()).getObjectSummaries();
+        List<OSSObjectSummary> objectSummaries = client.listObjects(bucket, path.getPath()).getObjectSummaries();
         ArrayList<File> files = new ArrayList<>();
         for (OSSObjectSummary summary : objectSummaries) {
             files.add(getFile(summary.getKey(), content));
@@ -86,18 +78,18 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
 
     @Override
     public void deleteFile(String fileUrl) {
-        client.deleteObject(configs.getBucket(), fileUrl);
+        client.deleteObject(bucket, fileUrl);
     }
 
     @Override
     public void deleteFiles(List<String> fileUrls) {
-        client.deleteObjects(new DeleteObjectsRequest(configs.getBucket()).withKeys(fileUrls));
+        client.deleteObjects(new DeleteObjectsRequest(bucket).withKeys(fileUrls));
     }
 
     @Override
     public void clearDirectory(FilePath path) {
         // 获取当前目录的所有文件概要
-        List<OSSObjectSummary> objectSummaries = client.listObjects(configs.getBucket(), path.getPath()).getObjectSummaries();
+        List<OSSObjectSummary> objectSummaries = client.listObjects(bucket, path.getPath()).getObjectSummaries();
         // 获取每个文件的key并批量删除
         deleteFiles(objectSummaries.stream().map(OSSObjectSummary::getKey).collect(Collectors.toList()));
     }
@@ -115,8 +107,8 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
      * @param newKey 新文件的键
      */
     private void move(String oldKey, String newKey) {
-        client.copyObject(configs.getBucket(), oldKey, configs.getBucket(), newKey);
-        client.deleteObject(configs.getBucket(), oldKey);
+        client.copyObject(bucket, oldKey, bucket, newKey);
+        client.deleteObject(bucket, oldKey);
     }
 
     @Override
@@ -133,13 +125,16 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
     }
 }
 
-@Data
-@Component
-@ConfigurationProperties(prefix = "upload.oss")
-class OSSConfigs {
+@Configuration
+@ConfigurationProperties("upload.oss")
+class OSSConfiguration {
 
-    private String bucket,
-            endpoint,
-            accessId,
-            accessSecret;
+    private String endpoint;
+    private String accessId;
+    private String accessSecret;
+
+    @Bean
+    public OSS ossClient() {
+        return new OSSClientBuilder().build(endpoint, accessId, accessSecret);
+    }
 }

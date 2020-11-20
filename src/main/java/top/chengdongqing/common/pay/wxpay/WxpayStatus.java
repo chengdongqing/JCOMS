@@ -1,11 +1,11 @@
 package top.chengdongqing.common.pay.wxpay;
 
 /**
- * 微信响应状态
+ * 微信支付响应状态码
  *
  * @author Luyao
  */
-public interface WxStatus {
+public interface WxpayStatus {
 
     /**
      * 成功

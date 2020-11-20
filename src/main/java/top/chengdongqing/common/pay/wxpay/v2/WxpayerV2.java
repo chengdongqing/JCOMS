@@ -12,10 +12,10 @@ import top.chengdongqing.common.pay.entities.RefundReqEntity;
 import top.chengdongqing.common.pay.entities.TradeQueryEntity;
 import top.chengdongqing.common.pay.enums.TradeChannel;
 import top.chengdongqing.common.pay.enums.TradeType;
-import top.chengdongqing.common.pay.wxpay.WxConfigs;
-import top.chengdongqing.common.pay.wxpay.WxPayHelper;
-import top.chengdongqing.common.pay.wxpay.WxStatus;
-import top.chengdongqing.common.pay.wxpay.v2.reqer.ReqerHolder;
+import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
+import top.chengdongqing.common.pay.wxpay.WxpayHelper;
+import top.chengdongqing.common.pay.wxpay.WxpayStatus;
+import top.chengdongqing.common.pay.wxpay.v2.reqer.WxpayReqerHolderV2;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
@@ -32,18 +32,18 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class WxV2Payer implements IPayer {
+public class WxpayerV2 implements IPayer {
 
     @Autowired
-    private WxConfigs configs;
+    private WxpayConfigs configs;
     @Autowired
-    private WxV2Configs v2configs;
+    private WxpayConfigsV2 v2configs;
     @Autowired
-    private WxPayHelper helper;
+    private WxpayHelper helper;
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
-        return new ReqerHolder(tradeType).request(entity);
+        return new WxpayReqerHolderV2(tradeType).request(entity);
     }
 
     @Override
@@ -66,11 +66,11 @@ public class WxV2Payer implements IPayer {
         // 转换数据类型
         String xml = XmlKit.toXml(params);
         // 发送请求
-        String requestUrl = helper.buildRequestUrl(v2configs.getCloseUrl());
+        String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getClose());
         String result = HttpKit.post(requestUrl, xml).body();
         log.info("请求订单关闭，参数：{}，\n结果：{}", xml, result);
         // 判断结果
-        return WxV2Helper.getResult(XmlKit.parseXml(result));
+        return WxpayHelperV2.getResult(XmlKit.parseXml(result));
     }
 
     @Override
@@ -81,8 +81,8 @@ public class WxV2Payer implements IPayer {
                 .add("nonce_str", StrKit.getRandomUUID())
                 .add("out_trade_no", entity.getOrderNo())
                 .add("out_refund_no", entity.getRefundNo())
-                .add("total_fee", WxPayHelper.convertAmount(entity.getTotalAmount()) + "")
-                .add("refund_fee", WxPayHelper.convertAmount(entity.getRefundAmount()) + "")
+                .add("total_fee", WxpayHelper.convertAmount(entity.getTotalAmount()) + "")
+                .add("refund_fee", WxpayHelper.convertAmount(entity.getRefundAmount()) + "")
                 .add("key", v2configs.getSecretKey())
                 .add("sign_type", v2configs.getSignType());
         String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
@@ -98,11 +98,11 @@ public class WxV2Payer implements IPayer {
             // 读取证书
             byte[] certBytes = Files.readAllBytes(Paths.get(v2configs.getCertPath()));
             // 发送请求
-            String requestUrl = helper.buildRequestUrl(v2configs.getRefundUrl());
+            String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getRefund());
             String result = HttpKit.post(requestUrl, xml, certBytes, configs.getMchId()).body();
             log.info("请求订单退款，参数：{}，\n结果：{}", xml, result);
             // 判断结果
-            return WxV2Helper.getResult(XmlKit.parseXml(result));
+            return WxpayHelperV2.getResult(XmlKit.parseXml(result));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -127,25 +127,25 @@ public class WxV2Payer implements IPayer {
         // 转换数据类型
         String xml = XmlKit.toXml(params);
         // 发送请求
-        String requestUrl = helper.buildRequestUrl(v2configs.getQueryUrl());
+        String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getQuery());
         String result = HttpKit.post(requestUrl, xml).body();
         log.info("请求查询订单，参数：{}，\n结果：{}", xml, result);
 
         // 转换数据类型
         Map<String, String> resultMap = XmlKit.parseXml(result);
         // 判断请求结果
-        Ret<TradeQueryEntity> queryResult = WxV2Helper.getResult(resultMap);
+        Ret<TradeQueryEntity> queryResult = WxpayHelperV2.getResult(resultMap);
         if (queryResult.isFail()) return queryResult;
 
         // 封装响应数据
         TradeQueryEntity tradeQueryEntity = TradeQueryEntity.builder()
                 .orderNo(resultMap.get("out_trade_no"))
                 .paymentNo(resultMap.get("transaction_id"))
-                .tradeTime(WxV2Helper.convertTime(resultMap.get("time_end")))
-                .tradeAmount(WxPayHelper.convertAmount(Integer.parseInt(resultMap.get("total_fee"))))
+                .tradeTime(WxpayHelperV2.convertTime(resultMap.get("time_end")))
+                .tradeAmount(WxpayHelper.convertAmount(Integer.parseInt(resultMap.get("total_fee"))))
                 .tradeChannel(TradeChannel.WXPAY)
-                .tradeType(WxPayHelper.getTradeType(resultMap.get("trade_type")))
-                .tradeState(WxPayHelper.getTradeState(resultMap.get("trade_state")))
+                .tradeType(WxpayHelper.getTradeType(resultMap.get("trade_type")))
+                .tradeState(WxpayHelper.getTradeState(resultMap.get("trade_state")))
                 .build();
         return Ret.ok(tradeQueryEntity);
     }
@@ -173,19 +173,19 @@ public class WxV2Payer implements IPayer {
         if (!isOk) return buildFailCallback("验签失败");
 
         // 判断支付结果
-        if (!WxStatus.isOk(params.get("result_code"))) return buildFailCallback("支付失败");
+        if (!WxpayStatus.isOk(params.get("result_code"))) return buildFailCallback("支付失败");
 
         // 封装支付信息
         PayResEntity payResEntity = PayResEntity.builder()
                 .orderNo(params.get("out_trade_no"))
                 .paymentNo(params.get("transaction_id"))
                 // 将单位从分转为元
-                .paymentAmount(WxPayHelper.convertAmount(Integer.parseInt(params.get("total_fee"))))
+                .paymentAmount(WxpayHelper.convertAmount(Integer.parseInt(params.get("total_fee"))))
                 // 转换支付时间
-                .paymentTime(WxV2Helper.convertTime(params.get("time_end")))
+                .paymentTime(WxpayHelperV2.convertTime(params.get("time_end")))
                 .build();
         // 返回回调结果
-        Kv<String, String> map = Kv.of("return_code", WxStatus.SUCCESS);
+        Kv<String, String> map = Kv.of("return_code", WxpayStatus.SUCCESS);
         return Ret.ok(payResEntity, XmlKit.toXml(map));
     }
 
@@ -196,7 +196,7 @@ public class WxV2Payer implements IPayer {
      * @return 带xml的处理结果
      */
     private Ret<PayResEntity> buildFailCallback(String errorMsg) {
-        Kv<String, String> map = Kv.of("return_code", WxStatus.FAIL).add("return_msg", errorMsg);
+        Kv<String, String> map = Kv.of("return_code", WxpayStatus.FAIL).add("return_msg", errorMsg);
         return Ret.fail(XmlKit.toXml(map));
     }
 }

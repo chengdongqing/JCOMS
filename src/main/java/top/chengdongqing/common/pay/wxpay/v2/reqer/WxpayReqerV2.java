@@ -7,11 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.pay.IPayReqer;
+import top.chengdongqing.common.pay.PayConfigs;
 import top.chengdongqing.common.pay.entities.PayReqEntity;
-import top.chengdongqing.common.pay.wxpay.WxConfigs;
-import top.chengdongqing.common.pay.wxpay.WxPayHelper;
-import top.chengdongqing.common.pay.wxpay.v2.WxV2Configs;
-import top.chengdongqing.common.pay.wxpay.v2.WxV2Helper;
+import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
+import top.chengdongqing.common.pay.wxpay.WxpayHelper;
+import top.chengdongqing.common.pay.wxpay.v2.WxpayConfigsV2;
+import top.chengdongqing.common.pay.wxpay.v2.WxpayHelperV2;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.BytesToStr;
@@ -29,26 +30,28 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public abstract class WxV2PayReqer implements IPayReqer {
+public abstract class WxpayReqerV2 implements IPayReqer {
 
     @Autowired
-    protected WxConfigs configs;
+    protected PayConfigs configs;
     @Autowired
-    protected WxV2Configs v2configs;
+    protected WxpayConfigs wxConfigs;
     @Autowired
-    protected WxPayHelper helper;
+    protected WxpayConfigsV2 v2configs;
+    @Autowired
+    protected WxpayHelper helper;
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity) {
         // 封装请求参数
-        Kv<String, String> params = Kv.of("mch_id", configs.getMchId())
+        Kv<String, String> params = Kv.of("mch_id", wxConfigs.getMchId())
                 .add("nonce_str", StrKit.getRandomUUID())
                 .add("body", configs.getWebTitle())
                 .add("detail", buildGoodsDetail(entity.getItems()))
                 .add("out_trade_no", entity.getOrderNo())
-                .add("total_fee", WxPayHelper.convertAmount(entity.getAmount()) + "")
+                .add("total_fee", WxpayHelper.convertAmount(entity.getAmount()) + "")
                 .add("spbill_create_ip", entity.getIp())
-                .add("time_expire", buildExpireTime(configs.getPayDuration()))
+                .add("time_expire", buildExpireTime(configs.getTimeout()))
                 .add("notify_url", v2configs.getNotifyUrl())
                 .add("key", v2configs.getSecretKey())
                 .add("sign_type", v2configs.getSignType());
@@ -65,14 +68,14 @@ public abstract class WxV2PayReqer implements IPayReqer {
         // 转换数据类型
         String xml = XmlKit.toXml(params);
         // 发送请求
-        String requestUrl = helper.buildRequestUrl(v2configs.getPaymentUrl());
+        String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getPay());
         String result = HttpKit.post(requestUrl, xml).body();
         log.info("请求付款参数：{}, \n请求付款结果：{}", xml, result);
 
         // 转换结果格式
         Kv<String, String> resultMap = XmlKit.parseXml(result);
         // 判断处理结果是否成功
-        Ret<Object> verifyResult = WxV2Helper.getResult(resultMap);
+        Ret<Object> verifyResult = WxpayHelperV2.getResult(resultMap);
         return verifyResult.isOk() ? buildResponse(resultMap) : verifyResult;
     }
 
@@ -83,7 +86,7 @@ public abstract class WxV2PayReqer implements IPayReqer {
      * @return 指定格式的过期时间字符串
      */
     private static String buildExpireTime(long duration) {
-        return LocalDateTime.now().plusMinutes(duration).format(WxV2Helper.FORMATTER);
+        return LocalDateTime.now().plusMinutes(duration).format(WxpayHelperV2.FORMATTER);
     }
 
     /**
@@ -104,7 +107,7 @@ public abstract class WxV2PayReqer implements IPayReqer {
         List<GoodsDetail> goodsDetails = items.stream().map(item -> new GoodsDetail(
                 item.getId(),
                 item.getName(),
-                WxPayHelper.convertAmount(item.getPrice()) + "",
+                WxpayHelper.convertAmount(item.getPrice()) + "",
                 item.getQuantity()))
                 .collect(Collectors.toList());
         // 转JSON字符串

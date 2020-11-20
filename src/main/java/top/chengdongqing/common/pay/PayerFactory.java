@@ -2,22 +2,22 @@ package top.chengdongqing.common.pay;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import top.chengdongqing.common.pay.alipay.AliPayer;
+import top.chengdongqing.common.pay.alipay.Alipayer;
 import top.chengdongqing.common.pay.enums.TradeChannel;
-import top.chengdongqing.common.pay.wxpay.WxPayFactory;
+import top.chengdongqing.common.pay.wxpay.WxpayFactory;
 
 /**
- * 支付工具类
+ * 支付器工厂
  *
  * @author Luyao
  */
 @Component
-public class PayHelper {
+public class PayerFactory {
 
     @Autowired
-    private WxPayFactory wxPayFactory;
+    private WxpayFactory wxPayFactory;
     @Autowired
-    private AliPayer aliPayer;
+    private Alipayer aliPayer;
 
     /**
      * 根据支付通道获取支付器实例

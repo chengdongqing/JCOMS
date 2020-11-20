@@ -18,7 +18,7 @@ public class Test {
         SecretKeyPair keyPair = SecretKeyGenerator.generateKeyPair(SignatureAlgorithm.EdDSA_ED25519);
         // 手动注入配置
         JwtConfigs configs = new JwtConfigs();
-        configs.setDuration(60 * 24 * 7L);
+        configs.setEffectiveDuration(60 * 24 * 7L);
         configs.setPrivateKey(keyPair.privateKey());
         configs.setPublicKey(keyPair.publicKey());
         JwtOperator jwtOperator = new JwtOperator(configs);

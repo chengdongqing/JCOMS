@@ -14,10 +14,10 @@ import java.util.Objects;
  * @author Luyao
  */
 @Component
-public class WxPayHelper {
+public class WxpayHelper {
 
     @Autowired
-    private WxConfigs configs;
+    private WxpayConfigs configs;
 
     /**
      * 转换金额，从元转为分
@@ -81,12 +81,13 @@ public class WxPayHelper {
      * @return 交易类型枚举
      */
     public static TradeType getTradeType(String tradeType) {
-        for (TradeType value : TradeType.values()) {
-            if (Objects.equals(tradeType, value.name())) {
-                return value;
-            }
-        }
-        throw new IllegalArgumentException("The tradeType '%s' does not exist".formatted(tradeType));
+        return switch (tradeType) {
+            case "NATIVE" -> TradeType.PC;
+            case "JSAPI" -> TradeType.MP;
+            case "APP" -> TradeType.APP;
+            case "MWEB" -> TradeType.MB;
+            default -> throw new IllegalArgumentException("The tradeType '%s' does not exist".formatted(tradeType));
+        };
     }
 
     /**

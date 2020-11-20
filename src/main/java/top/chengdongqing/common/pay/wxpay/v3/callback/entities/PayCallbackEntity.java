@@ -1,7 +1,7 @@
 package top.chengdongqing.common.pay.wxpay.v3.callback.entities;
 
 import lombok.Data;
-import top.chengdongqing.common.pay.wxpay.WxStatus;
+import top.chengdongqing.common.pay.wxpay.WxpayStatus;
 
 /**
  * 支付回调数据实体
@@ -52,6 +52,6 @@ public class PayCallbackEntity {
      * 是否交易成功
      */
     public boolean isTradeSuccess() {
-        return WxStatus.isOk(this.getTradeState());
+        return WxpayStatus.isOk(this.getTradeState());
     }
 }

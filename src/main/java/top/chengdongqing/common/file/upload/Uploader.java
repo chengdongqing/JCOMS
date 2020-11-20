@@ -52,7 +52,7 @@ public class Uploader {
 @Data
 @Component
 @RefreshScope
-@ConfigurationProperties(prefix = "upload")
+@ConfigurationProperties("upload")
 class UploadConfigs {
 
     private String[] imageFormats, videoFormats;

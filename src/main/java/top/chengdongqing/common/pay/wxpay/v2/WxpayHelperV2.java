@@ -2,7 +2,7 @@ package top.chengdongqing.common.pay.wxpay.v2;
 
 import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.pay.wxpay.WxStatus;
+import top.chengdongqing.common.pay.wxpay.WxpayStatus;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author Luyao
  */
-public class WxV2Helper {
+public class WxpayHelperV2 {
 
     /**
      * 默认时间格式
@@ -37,7 +37,7 @@ public class WxV2Helper {
      * @return 验证结果
      */
     public static <T> Ret<T> getResult(Map<String, String> resultMap) {
-        boolean isOk = WxStatus.isOk(resultMap.get("return_code")) && WxStatus.isOk(resultMap.get("result_code"));
+        boolean isOk = WxpayStatus.isOk(resultMap.get("return_code")) && WxpayStatus.isOk(resultMap.get("result_code"));
         return isOk ? Ret.ok() : Ret.fail(ErrorMsg.REQUEST_FAILED);
     }
 }

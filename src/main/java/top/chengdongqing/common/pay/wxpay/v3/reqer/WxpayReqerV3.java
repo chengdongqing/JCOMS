@@ -12,11 +12,12 @@ import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.pay.IPayReqer;
+import top.chengdongqing.common.pay.PayConfigs;
 import top.chengdongqing.common.pay.entities.PayReqEntity;
-import top.chengdongqing.common.pay.wxpay.WxConfigs;
-import top.chengdongqing.common.pay.wxpay.WxPayHelper;
-import top.chengdongqing.common.pay.wxpay.v3.WxV3Configs;
-import top.chengdongqing.common.pay.wxpay.v3.WxV3Helper;
+import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
+import top.chengdongqing.common.pay.wxpay.WxpayHelper;
+import top.chengdongqing.common.pay.wxpay.v3.WxpayConfigsV3;
+import top.chengdongqing.common.pay.wxpay.v3.WxpayHelperV3;
 
 import java.math.BigDecimal;
 import java.net.http.HttpResponse;
@@ -34,32 +35,34 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public abstract class WxV3PayReqer implements IPayReqer {
+public abstract class WxpayReqerV3 implements IPayReqer {
 
     @Autowired
-    protected WxConfigs configs;
+    protected PayConfigs configs;
     @Autowired
-    protected WxV3Configs v3Configs;
+    protected WxpayConfigs wxConfigs;
     @Autowired
-    protected WxPayHelper helper;
+    protected WxpayConfigsV3 v3Configs;
     @Autowired
-    protected WxV3Helper v3Helper;
+    protected WxpayHelper helper;
+    @Autowired
+    protected WxpayHelperV3 v3Helper;
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity) {
         // 封装请求参数
-        Kv<String, String> params = Kv.of("mchid", configs.getMchId())
+        Kv<String, String> params = Kv.of("mchid", wxConfigs.getMchId())
                 .add("description", configs.getWebTitle())
                 .add("out_trade_no", entity.getOrderNo())
-                .add("time_expire", buildExpireTime(configs.getPayDuration()))
-                .add("notify_url", v3Configs.getPayNotifyUrl())
+                .add("time_expire", buildExpireTime(configs.getTimeout()))
+                .add("notify_url", v3Configs.getNotifyUrl().getPayment())
                 .add("amount", buildAmount(entity.getAmount()))
                 .add("detail", buildGoodsDetail(entity.getItems()))
                 .add("scene_info", buildSceneInfo(entity.getIp()));
         addSpecialParams(params, entity);
 
         // 构建请求头
-        String apiPath = WxV3Helper.buildTradeApi(getTradeType());
+        String apiPath = getTradeApi();
         String body = params.toJson();
         Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
@@ -97,7 +100,7 @@ public abstract class WxV3PayReqer implements IPayReqer {
      */
     private String buildAmount(BigDecimal amount) {
         return Kv.ofAny("currency", v3Configs.getCurrency())
-                .add("total", WxPayHelper.convertAmount(amount))
+                .add("total", WxpayHelper.convertAmount(amount))
                 .toJson();
     }
 
@@ -119,7 +122,7 @@ public abstract class WxV3PayReqer implements IPayReqer {
         List<GoodsDetail> goodsDetails = items.stream().map(item -> new GoodsDetail(
                 item.getId(),
                 item.getName(),
-                WxPayHelper.convertAmount(item.getPrice()),
+                WxpayHelper.convertAmount(item.getPrice()),
                 item.getQuantity()))
                 .collect(Collectors.toList());
         // 转JSON字符串
@@ -156,11 +159,11 @@ public abstract class WxV3PayReqer implements IPayReqer {
     protected abstract void addSpecialParams(Kv<String, String> params, PayReqEntity entity);
 
     /**
-     * 获取交易类型
+     * 获取交易请求接口
      *
      * @return 支付类型
      */
-    protected abstract String getTradeType();
+    protected abstract String getTradeApi();
 
     /**
      * 构建响应数据

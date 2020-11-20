@@ -15,10 +15,10 @@ import top.chengdongqing.common.pay.entities.RefundReqEntity;
 import top.chengdongqing.common.pay.entities.TradeQueryEntity;
 import top.chengdongqing.common.pay.enums.TradeChannel;
 import top.chengdongqing.common.pay.enums.TradeType;
-import top.chengdongqing.common.pay.wxpay.WxConfigs;
-import top.chengdongqing.common.pay.wxpay.WxPayHelper;
+import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
+import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.pay.wxpay.v3.callback.ICallbackHandler;
-import top.chengdongqing.common.pay.wxpay.v3.reqer.ReqerHolder;
+import top.chengdongqing.common.pay.wxpay.v3.reqer.WxpayReqerHolderV3;
 
 import java.net.http.HttpResponse;
 
@@ -30,28 +30,28 @@ import java.net.http.HttpResponse;
  */
 @Slf4j
 @Component
-public class WxV3Payer implements IPayer {
+public class WxpayerV3 implements IPayer {
 
     @Autowired
-    private WxConfigs configs;
+    private WxpayConfigs configs;
     @Autowired
-    private WxV3Configs v3Configs;
+    private WxpayConfigsV3 v3Configs;
     @Autowired
-    private WxPayHelper helper;
+    private WxpayHelper helper;
     @Autowired
-    private WxV3Helper v3Helper;
+    private WxpayHelperV3 v3Helper;
     @Autowired
     private ICallbackHandler callbackHandler;
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
-        return new ReqerHolder(tradeType).request(entity);
+        return new WxpayReqerHolderV3(tradeType).request(entity);
     }
 
     @Override
     public Ret<Void> requestClose(String orderNo, TradeType tradeType) {
         // 构建请求头
-        String apiPath = WxV3Helper.buildTradeApi(v3Configs.getCloseUrl().formatted(orderNo));
+        String apiPath = v3Configs.getRequestApi().getClose().formatted(orderNo);
         String body = Kv.of("mchid", configs.getMchId()).toJson();
         Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
@@ -82,11 +82,11 @@ public class WxV3Payer implements IPayer {
                 .add("out_refund_no", entity.getRefundNo())
                 .add("reason", entity.getReason())
                 .add("amount", buildRefundAmount(entity))
-                .add("notify_url", v3Configs.getRefundNotifyUrl())
+                .add("notify_url", v3Configs.getNotifyUrl().getRefund())
                 .toJson();
 
         // 构建请求头
-        String apiPath = v3Configs.getRefundUrl();
+        String apiPath = v3Configs.getRequestApi().getRefund();
         Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
         // 发送退款请求
@@ -113,8 +113,8 @@ public class WxV3Payer implements IPayer {
      * @return 退款金额JSON字符串
      */
     private String buildRefundAmount(RefundReqEntity entity) {
-        return Kv.ofAny("refund", WxPayHelper.convertAmount(entity.getRefundAmount()))
-                .add("total", WxPayHelper.convertAmount(entity.getTotalAmount()))
+        return Kv.ofAny("refund", WxpayHelper.convertAmount(entity.getRefundAmount()))
+                .add("total", WxpayHelper.convertAmount(entity.getTotalAmount()))
                 .add("currency", v3Configs.getCurrency())
                 .toJson();
     }
@@ -123,7 +123,7 @@ public class WxV3Payer implements IPayer {
     public Ret<TradeQueryEntity> requestQuery(String orderNo, TradeType tradeType) {
         // 构建请求头
         Kv<String, String> params = Kv.of("mchid", configs.getMchId());
-        String apiPath = WxV3Helper.buildTradeApi(v3Configs.getQueryUrl().formatted(orderNo), params);
+        String apiPath = WxpayHelperV3.buildTradeApi(v3Configs.getRequestApi().getQuery().formatted(orderNo), params);
         Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.GET, apiPath, "");
 
         // 发送请求
@@ -149,11 +149,11 @@ public class WxV3Payer implements IPayer {
         TradeQueryEntity tradeQueryEntity = TradeQueryEntity.builder()
                 .orderNo(resultMap.get("out_trade_no"))
                 .paymentNo(resultMap.get("transaction_id"))
-                .tradeTime(WxV3Helper.convertTime(resultMap.get("success_time")))
-                .tradeAmount(WxPayHelper.convertAmount(totalAmount))
+                .tradeTime(WxpayHelperV3.convertTime(resultMap.get("success_time")))
+                .tradeAmount(WxpayHelper.convertAmount(totalAmount))
                 .tradeChannel(TradeChannel.WXPAY)
-                .tradeType(WxPayHelper.getTradeType(resultMap.get("trade_type")))
-                .tradeState(WxPayHelper.getTradeState(resultMap.get("trade_state")))
+                .tradeType(WxpayHelper.getTradeType(resultMap.get("trade_type")))
+                .tradeState(WxpayHelper.getTradeState(resultMap.get("trade_state")))
                 .build();
         return Ret.ok(tradeQueryEntity);
     }

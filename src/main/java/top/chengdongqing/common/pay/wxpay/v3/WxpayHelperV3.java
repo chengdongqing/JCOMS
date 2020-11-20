@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 import top.chengdongqing.common.encrypt.EncryptAlgorithm;
 import top.chengdongqing.common.encrypt.Encryptor;
 import top.chengdongqing.common.kit.*;
-import top.chengdongqing.common.pay.wxpay.WxConfigs;
-import top.chengdongqing.common.pay.wxpay.WxPayHelper;
-import top.chengdongqing.common.pay.wxpay.WxStatus;
+import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
+import top.chengdongqing.common.pay.wxpay.WxpayHelper;
+import top.chengdongqing.common.pay.wxpay.WxpayStatus;
 import top.chengdongqing.common.pay.wxpay.v3.callback.entities.EncryptedResource;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
@@ -28,12 +28,12 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class WxV3Helper {
+public class WxpayHelperV3 {
 
     @Autowired
-    private WxConfigs configs;
+    private WxpayConfigs configs;
     @Autowired
-    private WxV3Configs v3Configs;
+    private WxpayConfigsV3 v3Configs;
 
     /**
      * 构建包含认证信息的请求头
@@ -45,7 +45,7 @@ public class WxV3Helper {
      */
     public Kv<String, String> buildHeaders(HttpMethod method, String apiPath, String body) {
         // 时间戳
-        String timestamp = WxPayHelper.getTimestamp();
+        String timestamp = WxpayHelper.getTimestamp();
         // 随机数
         String nonceStr = StrKit.getRandomUUID();
         // 数字签名
@@ -71,22 +71,12 @@ public class WxV3Helper {
     /**
      * 构建除域名外的交易接口
      *
-     * @param path 业务路径
-     * @return 包含前缀的交易接口地址
-     */
-    public static String buildTradeApi(String path) {
-        return "/v3/pay/transactions".concat(path);
-    }
-
-    /**
-     * 构建除域名外的交易接口
-     *
      * @param path   业务路径
      * @param params 查询参数
      * @return 除域名外的完整交易接口地址
      */
     public static String buildTradeApi(String path, Kv<String, String> params) {
-        return buildTradeApi(path).concat("?").concat(StrKit.buildQueryStr(params));
+        return path.concat("?").concat(StrKit.buildQueryStr(params));
     }
 
     /**
@@ -151,7 +141,7 @@ public class WxV3Helper {
      * @return 成功JSON字符串
      */
     public static String getSuccessCallback() {
-        return Kv.of("code", WxStatus.SUCCESS).toJson();
+        return Kv.of("code", WxpayStatus.SUCCESS).toJson();
     }
 
     /**
@@ -161,7 +151,7 @@ public class WxV3Helper {
      * @return 失败JSON字符串
      */
     public static <T> Ret<T> buildFailCallback(String errorMsg) {
-        return Ret.fail(Kv.of("code", WxStatus.FAIL).add("message", errorMsg).toJson());
+        return Ret.fail(Kv.of("code", WxpayStatus.FAIL).add("message", errorMsg).toJson());
     }
 
     /**

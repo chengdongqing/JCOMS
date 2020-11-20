@@ -10,11 +10,11 @@ import top.chengdongqing.common.pay.enums.TradeType;
  *
  * @author Luyao
  */
-public class MBPayReqer extends WxV2PayReqer {
+public class MBPayReqerV2 extends WxpayReqerV2 {
 
     @Override
     protected void addSpecialParams(Kv<String, String> params, PayReqEntity entity) {
-        params.add("appid", configs.getAppId().getMb());
+        params.add("appid", wxConfigs.getAppId().getMb());
         params.add("trade_type", TradeType.MB.name());
         params.add("scene_info", Kv.of("h5_info", Kv.of("type", "Wap")).toJson());
     }

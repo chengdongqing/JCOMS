@@ -1,25 +1,27 @@
 package top.chengdongqing.common.pay.wxpay;
 
-import lombok.Data;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
 /**
- * 微信支付配置
+ * 微信支付公共配置
  *
  * @author Luyao
  */
-@Data
+@Getter
 @Component
 @RefreshScope
-@ConfigurationProperties(prefix = "payment.wx")
-public class WxConfigs {
+@ConfigurationProperties("pay.wx")
+public class WxpayConfigs {
 
     /**
      * 应用编号
      */
+    @Autowired
     private AppId appId;
     /**
      * 商户号
@@ -27,31 +29,15 @@ public class WxConfigs {
     private String mchId;
 
     /**
-     * 下单后允许付款时长，单位：分钟
-     */
-    @Value("${pay-duration:30}")
-    private Long payDuration;
-
-    /**
      * 微信支付域名
      */
     @Value("${wx-domain:https://api.mch.weixin.qq.com}")
     private String wxDomain;
 
-    /**
-     * 网站标题
-     */
-    private String webTitle;
-
-    /**
-     * 网站域名
-     */
-    private String webDomain;
-
-    @Data
+    @Getter
     @Component
     @RefreshScope
-    @ConfigurationProperties(prefix = "payment.wx.appid")
+    @ConfigurationProperties("pay.wx.appid")
     public static class AppId {
 
         private String mp;

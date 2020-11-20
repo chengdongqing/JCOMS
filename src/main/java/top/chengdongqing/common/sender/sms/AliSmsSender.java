@@ -1,6 +1,7 @@
 package top.chengdongqing.common.sender.sms;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -20,7 +21,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 /**
- * 基于阿里云的短信发送器
+ * 短信发送器
+ * 基于阿里云
  *
  * @author Luyao
  */
@@ -78,13 +80,10 @@ public class AliSmsSender extends SmsSender {
     }
 }
 
-/**
- * 配置信息常量
- */
-@Data
+@Getter
 @Component
 @RefreshScope
-@ConfigurationProperties(prefix = "send.sms.ali")
+@ConfigurationProperties("send.sms.ali")
 class AliSmsConfigs {
 
     /**

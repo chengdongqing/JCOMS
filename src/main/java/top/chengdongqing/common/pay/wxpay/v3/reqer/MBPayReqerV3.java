@@ -9,16 +9,16 @@ import top.chengdongqing.common.pay.entities.PayReqEntity;
  *
  * @author Luyao
  */
-public class MBPayReqer extends WxV3PayReqer {
+public class MBPayReqerV3 extends WxpayReqerV3 {
 
     @Override
-    protected String getTradeType() {
-        return v3Configs.getPaymentUrl().getH5();
+    protected String getTradeApi() {
+        return v3Configs.getRequestApi().getPay().getMb();
     }
 
     @Override
     protected void addSpecialParams(Kv<String, String> params, PayReqEntity entity) {
-        params.add("appid", configs.getAppId().getMb());
+        params.add("appid", wxConfigs.getAppId().getMb());
     }
 
     @Override

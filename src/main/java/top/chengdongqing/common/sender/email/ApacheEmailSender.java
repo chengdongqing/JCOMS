@@ -1,6 +1,6 @@
 package top.chengdongqing.common.sender.email;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -48,10 +48,10 @@ public class ApacheEmailSender extends EmailSender {
     }
 }
 
-@Data
+@Getter
 @Component
 @RefreshScope
-@ConfigurationProperties(prefix = "send.email.apache")
+@ConfigurationProperties("send.email.apache")
 class ApacheEmailConfigs {
 
     /**

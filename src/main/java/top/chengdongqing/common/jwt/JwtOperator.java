@@ -54,7 +54,7 @@ public class JwtOperator {
         Instant now = Instant.now();
         header.setIssueTime(now.toEpochMilli());
         // 过期时间
-        Instant expiryTime = now.plus(configs.getDuration(), ChronoUnit.MINUTES);
+        Instant expiryTime = now.plus(configs.getEffectiveDuration(), ChronoUnit.MINUTES);
         header.setExpiryTime(expiryTime.toEpochMilli());
         // 拼接待签名内容
         Base64.Encoder encoder = Base64.getUrlEncoder();
@@ -117,7 +117,8 @@ public class JwtOperator {
     public Kv<String, Object> getPayloads(String token) {
         String[] parts = getParts(token);
         Kv<String, Object> payloads = JsonKit.parseKv(Base64.getUrlDecoder().decode(parts[1]));
-        if (payloads == null || payloads.isEmpty()) throw new IllegalStateException("parse json failed from token: " + token);
+        if (payloads == null || payloads.isEmpty())
+            throw new IllegalStateException("parse json failed from token: " + token);
         return payloads;
     }
 }
@@ -125,7 +126,7 @@ public class JwtOperator {
 @Data
 @Component
 @RefreshScope
-@ConfigurationProperties(prefix = "jwt")
+@ConfigurationProperties("jwt")
 class JwtConfigs {
 
     /**
@@ -139,7 +140,7 @@ class JwtConfigs {
     /**
      * 有效时长，单位：分钟
      */
-    private Long duration;
+    private Long effectiveDuration;
 }
 
 @Data

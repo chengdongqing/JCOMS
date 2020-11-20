@@ -12,7 +12,7 @@ import top.chengdongqing.common.pay.enums.TradeType;
  *
  * @author Luyao
  */
-public class ReqerHolder extends ApplicationObjectSupport {
+public class WxpayReqerHolderV2 extends ApplicationObjectSupport {
 
     private final IPayReqer strategy;
 
@@ -21,12 +21,12 @@ public class ReqerHolder extends ApplicationObjectSupport {
      *
      * @param tradeType 交易类型
      */
-    public ReqerHolder(TradeType tradeType) {
+    public WxpayReqerHolderV2(TradeType tradeType) {
         Class<? extends IPayReqer> clazz = switch (tradeType) {
-            case APP -> APPPayReqer.class;
-            case MB -> MBPayReqer.class;
-            case MP -> MPPayReqer.class;
-            case PC -> PCPayReqer.class;
+            case APP -> APPPayReqerV2.class;
+            case MB -> MBPayReqerV2.class;
+            case MP -> MPPayReqerV2.class;
+            case PC -> PCPayReqerV2.class;
         };
         strategy = super.getApplicationContext().getBean(clazz);
     }
