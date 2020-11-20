@@ -23,21 +23,21 @@ import java.nio.charset.StandardCharsets;
 public class ApacheEmailSender extends EmailSender {
 
     @Autowired
-    private ApacheEmailConstants constants;
+    private ApacheEmailConfigs configs;
 
     @Override
     public void sendEmail(EmailEntity entity) {
         // 实例化网页邮件客户端
         HtmlEmail he = new HtmlEmail();
-        he.setHostName(constants.getHost());
-        he.setSmtpPort(constants.getPort());
+        he.setHostName(configs.getHost());
+        he.setSmtpPort(configs.getPort());
         he.setSSLOnConnect(true);
-        he.setAuthentication(constants.getAccount(), constants.getPassword());
+        he.setAuthentication(configs.getAccount(), configs.getPassword());
         he.setCharset(StandardCharsets.UTF_8.name());
         try {
-            he.setFrom(constants.getAccount(), constants.getApplicationName());
-            he.addTo(entity.getTo(), constants.getApplicationName() + "用户");
-            he.setSubject(entity.getTitle() + " - " + constants.getApplicationName());
+            he.setFrom(configs.getAccount(), configs.getApplicationName());
+            he.addTo(entity.getTo(), configs.getApplicationName() + "用户");
+            he.setSubject(entity.getTitle() + " - " + configs.getApplicationName());
             he.setMsg(entity.getContent());
             he.send();
             log.info("发送邮件成功：{}", he);
@@ -52,7 +52,7 @@ public class ApacheEmailSender extends EmailSender {
 @Component
 @RefreshScope
 @ConfigurationProperties(prefix = "send.email.apache")
-class ApacheEmailConstants {
+class ApacheEmailConfigs {
 
     /**
      * 邮箱服务商IP地址

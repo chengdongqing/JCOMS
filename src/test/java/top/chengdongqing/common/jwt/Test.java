@@ -17,11 +17,11 @@ public class Test {
         // 生成密钥对
         SecretKeyPair keyPair = SecretKeyGenerator.generateKeyPair(SignatureAlgorithm.EdDSA_ED25519);
         // 手动注入配置
-        JwtConstants constants = new JwtConstants();
-        constants.setDuration(60 * 24 * 7L);
-        constants.setPrivateKey(keyPair.privateKey());
-        constants.setPublicKey(keyPair.publicKey());
-        JwtOperator jwtOperator = new JwtOperator(constants);
+        JwtConfigs configs = new JwtConfigs();
+        configs.setDuration(60 * 24 * 7L);
+        configs.setPrivateKey(keyPair.privateKey());
+        configs.setPublicKey(keyPair.publicKey());
+        JwtOperator jwtOperator = new JwtOperator(configs);
         Kv<String, Object> payloads = new Kv<>();
         payloads.add("id", 100).add("name", "Hello world!");
         System.out.println("生成token----------------------");

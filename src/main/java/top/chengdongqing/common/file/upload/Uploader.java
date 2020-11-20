@@ -18,7 +18,7 @@ import top.chengdongqing.common.kit.Ret;
 public class Uploader {
 
     @Autowired
-    private UploadConstants constants;
+    private UploadConfigs configs;
     @Autowired
     private UploaderFactory uploaderFactory;
 
@@ -31,8 +31,8 @@ public class Uploader {
      */
     public Ret<String> uploadImage(MultipartFile file, FilePath path) {
         return uploaderFactory.getUploader().upload(file, path,
-                constants.getImageFormats(),
-                constants.getImageMaxSize());
+                configs.getImageFormats(),
+                configs.getImageMaxSize());
     }
 
     /**
@@ -44,8 +44,8 @@ public class Uploader {
      */
     public Ret<String> uploadVideo(MultipartFile file, FilePath path) {
         return uploaderFactory.getUploader().upload(file, path,
-                constants.getVideoFormats(),
-                constants.getVideoMaxSize());
+                configs.getVideoFormats(),
+                configs.getVideoMaxSize());
     }
 }
 
@@ -53,7 +53,7 @@ public class Uploader {
 @Component
 @RefreshScope
 @ConfigurationProperties(prefix = "upload")
-class UploadConstants {
+class UploadConfigs {
 
     private String[] imageFormats, videoFormats;
     private Integer imageMaxSize, videoMaxSize;

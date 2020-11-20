@@ -29,7 +29,7 @@ import java.util.Base64;
 public class JwtOperator {
 
     @Autowired
-    private JwtConstants constants;
+    private JwtConfigs configs;
     /**
      * 签名算法
      */
@@ -54,14 +54,14 @@ public class JwtOperator {
         Instant now = Instant.now();
         header.setIssueTime(now.toEpochMilli());
         // 过期时间
-        Instant expiryTime = now.plus(constants.getDuration(), ChronoUnit.MINUTES);
+        Instant expiryTime = now.plus(configs.getDuration(), ChronoUnit.MINUTES);
         header.setExpiryTime(expiryTime.toEpochMilli());
         // 拼接待签名内容
         Base64.Encoder encoder = Base64.getUrlEncoder();
         String content = encoder.encodeToString(header.toJson()).concat(".") + encoder.encodeToString(JsonKit.toJsonBytes(payloads));
         // 执行签名
         String signature = DigitalSigner.signature(ALGORITHM, content,
-                StrToBytes.of(constants.getPrivateKey()).fromBase64())
+                StrToBytes.of(configs.getPrivateKey()).fromBase64())
                 .toBase64();
         content += ".".concat(signature);
         // 返回token详情
@@ -87,7 +87,7 @@ public class JwtOperator {
 
         // 验签
         boolean verified = DigitalSigner.verify(ALGORITHM, content,
-                StrToBytes.of(constants.getPublicKey()).fromBase64(),
+                StrToBytes.of(configs.getPublicKey()).fromBase64(),
                 StrToBytes.of(parts[2]).fromBase64());
         if (!verified) return false;
 
@@ -126,7 +126,7 @@ public class JwtOperator {
 @Component
 @RefreshScope
 @ConfigurationProperties(prefix = "jwt")
-class JwtConstants {
+class JwtConfigs {
 
     /**
      * 公钥，验签用

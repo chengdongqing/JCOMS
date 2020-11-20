@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter;
 public class AliSmsSender extends SmsSender {
 
     @Autowired
-    private AliSmsConstants constants;
+    private AliSmsConfigs configs;
 
     /**
      * 默认时间格式
@@ -40,25 +40,25 @@ public class AliSmsSender extends SmsSender {
     public void sendSms(SmsEntity entity) {
         // 封装参数
         Kv<String, String> params = Kv.of("PhoneNumbers", entity.getTo())
-                .add("AccessKeyId", constants.getAccessKeyId())
-                .add("Action", constants.getAction())
-                .add("Version", constants.getVersion())
-                .add("Format", constants.getFormat())
-                .add("SignatureMethod", constants.getSignatureMethod())
-                .add("SignatureVersion", constants.getSignatureVersion())
+                .add("AccessKeyId", configs.getAccessKeyId())
+                .add("Action", configs.getAction())
+                .add("Version", configs.getVersion())
+                .add("Format", configs.getFormat())
+                .add("SignatureMethod", configs.getSignatureMethod())
+                .add("SignatureVersion", configs.getSignatureVersion())
                 .add("SignatureNonce", StrKit.getRandomUUID())
                 .add("Timestamp", getTimestamp())
-                .add("SignName", constants.getSignName())
+                .add("SignName", configs.getSignName())
                 .add("TemplateCode", entity.getTemplate())
                 .add("TemplateParam", entity.getContent());
         String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA1,
                 StrKit.buildQueryStr(params, true),
-                StrToBytes.of(constants.getAccessSecret()).fromBase64())
+                StrToBytes.of(configs.getAccessSecret()).fromBase64())
                 .toBase64();
         params.add("Signature", sign);
 
         // 发送请求
-        String result = HttpKit.get(constants.getGatewayUrl(), params).body();
+        String result = HttpKit.get(configs.getGatewayUrl(), params).body();
         log.info("发送短信参数：{}，结果：{}", params, result);
         SendResult sendResult = JsonKit.parseObject(result, SendResult.class);
         if (!sendResult.isOk()) {
@@ -85,7 +85,7 @@ public class AliSmsSender extends SmsSender {
 @Component
 @RefreshScope
 @ConfigurationProperties(prefix = "send.sms.ali")
-class AliSmsConstants {
+class AliSmsConfigs {
 
     /**
      * 访问的id

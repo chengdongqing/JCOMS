@@ -96,7 +96,7 @@ public class XmlKit {
         dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
         dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        dbFactory.setFeature("http://javax.xml.XMLConstants/feature/secure-processing", true);
+        dbFactory.setFeature("http://javax.xml.XMLConfigs/feature/secure-processing", true);
         dbFactory.setXIncludeAware(false);
         dbFactory.setExpandEntityReferences(false);
         return dbFactory.newDocumentBuilder();

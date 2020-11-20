@@ -34,28 +34,28 @@ import java.util.stream.Collectors;
 public class OSSFileManager extends AbstractUploader implements FileManager {
 
     @Autowired
-    private OSSConstants constants;
+    private OSSConfigs configs;
     @Autowired
     private OSS client;
 
     @Bean
     public OSS ossClient() {
         return new OSSClientBuilder().build(
-                constants.getEndpoint(),
-                constants.getAccessId(),
-                constants.getAccessSecret());
+                configs.getEndpoint(),
+                configs.getAccessId(),
+                configs.getAccessSecret());
     }
 
     @Override
     protected void upload(byte[] fileBytes, String path, String filename) throws Exception {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(fileBytes)) {
-            client.putObject(constants.getBucket(), path + filename, inputStream);
+            client.putObject(configs.getBucket(), path + filename, inputStream);
         }
     }
 
     @Override
     public File getFile(String fileUrl, boolean content) throws Exception {
-        SimplifiedObjectMeta objectMeta = client.getSimplifiedObjectMeta(constants.getBucket(), fileUrl);
+        SimplifiedObjectMeta objectMeta = client.getSimplifiedObjectMeta(configs.getBucket(), fileUrl);
         File file = File.builder()
                 .path(fileUrl)
                 .name(FileManager.getName(fileUrl))
@@ -66,7 +66,7 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
                 .build();
 
         if (content) {
-            OSSObject ossObject = client.getObject(constants.getBucket(), fileUrl);
+            OSSObject ossObject = client.getObject(configs.getBucket(), fileUrl);
             try (InputStream stream = ossObject.getObjectContent()) {
                 file.setBytes(stream.readAllBytes());
             }
@@ -76,7 +76,7 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
 
     @Override
     public List<File> getFiles(FilePath path, boolean content) throws Exception {
-        List<OSSObjectSummary> objectSummaries = client.listObjects(constants.getBucket(), path.getPath()).getObjectSummaries();
+        List<OSSObjectSummary> objectSummaries = client.listObjects(configs.getBucket(), path.getPath()).getObjectSummaries();
         ArrayList<File> files = new ArrayList<>();
         for (OSSObjectSummary summary : objectSummaries) {
             files.add(getFile(summary.getKey(), content));
@@ -86,18 +86,18 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
 
     @Override
     public void deleteFile(String fileUrl) {
-        client.deleteObject(constants.getBucket(), fileUrl);
+        client.deleteObject(configs.getBucket(), fileUrl);
     }
 
     @Override
     public void deleteFiles(List<String> fileUrls) {
-        client.deleteObjects(new DeleteObjectsRequest(constants.getBucket()).withKeys(fileUrls));
+        client.deleteObjects(new DeleteObjectsRequest(configs.getBucket()).withKeys(fileUrls));
     }
 
     @Override
     public void clearDirectory(FilePath path) {
         // 获取当前目录的所有文件概要
-        List<OSSObjectSummary> objectSummaries = client.listObjects(constants.getBucket(), path.getPath()).getObjectSummaries();
+        List<OSSObjectSummary> objectSummaries = client.listObjects(configs.getBucket(), path.getPath()).getObjectSummaries();
         // 获取每个文件的key并批量删除
         deleteFiles(objectSummaries.stream().map(OSSObjectSummary::getKey).collect(Collectors.toList()));
     }
@@ -115,8 +115,8 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
      * @param newKey 新文件的键
      */
     private void move(String oldKey, String newKey) {
-        client.copyObject(constants.getBucket(), oldKey, constants.getBucket(), newKey);
-        client.deleteObject(constants.getBucket(), oldKey);
+        client.copyObject(configs.getBucket(), oldKey, configs.getBucket(), newKey);
+        client.deleteObject(configs.getBucket(), oldKey);
     }
 
     @Override
@@ -136,7 +136,7 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
 @Data
 @Component
 @ConfigurationProperties(prefix = "upload.oss")
-class OSSConstants {
+class OSSConfigs {
 
     private String bucket,
             endpoint,
