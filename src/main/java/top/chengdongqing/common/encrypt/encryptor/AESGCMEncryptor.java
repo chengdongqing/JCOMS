@@ -17,7 +17,7 @@ import java.security.SecureRandom;
  */
 public class AESGCMEncryptor implements IEncryptor {
 
-    private static final int IV_LENGTH_BIT = 16;
+    private static final int NONCE_LENGTH_BIT = 12;
     private static final int TAG_LENGTH_BIT = 128;
 
     @Override
@@ -26,7 +26,7 @@ public class AESGCMEncryptor implements IEncryptor {
             // 加密
             Cipher cipher = Cipher.getInstance(algorithm.getAlgorithm());
             SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), algorithm.getFamily());
-            byte[] iv = SecureRandom.getInstanceStrong().generateSeed(IV_LENGTH_BIT);
+            byte[] iv = SecureRandom.getInstanceStrong().generateSeed(NONCE_LENGTH_BIT);
             GCMParameterSpec parameterSpec = new GCMParameterSpec(TAG_LENGTH_BIT, iv);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, parameterSpec);
             cipher.updateAAD(associatedData.getBytes());
@@ -41,7 +41,7 @@ public class AESGCMEncryptor implements IEncryptor {
     public BytesToStr decrypt(EncryptAlgorithm algorithm, byte[] data, String key, String associatedData) {
         try {
             // 分割初始向量和密文
-            byte[][] bytes = ByteUtils.split(data, IV_LENGTH_BIT);
+            byte[][] bytes = ByteUtils.split(data, NONCE_LENGTH_BIT);
             byte[] iv = bytes[0];
             byte[] ciphertext = bytes[1];
             // 解密

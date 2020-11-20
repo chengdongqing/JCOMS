@@ -172,8 +172,8 @@ public class WxV3Helper {
      * @return 解密后的核心数据对象
      */
     public static <T> T decryptData(String body, String secretKey, Class<T> clazz) {
-        String encryptionInfoJson = JsonKit.parseKv(body).getAs("resource");
-        EncryptedResource encryptedResource = JsonKit.parseObject(encryptionInfoJson, EncryptedResource.class);
+        String encryptedJson = JsonKit.parseKv(body).getAs("resource");
+        EncryptedResource encryptedResource = JsonKit.parseObject(encryptedJson, EncryptedResource.class);
         // 获取密文、随机数、关联数据
         byte[] ciphertext = StrToBytes.of(encryptedResource.getCiphertext()).fromBase64();
         byte[] iv = encryptedResource.getNonce().getBytes();

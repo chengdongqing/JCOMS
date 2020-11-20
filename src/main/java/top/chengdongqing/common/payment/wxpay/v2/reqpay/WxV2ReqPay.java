@@ -36,7 +36,7 @@ public abstract class WxV2ReqPay implements IReqPay {
     @Autowired
     protected WxV2Constants v2constants;
     @Autowired
-    private WxPayHelper helper;
+    protected WxPayHelper helper;
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity) {
