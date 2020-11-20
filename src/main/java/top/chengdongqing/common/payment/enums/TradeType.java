@@ -12,9 +12,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TradeType {
 
-    NATIVE("电脑网站"),
-    MWEB("手机网站"),
-    JSAPI("小程序"),
+    PC("电脑网站"),
+    MB("手机网站"),
+    MP("小程序"),
     APP("APP");
 
     private final String description;

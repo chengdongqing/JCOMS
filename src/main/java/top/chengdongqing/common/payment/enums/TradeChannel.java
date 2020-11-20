@@ -4,13 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 交易方式
+ * 交易通道
  *
  * @author Luyao
  */
 @Getter
 @AllArgsConstructor
-public enum TradeMode {
+public enum TradeChannel {
 
     WXPAY("微信"),
     ALIPAY("支付宝");

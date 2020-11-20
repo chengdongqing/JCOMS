@@ -15,7 +15,7 @@ public class PCReqPay extends WxV2ReqPay {
     @Override
     protected void addSpecialParams(Kv<String, String> params, PayReqEntity entity) {
         params.add("appid", constants.getAppId().getPc());
-        params.add("trade_type", TradeType.NATIVE.name());
+        params.add("trade_type", TradeType.PC.name());
     }
 
     @Override

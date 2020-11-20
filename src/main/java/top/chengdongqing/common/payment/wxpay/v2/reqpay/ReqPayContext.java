@@ -24,9 +24,9 @@ public class ReqPayContext extends ApplicationObjectSupport {
     public ReqPayContext(TradeType tradeType) {
         Class<? extends IReqPay> clazz = switch (tradeType) {
             case APP -> APPReqPay.class;
-            case MWEB -> MBReqPay.class;
-            case JSAPI -> MPReqPay.class;
-            case NATIVE -> PCReqPay.class;
+            case MB -> MBReqPay.class;
+            case MP -> MPReqPay.class;
+            case PC -> PCReqPay.class;
         };
         strategy = super.getApplicationContext().getBean(clazz);
     }

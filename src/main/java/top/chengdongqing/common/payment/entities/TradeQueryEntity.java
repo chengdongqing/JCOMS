@@ -2,7 +2,7 @@ package top.chengdongqing.common.payment.entities;
 
 import lombok.Builder;
 import lombok.Data;
-import top.chengdongqing.common.payment.enums.TradeMode;
+import top.chengdongqing.common.payment.enums.TradeChannel;
 import top.chengdongqing.common.payment.enums.TradeState;
 import top.chengdongqing.common.payment.enums.TradeType;
 
@@ -29,7 +29,7 @@ public class TradeQueryEntity {
     /**
      * 交易方式
      */
-    private TradeMode tradeMode;
+    private TradeChannel tradeChannel;
     /**
      * 交易类型
      */

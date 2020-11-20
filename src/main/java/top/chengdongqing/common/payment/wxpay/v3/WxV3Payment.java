@@ -13,7 +13,7 @@ import top.chengdongqing.common.payment.IPayment;
 import top.chengdongqing.common.payment.entities.PayReqEntity;
 import top.chengdongqing.common.payment.entities.TradeQueryEntity;
 import top.chengdongqing.common.payment.entities.RefundReqEntity;
-import top.chengdongqing.common.payment.enums.TradeMode;
+import top.chengdongqing.common.payment.enums.TradeChannel;
 import top.chengdongqing.common.payment.enums.TradeType;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
@@ -151,7 +151,7 @@ public class WxV3Payment implements IPayment {
                 .paymentNo(resultMap.get("transaction_id"))
                 .tradeTime(WxV3Helper.convertTime(resultMap.get("success_time")))
                 .tradeAmount(WxPayHelper.convertAmount(totalAmount))
-                .tradeMode(TradeMode.WXPAY)
+                .tradeChannel(TradeChannel.WXPAY)
                 .tradeType(WxPayHelper.getTradeType(resultMap.get("trade_type")))
                 .tradeState(WxPayHelper.getTradeState(resultMap.get("trade_state")))
                 .build();

@@ -20,7 +20,7 @@ public class MPReqPay extends WxV2ReqPay {
     @Override
     protected void addSpecialParams(Kv<String, String> params, PayReqEntity entity) {
         params.add("appid", constants.getAppId().getMp());
-        params.add("trade_type", TradeType.JSAPI.name());
+        params.add("trade_type", TradeType.MP.name());
         params.add("openid", entity.getOpenId());
     }
 
