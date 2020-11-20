@@ -8,7 +8,6 @@ import java.util.List;
 
 /**
  * JSON处理工具类
- * 基于Google Gson
  *
  * @author Luyao
  */
