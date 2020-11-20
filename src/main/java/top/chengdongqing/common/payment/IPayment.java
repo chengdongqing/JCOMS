@@ -2,7 +2,7 @@ package top.chengdongqing.common.payment;
 
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.entities.PayReqEntity;
-import top.chengdongqing.common.payment.entities.QueryResEntity;
+import top.chengdongqing.common.payment.entities.TradeQueryEntity;
 import top.chengdongqing.common.payment.entities.RefundReqEntity;
 import top.chengdongqing.common.payment.enums.TradeType;
 
@@ -44,5 +44,5 @@ public interface IPayment {
      * @param orderNo 订单号
      * @return 查询结果
      */
-    Ret<QueryResEntity> requestQuery(String orderNo);
+    Ret<TradeQueryEntity> requestQuery(String orderNo);
 }

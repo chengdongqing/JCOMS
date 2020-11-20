@@ -8,7 +8,7 @@ import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.payment.IPayment;
 import top.chengdongqing.common.payment.entities.PayReqEntity;
 import top.chengdongqing.common.payment.entities.PayResEntity;
-import top.chengdongqing.common.payment.entities.QueryResEntity;
+import top.chengdongqing.common.payment.entities.TradeQueryEntity;
 import top.chengdongqing.common.payment.entities.RefundReqEntity;
 import top.chengdongqing.common.payment.enums.TradeMode;
 import top.chengdongqing.common.payment.enums.TradeType;
@@ -109,7 +109,7 @@ public class WxV2Payment implements IPayment {
     }
 
     @Override
-    public Ret<QueryResEntity> requestQuery(String orderNo) {
+    public Ret<TradeQueryEntity> requestQuery(String orderNo) {
         // 封装请求参数
         Kv<String, String> params = Kv.of("appid", constants.getAppId().getMp())
                 .add("mch_id", constants.getMchId())
@@ -134,20 +134,20 @@ public class WxV2Payment implements IPayment {
         // 转换数据类型
         Map<String, String> resultMap = XmlKit.parseXml(result);
         // 判断请求结果
-        Ret<QueryResEntity> queryResult = WxV2Helper.getResult(resultMap);
+        Ret<TradeQueryEntity> queryResult = WxV2Helper.getResult(resultMap);
         if (queryResult.isFail()) return queryResult;
 
         // 封装响应数据
-        QueryResEntity queryResEntity = QueryResEntity.builder()
+        TradeQueryEntity tradeQueryEntity = TradeQueryEntity.builder()
                 .orderNo(resultMap.get("out_trade_no"))
                 .paymentNo(resultMap.get("transaction_id"))
-                .paymentTime(WxV2Helper.convertTime(resultMap.get("time_end")))
+                .tradeTime(WxV2Helper.convertTime(resultMap.get("time_end")))
                 .tradeAmount(WxPayHelper.convertAmount(Integer.parseInt(resultMap.get("total_fee"))))
                 .tradeMode(TradeMode.WXPAY)
                 .tradeType(WxPayHelper.getTradeType(resultMap.get("trade_type")))
                 .tradeState(WxPayHelper.getTradeState(resultMap.get("trade_state")))
                 .build();
-        return Ret.ok(queryResEntity);
+        return Ret.ok(tradeQueryEntity);
     }
 
     /**

@@ -50,7 +50,7 @@ public class Test {
     }
 
     private static void test3(String content) {
-        SignatureAlgorithm algorithm = SignatureAlgorithm.SHA256;
+        SignatureAlgorithm algorithm = SignatureAlgorithm.MD5;
         System.out.printf("%n基于%s的数字签名----------------%n", algorithm.getAlgorithm());
         BytesToStr sign = DigitalSigner.signature(algorithm, content, null);
         System.out.println("签名（16进制字符串）：" + sign.toHex());

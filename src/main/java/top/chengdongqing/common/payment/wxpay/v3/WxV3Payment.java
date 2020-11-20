@@ -11,7 +11,7 @@ import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.payment.IPayment;
 import top.chengdongqing.common.payment.entities.PayReqEntity;
-import top.chengdongqing.common.payment.entities.QueryResEntity;
+import top.chengdongqing.common.payment.entities.TradeQueryEntity;
 import top.chengdongqing.common.payment.entities.RefundReqEntity;
 import top.chengdongqing.common.payment.enums.TradeMode;
 import top.chengdongqing.common.payment.enums.TradeType;
@@ -120,7 +120,7 @@ public class WxV3Payment implements IPayment {
     }
 
     @Override
-    public Ret<QueryResEntity> requestQuery(String orderNo) {
+    public Ret<TradeQueryEntity> requestQuery(String orderNo) {
         // 构建请求头
         Kv<String, String> params = Kv.of("mchid", constants.getMchId());
         String apiPath = WxV3Helper.buildTradeApi(v3Constants.getQueryUrl().formatted(orderNo), params);
@@ -146,16 +146,16 @@ public class WxV3Payment implements IPayment {
         // 封装响应数据
         Kv<String, String> resultMap = JsonKit.parseKv(response.body());
         int totalAmount = JsonKit.parseKv(resultMap.get("amount")).getAs("total");
-        QueryResEntity queryResEntity = QueryResEntity.builder()
+        TradeQueryEntity tradeQueryEntity = TradeQueryEntity.builder()
                 .orderNo(resultMap.get("out_trade_no"))
                 .paymentNo(resultMap.get("transaction_id"))
-                .paymentTime(WxV3Helper.convertTime(resultMap.get("success_time")))
+                .tradeTime(WxV3Helper.convertTime(resultMap.get("success_time")))
                 .tradeAmount(WxPayHelper.convertAmount(totalAmount))
                 .tradeMode(TradeMode.WXPAY)
                 .tradeType(WxPayHelper.getTradeType(resultMap.get("trade_type")))
                 .tradeState(WxPayHelper.getTradeState(resultMap.get("trade_state")))
                 .build();
-        return Ret.ok(queryResEntity);
+        return Ret.ok(tradeQueryEntity);
     }
 
     /**

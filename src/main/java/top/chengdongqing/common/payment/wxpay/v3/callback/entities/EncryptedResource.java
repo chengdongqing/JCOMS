@@ -9,7 +9,7 @@ import lombok.Data;
  * @author Luyao
  */
 @Data
-public class EncryptResource {
+public class EncryptedResource {
 
     /**
      * 加密算法

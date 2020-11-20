@@ -10,13 +10,13 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 查询响应数据实体
+ * 交易查询响应数据实体
  *
  * @author Luyao
  */
 @Data
 @Builder
-public class QueryResEntity {
+public class TradeQueryEntity {
 
     /**
      * 订单号
@@ -45,5 +45,5 @@ public class QueryResEntity {
     /**
      * 支付时间
      */
-    private LocalDateTime paymentTime;
+    private LocalDateTime tradeTime;
 }

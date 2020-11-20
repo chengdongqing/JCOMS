@@ -12,7 +12,7 @@ import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.payment.wxpay.WxConstants;
 import top.chengdongqing.common.payment.wxpay.WxPayHelper;
 import top.chengdongqing.common.payment.wxpay.WxStatus;
-import top.chengdongqing.common.payment.wxpay.v3.callback.entities.EncryptResource;
+import top.chengdongqing.common.payment.wxpay.v3.callback.entities.EncryptedResource;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
@@ -173,11 +173,11 @@ public class WxV3Helper {
      */
     public static <T> T decryptData(String body, String secretKey, Class<T> clazz) {
         String encryptionInfoJson = JsonKit.parseKv(body).getAs("resource");
-        EncryptResource encryptResource = JsonKit.parseObject(encryptionInfoJson, EncryptResource.class);
+        EncryptedResource encryptedResource = JsonKit.parseObject(encryptionInfoJson, EncryptedResource.class);
         // 获取密文、随机数、关联数据
-        byte[] ciphertext = StrToBytes.of(encryptResource.getCiphertext()).fromBase64();
-        byte[] iv = encryptResource.getNonce().getBytes();
-        String associatedData = encryptResource.getAssociatedData();
+        byte[] ciphertext = StrToBytes.of(encryptedResource.getCiphertext()).fromBase64();
+        byte[] iv = encryptedResource.getNonce().getBytes();
+        String associatedData = encryptedResource.getAssociatedData();
         // 解密数据
         String resourceJson = Encryptor.decrypt(EncryptAlgorithm.AES_GCM_NoPadding,
                 ByteUtils.concatenate(iv, ciphertext),

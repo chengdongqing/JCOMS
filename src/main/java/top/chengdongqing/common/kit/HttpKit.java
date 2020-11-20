@@ -17,7 +17,6 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.SecureRandom;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +33,7 @@ public class HttpKit {
         return get(url, null);
     }
 
-    public static HttpResponse<String> get(String url, Map<String, String> params) {
+    public static HttpResponse<String> get(String url, Kv<String, String> params) {
         return get(url, params, null);
     }
 
@@ -46,7 +45,7 @@ public class HttpKit {
      * @param headers 请求头
      * @return 响应结果
      */
-    public static HttpResponse<String> get(String url, Map<String, String> params, Map<String, String> headers) {
+    public static HttpResponse<String> get(String url, Kv<String, String> params, Kv<String, String> headers) {
         return send(HttpMethod.GET, url, params, headers, null, null, null);
     }
 
@@ -54,11 +53,11 @@ public class HttpKit {
         return post(url, null, data);
     }
 
-    public static HttpResponse<String> post(String url, Map<String, String> headers, String data) {
+    public static HttpResponse<String> post(String url, Kv<String, String> headers, String data) {
         return post(url, null, headers, data);
     }
 
-    public static HttpResponse<String> post(String url, Map<String, String> params, Map<String, String> headers, String data) {
+    public static HttpResponse<String> post(String url, Kv<String, String> params, Kv<String, String> headers, String data) {
         return post(url, params, headers, data, null, null);
     }
 
@@ -77,7 +76,7 @@ public class HttpKit {
      * @param certPwd   证书密码
      * @return 响应结果
      */
-    public static HttpResponse<String> post(String url, Map<String, String> params, Map<String, String> headers,
+    public static HttpResponse<String> post(String url, Kv<String, String> params, Kv<String, String> headers,
                                             String data, byte[] certBytes, String certPwd) {
         return send(HttpMethod.POST, url, params, headers, data, certBytes, certPwd);
     }
@@ -91,7 +90,7 @@ public class HttpKit {
      * @param data    请求体
      * @return 响应结果
      */
-    public static HttpResponse<String> delete(String url, Map<String, String> params, Map<String, String> headers,
+    public static HttpResponse<String> delete(String url, Kv<String, String> params, Kv<String, String> headers,
                                               String data) {
         return send(HttpMethod.DELETE, url, params, headers, data, null, null);
     }
@@ -105,7 +104,7 @@ public class HttpKit {
      * @param data    请求体
      * @return 响应结果
      */
-    public static HttpResponse<String> put(String url, Map<String, String> params, Map<String, String> headers,
+    public static HttpResponse<String> put(String url, Kv<String, String> params, Kv<String, String> headers,
                                            String data) {
         return send(HttpMethod.PUT, url, params, headers, data, null, null);
     }
@@ -122,8 +121,8 @@ public class HttpKit {
      * @param certPwd   证书密码
      * @return 响应结果
      */
-    public static HttpResponse<String> send(HttpMethod method, String url, Map<String, String> params,
-                                            Map<String, String> headers, String data,
+    public static HttpResponse<String> send(HttpMethod method, String url, Kv<String, String> params,
+                                            Kv<String, String> headers, String data,
                                             byte[] certBytes, String certPwd) {
         try {
             // 构建HTTP客户端
@@ -134,7 +133,8 @@ public class HttpKit {
             HttpClient client = clientBuilder.build();
 
             // 构建HTTP请求
-            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(buildUrlWithParams(url, params)))
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+                    .uri(URI.create(buildUrlWithParams(url, params)))
                     .method(method.name(), data == null ?
                             HttpRequest.BodyPublishers.noBody() :
                             HttpRequest.BodyPublishers.ofString(data)
@@ -181,7 +181,7 @@ public class HttpKit {
      * @param params 参数键值对
      * @return 带参数的请求地址
      */
-    private static String buildUrlWithParams(String url, Map<String, String> params) {
+    private static String buildUrlWithParams(String url, Kv<String, String> params) {
         if (params == null || params.isEmpty()) return url;
 
         StringBuilder sb = new StringBuilder(url);
@@ -206,7 +206,7 @@ public class HttpKit {
      */
     public static String readData(HttpServletRequest request) {
         try {
-            return request.getReader().lines().collect(Collectors.joining("\n"));
+            return request.getReader().lines().collect(Collectors.joining("\\n"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
