@@ -19,11 +19,6 @@ public abstract class EmailSender implements ISender<EmailEntity> {
      */
     private static final Pattern PATTERN = Pattern.compile(Regexps.EMAIL_ADDRESS.getRegex());
 
-    /**
-     * 发送邮件
-     *
-     * @param entity 发送需要的参数实体
-     */
     @Override
     public void send(EmailEntity entity) {
         if (StringUtils.isAnyBlank(entity.getTo(), entity.getTitle(), entity.getContent())) {
@@ -36,7 +31,7 @@ public abstract class EmailSender implements ISender<EmailEntity> {
     }
 
     /**
-     * 具体邮件发送细节
+     * 发送邮件
      *
      * @param entity 参数实体
      */

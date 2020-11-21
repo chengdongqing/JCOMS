@@ -15,7 +15,7 @@ public interface ISender<T> {
     /**
      * 执行发送
      *
-     * @param entity 发送需要的参数实体
+     * @param entity 参数实体
      */
     void send(T entity);
 }

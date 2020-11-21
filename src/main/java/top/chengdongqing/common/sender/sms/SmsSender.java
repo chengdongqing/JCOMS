@@ -19,9 +19,6 @@ public abstract class SmsSender implements ISender<SmsEntity> {
      */
     private static final Pattern PATTERN = Pattern.compile(Regexps.PHONE_NUMBER.getRegex());
 
-    /**
-     * 发送短信
-     */
     @Override
     public void send(SmsEntity entity) {
         if (StringUtils.isAnyBlank(entity.getTo(), entity.getTemplate(), entity.getContent())) {
@@ -34,7 +31,7 @@ public abstract class SmsSender implements ISender<SmsEntity> {
     }
 
     /**
-     * 具体发送短信细节
+     * 发送短信
      *
      * @param entity 参数实体
      */
