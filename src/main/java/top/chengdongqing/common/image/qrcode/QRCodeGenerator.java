@@ -9,7 +9,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.image.ImageGenerator;
 import top.chengdongqing.common.kit.Kv;
-import top.chengdongqing.common.render.ImageRender;
+import top.chengdongqing.common.renderer.ImageRenderer;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -69,6 +69,6 @@ public class QRCodeGenerator implements ImageGenerator {
      */
     @Override
     public void render() {
-        ImageRender.ofPNG(generate()).render();
+        ImageRenderer.ofPNG(generate()).render();
     }
 }

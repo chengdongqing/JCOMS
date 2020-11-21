@@ -1,4 +1,4 @@
-package top.chengdongqing.common.render;
+package top.chengdongqing.common.renderer;
 
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -13,14 +13,14 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Luyao
  */
-public abstract class Render {
+public abstract class Renderer {
 
     protected final HttpServletRequest request;
     protected final HttpServletResponse response;
 
     protected static final Charset CHARSET = StandardCharsets.UTF_8;
 
-    public Render() {
+    public Renderer() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         request = attributes.getRequest();
         response = attributes.getResponse();

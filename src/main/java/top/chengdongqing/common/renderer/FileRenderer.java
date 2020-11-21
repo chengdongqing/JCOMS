@@ -1,4 +1,4 @@
-package top.chengdongqing.common.render;
+package top.chengdongqing.common.renderer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,7 +14,7 @@ import java.util.Objects;
  *
  * @author Luyao
  */
-public class FileRender extends Render {
+public class FileRenderer extends Renderer {
 
     /**
      * 文件名
@@ -25,7 +25,7 @@ public class FileRender extends Render {
      */
     private final byte[] data;
 
-    public FileRender(String filename, byte[] data) {
+    public FileRenderer(String filename, byte[] data) {
         Objects.requireNonNull(data);
         if (StringUtils.isBlank(filename)) {
             throw new IllegalArgumentException("The filename cannot be blank.");
@@ -35,8 +35,8 @@ public class FileRender extends Render {
         this.data = data;
     }
 
-    public static Render of(String name, byte[] data) {
-        return new FileRender(name, data);
+    public static Renderer of(String name, byte[] data) {
+        return new FileRenderer(name, data);
     }
 
     @Override

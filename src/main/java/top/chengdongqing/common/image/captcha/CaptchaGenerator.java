@@ -1,7 +1,7 @@
 package top.chengdongqing.common.image.captcha;
 
 import top.chengdongqing.common.image.ImageGenerator;
-import top.chengdongqing.common.render.ImageRender;
+import top.chengdongqing.common.renderer.ImageRenderer;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -167,6 +167,6 @@ public class CaptchaGenerator implements ImageGenerator {
 
     @Override
     public void render() {
-        ImageRender.ofPNG(generate()).render();
+        ImageRenderer.ofPNG(generate()).render();
     }
 }

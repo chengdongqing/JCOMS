@@ -1,4 +1,4 @@
-package top.chengdongqing.common.render;
+package top.chengdongqing.common.renderer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -10,7 +10,7 @@ import java.io.OutputStream;
  *
  * @author Luyao
  */
-public class ImageRender extends Render {
+public class ImageRenderer extends Renderer {
 
     /**
      * 图片格式
@@ -25,7 +25,7 @@ public class ImageRender extends Render {
      */
     private final boolean cache;
 
-    public ImageRender(String format, byte[] data, boolean cache) {
+    public ImageRenderer(String format, byte[] data, boolean cache) {
         if (StringUtils.isBlank(format) || data == null) {
             throw new IllegalArgumentException("image format and data cannot be null");
         }
@@ -34,16 +34,16 @@ public class ImageRender extends Render {
         this.cache = cache;
     }
 
-    public static ImageRender ofPNG(byte[] data) {
+    public static ImageRenderer ofPNG(byte[] data) {
         return of("png", data, false);
     }
 
-    public static ImageRender of(String format, byte[] data) {
+    public static ImageRenderer of(String format, byte[] data) {
         return of(format, data, true);
     }
 
-    public static ImageRender of(String format, byte[] data, boolean cache) {
-        return new ImageRender(format, data, cache);
+    public static ImageRenderer of(String format, byte[] data, boolean cache) {
+        return new ImageRenderer(format, data, cache);
     }
 
     @Override
