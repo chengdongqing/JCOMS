@@ -49,7 +49,7 @@ public class WxpayHelperV3 {
         // 随机数
         String nonceStr = StrKit.getRandomUUID();
         // 数字签名
-        String signature = signature(v3Configs.getPrivateKey(), method.name(), apiPath, body, timestamp, nonceStr);
+        String signature = signature(method.name(), apiPath, body, timestamp, nonceStr);
         // 商户号
         String mchId = configs.getMchId();
         // 证书序列号
@@ -83,17 +83,16 @@ public class WxpayHelperV3 {
      * 生成签名
      * 签名算法：SHA256-RSA2048
      *
-     * @param key    私钥
      * @param params 参数
      * @return 数字签名
      */
-    public String signature(String key, String... params) {
+    public String signature(String... params) {
         // 构建待签名字符串
         String content = buildContent(params);
         // 生成签名
         return DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256,
                 content,
-                StrToBytes.of(key).fromBase64())
+                StrToBytes.of(v3Configs.getPrivateKey()).fromBase64())
                 .toBase64();
     }
 

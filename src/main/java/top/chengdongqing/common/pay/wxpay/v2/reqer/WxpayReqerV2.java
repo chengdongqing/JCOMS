@@ -9,14 +9,11 @@ import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.pay.IPayReqer;
 import top.chengdongqing.common.pay.PayConfigs;
 import top.chengdongqing.common.pay.entities.PayReqEntity;
+import top.chengdongqing.common.pay.enums.TradeType;
 import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.pay.wxpay.v2.WxpayConfigsV2;
 import top.chengdongqing.common.pay.wxpay.v2.WxpayHelperV2;
-import top.chengdongqing.common.signature.DigitalSigner;
-import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.transformer.BytesToStr;
-import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,43 +37,35 @@ public abstract class WxpayReqerV2 implements IPayReqer {
     protected WxpayConfigsV2 v2configs;
     @Autowired
     protected WxpayHelper helper;
+    @Autowired
+    protected WxpayHelperV2 helperV2;
 
     @Override
-    public Ret<Object> requestPayment(PayReqEntity entity) {
+    public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
         // 封装请求参数
-        Kv<String, String> params = Kv.of("mch_id", wxConfigs.getMchId())
-                .add("nonce_str", StrKit.getRandomUUID())
-                .add("body", configs.getWebTitle())
-                .add("detail", buildGoodsDetail(entity.getItems()))
-                .add("out_trade_no", entity.getOrderNo())
-                .add("total_fee", WxpayHelper.convertAmount(entity.getAmount()) + "")
-                .add("spbill_create_ip", entity.getIp())
+        Kv<String, String> params = Kv.of("trade_type", tradeType.name())
+                .add("total_fee", WxpayHelper.convertAmount(entity.getAmount()).toString())
                 .add("time_expire", buildExpireTime(configs.getTimeout()))
+                .add("detail", buildGoodsDetail(entity.getItems()))
                 .add("notify_url", v2configs.getNotifyUrl())
-                .add("key", v2configs.getSecretKey())
-                .add("sign_type", v2configs.getSignType());
+                .add("out_trade_no", entity.getOrderNo())
+                .add("spbill_create_ip", entity.getIp())
+                .add("body", configs.getWebTitle());
         // 不同客户端添加不同的参数
-        addSpecialParams(params, entity);
-        // 执行签名
-        BytesToStr sign = DigitalSigner.signature(
-                SignatureAlgorithm.HMAC_SHA256,
-                StrKit.buildQueryStr(params),
-                StrToBytes.of(v2configs.getSecretKey()).fromHex());
-        params.add("sign", sign.toHex());
-        params.remove("key");
+        addParams(params, entity);
 
-        // 转换数据类型
-        String xml = XmlKit.toXml(params);
+        // 构建请求xml
+        String xml = helperV2.buildRequestXml(tradeType, params);
         // 发送请求
         String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getPay());
         String result = HttpKit.post(requestUrl, xml).body();
         log.info("请求付款参数：{}, \n请求付款结果：{}", xml, result);
 
         // 转换结果格式
-        Kv<String, String> resultMap = XmlKit.parseXml(result);
+        Kv<String, String> response = XmlKit.parseXml(result);
         // 判断处理结果是否成功
-        Ret<Object> verifyResult = WxpayHelperV2.getResult(resultMap);
-        return verifyResult.isOk() ? buildResponse(resultMap) : verifyResult;
+        Ret<Object> verifyResult = WxpayHelperV2.getResult(response);
+        return verifyResult.isOk() ? buildResponse(response) : verifyResult;
     }
 
     /**
@@ -116,18 +105,19 @@ public abstract class WxpayReqerV2 implements IPayReqer {
     }
 
     /**
-     * 填充特有的参数
+     * 添加特有的参数
      *
-     * @param params 被填充的参数map
-     * @param entity 请求付款的参数实体
+     * @param params 参数容器
+     * @param entity 参数实体
      */
-    protected abstract void addSpecialParams(Kv<String, String> params, PayReqEntity entity);
+    protected void addParams(Kv<String, String> params, PayReqEntity entity) {
+    }
 
     /**
-     * 封装返回的数据
+     * 构建响应数据
      *
-     * @param resultMap 微信响应的数据
-     * @return 返回的数据
+     * @param response 微信响应的数据
+     * @return 构建的响应数据
      */
-    protected abstract Ret<Object> buildResponse(Kv<String, String> resultMap);
+    protected abstract Ret<Object> buildResponse(Kv<String, String> response);
 }

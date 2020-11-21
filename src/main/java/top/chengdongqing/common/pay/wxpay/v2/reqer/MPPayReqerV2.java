@@ -4,7 +4,6 @@ import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.pay.entities.PayReqEntity;
-import top.chengdongqing.common.pay.enums.TradeType;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
@@ -18,31 +17,22 @@ import top.chengdongqing.common.transformer.StrToBytes;
 public class MPPayReqerV2 extends WxpayReqerV2 {
 
     @Override
-    protected void addSpecialParams(Kv<String, String> params, PayReqEntity entity) {
-        params.add("appid", wxConfigs.getAppId().getMp());
-        params.add("trade_type", TradeType.MP.name());
+    protected void addParams(Kv<String, String> params, PayReqEntity entity) {
         params.add("openid", entity.getOpenId());
     }
 
-    /**
-     * 封装返回数据
-     *
-     * @param resultMap 微信响应数据
-     * @return 调起小程序支付需要的数据
-     */
     @Override
-    protected Ret<Object> buildResponse(Kv<String, String> resultMap) {
+    protected Ret<Object> buildResponse(Kv<String, String> response) {
         Kv<String, String> data = Kv.of("appId", wxConfigs.getAppId().getMp())
                 .add("timeStamp", WxpayHelper.getTimestamp())
                 .add("nonceStr", StrKit.getRandomUUID())
-                .add("package", "prepay_id=" + resultMap.get("prepay_id"))
+                .add("package", "prepay_id=" + response.get("prepay_id"))
                 .add("signType", v2configs.getSignType());
         // 获取签名
         String sign = DigitalSigner.signature(
                 SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(data),
-                StrToBytes.of(v2configs.getSecretKey()).fromHex())
-                .toHex();
+                StrToBytes.of(v2configs.getSecretKey()).fromHex()).toHex();
         data.add("paySign", sign);
         return Ret.ok(data);
     }

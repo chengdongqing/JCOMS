@@ -25,7 +25,7 @@ public class WxpayHelper {
      * @param amount 金额，单位元
      * @return 金额，单位分
      */
-    public static int convertAmount(BigDecimal amount) {
+    public static Integer convertAmount(BigDecimal amount) {
         return amount.multiply(BigDecimal.valueOf(100)).intValue();
     }
 

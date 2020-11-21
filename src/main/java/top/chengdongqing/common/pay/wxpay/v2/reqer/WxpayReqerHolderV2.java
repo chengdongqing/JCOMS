@@ -17,6 +17,7 @@ import top.chengdongqing.common.pay.enums.TradeType;
 public class WxpayReqerHolderV2 extends ApplicationObjectSupport {
 
     private final IPayReqer context;
+    private final TradeType tradeType;
 
     /**
      * 根据请求客户端获取请求实例
@@ -31,6 +32,7 @@ public class WxpayReqerHolderV2 extends ApplicationObjectSupport {
             case PC -> PCPayReqerV2.class;
         };
         context = super.getApplicationContext().getBean(clazz);
+        this.tradeType = tradeType;
     }
 
     /**
@@ -40,6 +42,6 @@ public class WxpayReqerHolderV2 extends ApplicationObjectSupport {
      * @return 请求响应
      */
     public Ret<Object> request(PayReqEntity entity) {
-        return context.requestPayment(entity);
+        return context.requestPayment(entity, tradeType);
     }
 }

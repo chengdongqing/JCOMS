@@ -40,6 +40,8 @@ public class WxpayerV2 implements IPayer {
     private WxpayConfigsV2 v2configs;
     @Autowired
     private WxpayHelper helper;
+    @Autowired
+    private WxpayHelperV2 helperV2;
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
@@ -48,23 +50,9 @@ public class WxpayerV2 implements IPayer {
 
     @Override
     public Ret<Void> requestClose(String orderNo, TradeType tradeType) {
-        // 封装请求参数
-        Kv<String, String> params = Kv.of("appid", helper.getAppId(tradeType))
-                .add("mch_id", configs.getMchId())
-                .add("nonce_str", StrKit.getRandomUUID())
-                .add("out_trade_no", orderNo)
-                .add("key", v2configs.getSecretKey())
-                .add("sign_type", v2configs.getSignType());
-        String sign = DigitalSigner.signature(
-                SignatureAlgorithm.HMAC_SHA256,
-                StrKit.buildQueryStr(params),
-                StrToBytes.of(v2configs.getSecretKey()).fromHex())
-                .toHex();
-        params.add("sign", sign);
-        params.remove("key");
-
-        // 转换数据类型
-        String xml = XmlKit.toXml(params);
+        // 构建请求xml
+        Kv<String, String> params = Kv.of("out_trade_no", orderNo);
+        String xml = helperV2.buildRequestXml(tradeType, params);
         // 发送请求
         String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getClose());
         String result = HttpKit.post(requestUrl, xml).body();
@@ -75,26 +63,14 @@ public class WxpayerV2 implements IPayer {
 
     @Override
     public Ret<Void> requestRefund(RefundReqEntity entity, TradeType tradeType) {
-        // 封装请求参数
-        Kv<String, String> params = Kv.of("appid", helper.getAppId(tradeType))
-                .add("mch_id", configs.getMchId())
-                .add("nonce_str", StrKit.getRandomUUID())
-                .add("out_trade_no", entity.getOrderNo())
+        // 构建请求xml
+        Kv<String, String> params = Kv.of("out_trade_no", entity.getOrderNo())
                 .add("out_refund_no", entity.getRefundNo())
-                .add("total_fee", WxpayHelper.convertAmount(entity.getTotalAmount()) + "")
-                .add("refund_fee", WxpayHelper.convertAmount(entity.getRefundAmount()) + "")
-                .add("key", v2configs.getSecretKey())
-                .add("sign_type", v2configs.getSignType());
-        String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
-                StrKit.buildQueryStr(params),
-                StrToBytes.of(v2configs.getSecretKey()).fromHex())
-                .toHex();
-        params.add("sign", sign);
-        params.remove("key");
+                .add("total_fee", WxpayHelper.convertAmount(entity.getTotalAmount()).toString())
+                .add("refund_fee", WxpayHelper.convertAmount(entity.getRefundAmount()).toString());
+        String xml = helperV2.buildRequestXml(tradeType, params);
 
         try {
-            // 转换数据类型
-            String xml = XmlKit.toXml(params);
             // 读取证书
             byte[] certBytes = Files.readAllBytes(Paths.get(v2configs.getCertPath()));
             // 发送请求
@@ -111,21 +87,9 @@ public class WxpayerV2 implements IPayer {
     @Override
     public Ret<TradeQueryEntity> requestQuery(String orderNo, TradeType tradeType) {
         // 封装请求参数
-        Kv<String, String> params = Kv.of("appid", helper.getAppId(tradeType))
-                .add("mch_id", configs.getMchId())
-                .add("nonce_str", StrKit.getRandomUUID())
-                .add("out_trade_no", orderNo)
-                .add("key", v2configs.getSecretKey())
-                .add("sign_type", v2configs.getSignType());
-        String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
-                StrKit.buildQueryStr(params),
-                StrToBytes.of(v2configs.getSecretKey()).fromHex())
-                .toHex();
-        params.add("sign", sign);
-        params.remove("key");
+        Kv<String, String> params = Kv.of("out_trade_no", orderNo);
+        String xml = helperV2.buildRequestXml(tradeType, params);
 
-        // 转换数据类型
-        String xml = XmlKit.toXml(params);
         // 发送请求
         String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getQuery());
         String result = HttpKit.post(requestUrl, xml).body();
@@ -179,9 +143,7 @@ public class WxpayerV2 implements IPayer {
         PayResEntity payResEntity = PayResEntity.builder()
                 .orderNo(params.get("out_trade_no"))
                 .paymentNo(params.get("transaction_id"))
-                // 将单位从分转为元
                 .paymentAmount(WxpayHelper.convertAmount(Integer.parseInt(params.get("total_fee"))))
-                // 转换支付时间
                 .paymentTime(WxpayHelperV2.convertTime(params.get("time_end")))
                 .build();
         // 返回回调结果

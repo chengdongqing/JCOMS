@@ -1,8 +1,19 @@
 package top.chengdongqing.common.pay.wxpay.v2;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
+import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
+import top.chengdongqing.common.kit.StrKit;
+import top.chengdongqing.common.kit.XmlKit;
+import top.chengdongqing.common.pay.enums.TradeType;
+import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
+import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.pay.wxpay.WxpayStatus;
+import top.chengdongqing.common.signature.DigitalSigner;
+import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,12 +24,46 @@ import java.util.Map;
  *
  * @author Luyao
  */
+@Component
 public class WxpayHelperV2 {
+
+    @Autowired
+    private WxpayConfigs configs;
+    @Autowired
+    private WxpayConfigsV2 v2configs;
+    @Autowired
+    private WxpayHelper helper;
 
     /**
      * 默认时间格式
      */
     public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+    /**
+     * 构建请求的xml
+     *
+     * @param tradeType     交易类型
+     * @param requestParams 请求参数
+     * @return 构建的xml
+     */
+    public String buildRequestXml(TradeType tradeType, Kv<String, String> requestParams) {
+        // 构建公共参数
+        Kv<String, String> params = Kv.of("appid", helper.getAppId(tradeType))
+                .add("mch_id", configs.getMchId())
+                .add("nonce_str", StrKit.getRandomUUID())
+                .add("key", v2configs.getSecretKey())
+                .add("sign_type", v2configs.getSignType());
+        // 添加业务参数
+        params.putAll(requestParams);
+        // 数字签名
+        String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
+                StrKit.buildQueryStr(params),
+                StrToBytes.of(v2configs.getSecretKey()).fromHex()).toHex();
+        params.add("sign", sign);
+        params.remove("key");
+        // 转换数据类型
+        return XmlKit.toXml(params);
+    }
 
     /**
      * 转换时间
@@ -33,11 +78,11 @@ public class WxpayHelperV2 {
     /**
      * 验证请求结果
      *
-     * @param resultMap 响应信息
+     * @param response 响应信息
      * @return 验证结果
      */
-    public static <T> Ret<T> getResult(Map<String, String> resultMap) {
-        boolean isOk = WxpayStatus.isOk(resultMap.get("return_code")) && WxpayStatus.isOk(resultMap.get("result_code"));
+    public static <T> Ret<T> getResult(Map<String, String> response) {
+        boolean isOk = WxpayStatus.isOk(response.get("return_code")) && WxpayStatus.isOk(response.get("result_code"));
         return isOk ? Ret.ok() : Ret.fail(ErrorMsg.REQUEST_FAILED);
     }
 }

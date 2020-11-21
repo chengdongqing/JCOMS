@@ -14,6 +14,7 @@ import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.pay.IPayReqer;
 import top.chengdongqing.common.pay.PayConfigs;
 import top.chengdongqing.common.pay.entities.PayReqEntity;
+import top.chengdongqing.common.pay.enums.TradeType;
 import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.pay.wxpay.v3.WxpayConfigsV3;
@@ -49,17 +50,18 @@ public abstract class WxpayReqerV3 implements IPayReqer {
     protected WxpayHelperV3 v3Helper;
 
     @Override
-    public Ret<Object> requestPayment(PayReqEntity entity) {
+    public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
         // 封装请求参数
-        Kv<String, String> params = Kv.of("mchid", wxConfigs.getMchId())
-                .add("description", configs.getWebTitle())
-                .add("out_trade_no", entity.getOrderNo())
+        Kv<String, String> params = Kv.of("appid", helper.getAppId(tradeType))
                 .add("time_expire", buildExpireTime(configs.getTimeout()))
                 .add("notify_url", v3Configs.getNotifyUrl().getPayment())
-                .add("amount", buildAmount(entity.getAmount()))
                 .add("detail", buildGoodsDetail(entity.getItems()))
-                .add("scene_info", buildSceneInfo(entity.getIp()));
-        addSpecialParams(params, entity);
+                .add("scene_info", buildSceneInfo(entity.getIp()))
+                .add("amount", buildAmount(entity.getAmount()))
+                .add("description", configs.getWebTitle())
+                .add("out_trade_no", entity.getOrderNo())
+                .add("mchid", wxConfigs.getMchId());
+        addParams(params, entity);
 
         // 构建请求头
         String apiPath = getTradeApi();
@@ -100,8 +102,7 @@ public abstract class WxpayReqerV3 implements IPayReqer {
      */
     private String buildAmount(BigDecimal amount) {
         return Kv.ofAny("currency", v3Configs.getCurrency())
-                .add("total", WxpayHelper.convertAmount(amount))
-                .toJson();
+                .add("total", WxpayHelper.convertAmount(amount)).toJson();
     }
 
     /**
@@ -151,12 +152,13 @@ public abstract class WxpayReqerV3 implements IPayReqer {
     }
 
     /**
-     * 填充特有的参数
+     * 添加特有的参数
      *
-     * @param params 被填充的参数map
-     * @param entity 请求付款的参数实体
+     * @param params 参数容器
+     * @param entity 参数实体
      */
-    protected abstract void addSpecialParams(Kv<String, String> params, PayReqEntity entity);
+    protected void addParams(Kv<String, String> params, PayReqEntity entity) {
+    }
 
     /**
      * 获取交易请求接口
@@ -168,8 +170,21 @@ public abstract class WxpayReqerV3 implements IPayReqer {
     /**
      * 构建响应数据
      *
-     * @param resultMap 微信响应的数据
-     * @return 返回的数据
+     * @param response 微信响应的数据
+     * @return 构建的响应数据
      */
-    protected abstract Ret<Object> buildResponse(Kv<String, String> resultMap);
+    protected abstract Ret<Object> buildResponse(Kv<String, String> response);
+
+    /**
+     * 构建支付签名
+     *
+     * @param appId     应用编号
+     * @param timestamp 时间戳
+     * @param nonceStr  随机数
+     * @param prepayId  预支付id
+     * @return 数字签名
+     */
+    protected String buildPaySign(String appId, String timestamp, String nonceStr, String prepayId) {
+        return v3Helper.signature(appId, timestamp, nonceStr, prepayId);
+    }
 }
