@@ -10,6 +10,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
 
+import javax.mail.SendFailedException;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -26,7 +27,7 @@ public class ApacheEmailSender extends EmailSender {
     private ApacheEmailConfigs configs;
 
     @Override
-    public void sendEmail(EmailEntity entity) {
+    public void sendEmail(EmailEntity entity) throws SendFailedException {
         // 实例化网页邮件客户端
         HtmlEmail he = new HtmlEmail();
         he.setHostName(configs.getHost());
@@ -42,8 +43,7 @@ public class ApacheEmailSender extends EmailSender {
             he.send();
             log.info("发送邮件成功：{}", he);
         } catch (EmailException e) {
-            log.warn("发送邮件失败", e);
-            throw new SendEmailException(ErrorMsg.SEND_FAILED);
+            throw new SendFailedException("邮件" + ErrorMsg.SEND_FAILED);
         }
     }
 }

@@ -14,6 +14,7 @@ import top.chengdongqing.common.sender.email.EmailTemplate;
 import top.chengdongqing.common.sender.sms.SmsEntity;
 import top.chengdongqing.common.sender.sms.SmsTemplate;
 
+import javax.mail.SendFailedException;
 import java.time.Duration;
 import java.util.Objects;
 
@@ -41,39 +42,42 @@ public class VerificationCodeSender {
     /**
      * 发送短信验证码
      */
-    public void send(String to, SmsTemplate template) {
+    public void send(String to, SmsTemplate template) throws SendFailedException {
         String code = StrKit.generateRandomCode();
+        // 生成短信内容
+        String content = Kv.of("code", code).toJson();
         senderFactory.getSmsSender().send(SmsEntity.builder()
                 .to(to)
                 .template(template.getCode())
-                .content(Kv.of("code", code).toJson())
+                .content(content)
                 .build());
-        handleResult(to, code);
+
+        cacheCode(to, code);
     }
 
     /**
      * 发送邮件验证码
      */
-    public void send(String to, EmailTemplate template) {
+    public void send(String to, EmailTemplate template) throws SendFailedException {
         String code = StrKit.generateRandomCode();
-        // 将随机数加到邮件内容中
+        // 生成邮件内容
         String content = template.getContent().formatted(code);
         senderFactory.getEmailSender().send(EmailEntity.builder()
                 .to(to)
                 .title(template.getTitle())
                 .content(content)
                 .build());
-        handleResult(to, code);
+
+        cacheCode(to, code);
     }
 
     /**
-     * 处理发送结果
+     * 缓存验证码
      *
-     * @param to   接收人账号
+     * @param to   账号
      * @param code 验证码
      */
-    private void handleResult(String to, String code) {
-        // 保存验证码到缓存，默认5分钟
+    private void cacheCode(String to, String code) {
         String key = CacheKeys.VERIFICATION_CODE + to;
         cacheTemplate.set(key, code, Duration.ofMinutes(cacheDuration));
     }

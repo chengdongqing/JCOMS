@@ -4,8 +4,8 @@ import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.pay.entities.PayReqEntity;
 
 /**
- * 请求付款接口
- * 针对多种支付客户端请求付款的统一接口定义
+ * 付款请求器
+ * 定义同支付平台下不同类型客户端请求支付统一接口
  *
  * @author Luyao
  */

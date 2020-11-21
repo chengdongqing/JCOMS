@@ -16,6 +16,7 @@ import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
 
+import javax.mail.SendFailedException;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -39,7 +40,7 @@ public class AliSmsSender extends SmsSender {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     @Override
-    public void sendSms(SmsEntity entity) {
+    public void sendSms(SmsEntity entity) throws SendFailedException {
         // 封装参数
         Kv<String, String> params = Kv.of("PhoneNumbers", entity.getTo())
                 .add("AccessKeyId", configs.getAccessKeyId())
@@ -64,7 +65,7 @@ public class AliSmsSender extends SmsSender {
         log.info("发送短信参数：{}，结果：{}", params, result);
         SendResult sendResult = JsonKit.parseObject(result, SendResult.class);
         if (!sendResult.isOk()) {
-            throw new SendSmsException(ErrorMsg.SEND_FAILED);
+            throw new SendFailedException("短信" + ErrorMsg.SEND_FAILED);
         }
     }
 

@@ -10,5 +10,5 @@ public interface CacheKeys {
     /**
      * 验证码
      */
-    String VERIFICATION_CODE = "verificationCode:";
+    String VERIFICATION_CODE = "verification-code:";
 }
