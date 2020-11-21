@@ -14,37 +14,35 @@ import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
 
+import java.security.SignatureException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 
 /**
- * token生成与验证工具
+ * JWT处理器
+ * 基于EdDSA数字签名算法
  *
  * @author Luyao
  */
 @Component
 @NoArgsConstructor
 @AllArgsConstructor
-public class JwtOperator {
+public class JwtProcessor implements IJwtProcessor {
 
-    @Autowired
-    private JwtConfigs configs;
     /**
      * 签名算法
      */
     private static final SignatureAlgorithm ALGORITHM = SignatureAlgorithm.EdDSA_ED25519;
 
-    /**
-     * 生成token
-     * token结构：base64(headers).base64(payloads).base64(signature)
-     * 待签名内容：signature(base64(headers.toJson()).base64(payloads.toJson()))
-     *
-     * @param payloads 有效载荷
-     * @return token对象
-     */
-    public JwtInfo generate(Kv<String, Object> payloads) {
-        if (payloads == null || payloads.isEmpty()) throw new IllegalArgumentException("The payloads cannot be empty.");
+    @Autowired
+    private JwtConfigs configs;
+
+    @Override
+    public JsonWebToken generate(Kv<String, Object> payloads) {
+        if (payloads == null || payloads.isEmpty()) {
+            throw new IllegalArgumentException("The jwt payloads cannot be empty.");
+        }
 
         // 头部信息
         JwtHeader header = new JwtHeader();
@@ -63,63 +61,63 @@ public class JwtOperator {
         String signature = DigitalSigner.signature(ALGORITHM, content,
                 StrToBytes.of(configs.getPrivateKey()).fromBase64())
                 .toBase64();
-        content += ".".concat(signature);
+        // 合成令牌
+        String token = content.concat(".").concat(signature);
         // 返回token详情
-        return JwtInfo.builder()
-                .token(content)
+        return JsonWebToken.builder()
+                .token(token)
                 .header(header)
                 .payloads(payloads)
                 .signature(signature)
                 .build();
     }
 
-    /**
-     * 验证token是否有效
-     *
-     * @param token token
-     * @return 是否有效
-     */
-    public boolean verify(String token) {
-        String[] parts = getParts(token);
+    @Override
+    public Kv<String, Object> verify(String token) throws SignatureException, TokenExpiredException {
+        String[] parts;
+        try {
+            // 获取token的每部分
+            parts = getParts(token);
 
-        // 获取被签名的数据
-        String content = parts[0] + "." + parts[1];
+            // 获取被签名的数据
+            String content = parts[0].concat(".").concat(parts[1]);
+            // 验签
+            boolean verified = DigitalSigner.verify(ALGORITHM, content,
+                    StrToBytes.of(configs.getPublicKey()).fromBase64(),
+                    StrToBytes.of(parts[2]).fromBase64());
+            if (!verified) throw new SignatureException("token签名无效");
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("token无效");
+        }
 
-        // 验签
-        boolean verified = DigitalSigner.verify(ALGORITHM, content,
-                StrToBytes.of(configs.getPublicKey()).fromBase64(),
-                StrToBytes.of(parts[2]).fromBase64());
-        if (!verified) return false;
+        // 解码头部信息
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        JwtHeader header = JsonKit.parseObject(decoder.decode(parts[0]), JwtHeader.class);
 
-        // 将头部解码并转JwtHeader对象
-        JwtHeader header = JsonKit.parseObject(Base64.getUrlDecoder().decode(parts[0]), JwtHeader.class);
+        // 判断是否过期
+        if (Instant.ofEpochMilli(header.getExpiryTime()).isBefore(Instant.now())) {
+            throw new TokenExpiredException("token已过期");
+        }
 
-        // 获取过期时间并判断是否过期
-        return Instant.ofEpochMilli(header.getExpiryTime()).isAfter(Instant.now());
+        // 解码有效载荷
+        Kv<String, Object> payloads = JsonKit.parseKv(decoder.decode(parts[1]));
+        if (payloads == null || payloads.isEmpty()) {
+            throw new IllegalStateException("not any payloads of token " + token);
+        }
+        return payloads;
     }
 
     /**
      * 将token根据点分成3部分
+     *
+     * @param token 令牌
+     * @return token的每部分
      */
     private String[] getParts(String token) {
-        if (StringUtils.isBlank(token)) throw new IllegalArgumentException("The token cannot be blank");
+        if (StringUtils.isBlank(token)) throw new IllegalArgumentException();
         String[] parts = token.split("\\.");
-        if (parts.length != 3) throw new IllegalArgumentException("The token is wrong, token: " + token);
+        if (parts.length != 3) throw new IllegalArgumentException();
         return parts;
-    }
-
-    /**
-     * 从token中获取有效载荷
-     *
-     * @param token token
-     * @return 有效载荷
-     */
-    public Kv<String, Object> getPayloads(String token) {
-        String[] parts = getParts(token);
-        Kv<String, Object> payloads = JsonKit.parseKv(Base64.getUrlDecoder().decode(parts[1]));
-        if (payloads == null || payloads.isEmpty())
-            throw new IllegalStateException("parse json failed from token: " + token);
-        return payloads;
     }
 }
 

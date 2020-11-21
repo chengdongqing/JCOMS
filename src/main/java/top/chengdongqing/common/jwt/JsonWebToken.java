@@ -11,7 +11,7 @@ import top.chengdongqing.common.kit.Kv;
  */
 @Data
 @Builder
-public class JwtInfo {
+public class JsonWebToken {
 
     /**
      * 访问令牌
