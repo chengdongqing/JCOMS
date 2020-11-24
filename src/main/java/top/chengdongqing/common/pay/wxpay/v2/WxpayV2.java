@@ -1,7 +1,6 @@
 package top.chengdongqing.common.pay.wxpay.v2;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Component;
@@ -9,12 +8,12 @@ import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.XmlKit;
-import top.chengdongqing.common.pay.IPayer;
 import top.chengdongqing.common.pay.entity.PayReqEntity;
 import top.chengdongqing.common.pay.entity.PayResEntity;
 import top.chengdongqing.common.pay.entity.RefundReqEntity;
 import top.chengdongqing.common.pay.entity.TradeQueryEntity;
 import top.chengdongqing.common.pay.enums.TradeChannel;
+import top.chengdongqing.common.pay.enums.TradeState;
 import top.chengdongqing.common.pay.enums.TradeType;
 import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
@@ -35,7 +34,7 @@ import java.nio.file.Paths;
  */
 @Slf4j
 @Component
-public class WxpayerV2 extends ApplicationObjectSupport implements IPayer {
+public class WxpayV2 extends ApplicationObjectSupport implements IWxpayV2 {
 
     @Autowired
     private WxpayConfigs configs;
@@ -117,32 +116,30 @@ public class WxpayerV2 extends ApplicationObjectSupport implements IPayer {
                 .tradeTime(WxpayHelperV2.convertTime(response.get("time_end")))
                 .tradeAmount(WxpayHelper.convertAmount(Integer.parseInt(response.get("total_fee"))))
                 .tradeChannel(TradeChannel.WXPAY)
-                .tradeType(WxpayHelper.getTradeType(response.get("trade_type")))
-                .tradeState(WxpayHelper.getTradeState(response.get("trade_state")))
+                .tradeType(TradeType.ofWxpayCode(response.get("trade_type")))
+                .tradeState(TradeState.ofAlipayCode(response.get("trade_state")))
                 .build();
         return Ret.ok(tradeQueryEntity);
     }
 
-    /**
-     * 处理支付回调
-     *
-     * @param xml 回调数据
-     * @return 处理结果
-     */
+    @Override
     public Ret<PayResEntity> handlePayCallback(String xml) {
         // 将xml转为map
         Kv<String, String> params = XmlKit.parseXml(xml);
         // 判断参数是否为空
-        if (params == null || params.isEmpty() || StringUtils.isBlank(params.get("sign"))) {
-            throw new IllegalArgumentException("wx callback params is error");
+        if (params.isEmpty() || !params.containsKey("sign")) {
+            throw new IllegalArgumentException("wxpay callback params is error");
         }
 
         // 验证签名
         boolean isOk = DigitalSigner.verify(SignatureAlgorithm.HMAC_SHA256,
                 helperV2.buildQueryStr(params),
-                StrToBytes.of(v2configs.getSecretKey()).fromHex(),
+                v2configs.getSecretKey().getBytes(),
                 StrToBytes.of(params.get("sign")).fromHex());
-        if (!isOk) return buildFailCallback("验签失败");
+        if (!isOk) {
+            log.warn("微信支付回调验签失败：{}", params);
+            return buildFailCallback("验签失败");
+        }
 
         // 判断支付结果
         if (!WxpayStatus.isOk(params.get("result_code"))) return buildFailCallback("支付失败");

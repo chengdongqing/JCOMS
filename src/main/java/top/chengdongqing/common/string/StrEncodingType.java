@@ -1,4 +1,4 @@
-package top.chengdongqing.common.constant;
+package top.chengdongqing.common.string;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,12 +18,12 @@ import java.util.function.Function;
 public enum StrEncodingType {
 
     /**
-     * 地址栏参数规则
+     * 地址栏参数规则编解码
      */
     URL(value -> URLEncoder.encode(value, StandardCharsets.UTF_8),
             value -> URLDecoder.decode(value, StandardCharsets.UTF_8)),
     /**
-     * POP编码规则
+     * POP规则编解码
      */
     POP(value -> URL.getEncodeLogic().apply(value).replace("+", "%20")
             .replace("*", "%2A").replace("%7E", "~"),

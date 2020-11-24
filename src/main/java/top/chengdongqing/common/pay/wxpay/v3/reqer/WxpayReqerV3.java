@@ -69,7 +69,7 @@ public abstract class WxpayReqerV3 implements IRequestPay {
         // 发送支付请求
         String requestUrl = helper.buildRequestUrl(apiPath);
         HttpResponse<String> response = HttpKit.post(requestUrl, headers, body);
-        log.info("微信请求订单付款：{}，\n请求头：{}，\n请求体：{}，\n响应结果：{}",
+        log.info("请求微信付款：{}，\n请求头：{}，\n请求体：{}，\n响应结果：{}",
                 requestUrl,
                 headers,
                 body,

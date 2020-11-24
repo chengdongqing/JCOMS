@@ -1,6 +1,7 @@
 package top.chengdongqing.common.kit;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 链式HashMap
@@ -31,6 +32,22 @@ public class Kv<K, V> extends HashMap<K, V> {
      */
     public static <K, V> Kv<K, V> of(K key, V value) {
         return new Kv<K, V>().add(key, value);
+    }
+
+    /**
+     * 将从HttpServletRequest中获取的全部参数Map转为Kv对象
+     *
+     * @param paraMap 参数Map
+     * @return 包含全部参数的Kv对象
+     */
+    public static Kv<String, String> of(Map<String, String[]> paraMap) {
+        Kv<String, String> params = new Kv<>();
+        paraMap.forEach((key, values) -> {
+            if (values != null && values.length > 0) {
+                params.add(key, values[0]);
+            }
+        });
+        return params;
     }
 
     /**

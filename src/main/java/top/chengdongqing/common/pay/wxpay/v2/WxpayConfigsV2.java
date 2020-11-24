@@ -28,6 +28,7 @@ public class WxpayConfigsV2 {
     /**
      * 签名用的密钥
      */
+    @Value("${pay.wx.v2.secret-key:3u24y3jdksfjksdu3y432bndbf}")
     private String secretKey;
     /**
      * 签名方式

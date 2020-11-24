@@ -1,6 +1,6 @@
 package top.chengdongqing.common.sender;
 
-import org.springframework.beans.factory.CannotLoadBeanClassException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.support.ApplicationObjectSupport;
@@ -35,7 +35,7 @@ public class SenderFactory extends ApplicationObjectSupport {
      *
      * @return 短信发送器实例
      */
-    public SmsSender getSmsSender() throws CannotLoadBeanClassException {
+    public SmsSender getSmsSender() throws NoSuchBeanDefinitionException {
         Objects.requireNonNull(smsActive, "sms.active cannot be blank.");
         String beanName = smsActive + "SmsSender";
         return super.getApplicationContext().getBean(beanName, SmsSender.class);
@@ -46,7 +46,7 @@ public class SenderFactory extends ApplicationObjectSupport {
      *
      * @return 邮件发送器实例
      */
-    public EmailSender getEmailSender() throws CannotLoadBeanClassException {
+    public EmailSender getEmailSender() throws NoSuchBeanDefinitionException {
         Objects.requireNonNull(emailActive, "sms.active cannot be blank.");
         String beanName = emailActive + "EmailSender";
         return super.getApplicationContext().getBean(beanName, EmailSender.class);

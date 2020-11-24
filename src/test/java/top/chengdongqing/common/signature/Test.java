@@ -30,8 +30,7 @@ public class Test {
         BytesToStr sign = DigitalSigner.signature(algorithm, content, StrToBytes.of(keyPair.privateKey()).fromBase64());
         System.out.println("签名（16进制字符串）：" + sign.toHex());
         System.out.println("签名（base64字符串）：" + sign.toBase64());
-        boolean isOk = DigitalSigner.verify(algorithm, content, StrToBytes.of(keyPair.publicKey()).fromBase64(),
-                StrToBytes.of(sign.toBase64()).fromBase64());
+        boolean isOk = DigitalSigner.verify(algorithm, content, StrToBytes.of(keyPair.publicKey()).fromBase64(), sign.bytes());
         System.out.println("签名有效：" + isOk);
     }
 
@@ -44,8 +43,7 @@ public class Test {
         BytesToStr sign = DigitalSigner.signature(algorithm, content, StrToBytes.of(key.toHex()).fromHex());
         System.out.println("签名（16进制字符串）：" + sign.toHex());
         System.out.println("签名（base64字符串）：" + sign.toBase64());
-        boolean isOk = DigitalSigner.verify(algorithm, content, StrToBytes.of(key.toHex()).fromHex(),
-                StrToBytes.of(sign.toHex()).fromHex());
+        boolean isOk = DigitalSigner.verify(algorithm, content, key.bytes(), sign.bytes());
         System.out.println("签名有效：" + isOk);
     }
 
@@ -55,7 +53,7 @@ public class Test {
         BytesToStr sign = DigitalSigner.signature(algorithm, content, null);
         System.out.println("签名（16进制字符串）：" + sign.toHex());
         System.out.println("签名（base64字符串）：" + sign.toBase64());
-        boolean isOk = DigitalSigner.verify(algorithm, content, null, StrToBytes.of(sign.toHex()).fromHex());
+        boolean isOk = DigitalSigner.verify(algorithm, content, null, sign.bytes());
         System.out.println("签名有效：" + isOk);
     }
 }

@@ -8,7 +8,6 @@ import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.StrKit;
-import top.chengdongqing.common.pay.enums.TradeState;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
@@ -70,21 +69,6 @@ public class AlipayHelper {
         // 判断请求结果
         if (!AlipayStatus.isOk(resKv.get("code"))) throw new IllegalStateException(resKv.get("sub_msg"));
         return resKv;
-    }
-
-    /**
-     * 获取交易状态
-     *
-     * @param tradeState 交易状态
-     * @return 交易状态枚举
-     */
-    public TradeState getTradeState(String tradeState) {
-        return switch (tradeState) {
-            case "WAIT_BUYER_PAY" -> TradeState.USER_PAYING;
-            case "TRADE_CLOSED" -> TradeState.CLOSED;
-            case "TRADE_SUCCESS", "TRADE_FINISHED" -> TradeState.SUCCESS;
-            default -> TradeState.PAY_ERROR;
-        };
     }
 
     /**

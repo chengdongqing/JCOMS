@@ -1,6 +1,6 @@
 package top.chengdongqing.common.file.upload;
 
-import org.springframework.beans.factory.CannotLoadBeanClassException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.support.ApplicationObjectSupport;
@@ -25,7 +25,7 @@ public class UploaderFactory extends ApplicationObjectSupport {
      *
      * @return 上传器实例
      */
-    public AbstractUploader getUploader() throws CannotLoadBeanClassException {
+    public AbstractUploader getUploader() throws NoSuchBeanDefinitionException {
         Objects.requireNonNull(active, "upload.active cannot be null.");
         String beanName = active + "FileManager";
         return super.getApplicationContext().getBean(beanName, AbstractUploader.class);

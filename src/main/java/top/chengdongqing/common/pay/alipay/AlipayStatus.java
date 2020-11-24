@@ -8,9 +8,13 @@ package top.chengdongqing.common.pay.alipay;
 public interface AlipayStatus {
 
     /**
-     * 成功
+     * 请求支付宝服务器成功代码
      */
     String SUCCESS = "10000";
+    /**
+     * 回调时给支付宝的收到响应代码
+     */
+    String CALLBACK_CODE = "success";
 
     /**
      * 判断状态是否为成功

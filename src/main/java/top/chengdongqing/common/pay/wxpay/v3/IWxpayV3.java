@@ -1,16 +1,18 @@
-package top.chengdongqing.common.pay.wxpay.v3.callback;
+package top.chengdongqing.common.pay.wxpay.v3;
 
 import top.chengdongqing.common.kit.Ret;
+import top.chengdongqing.common.pay.IPayment;
 import top.chengdongqing.common.pay.entity.PayResEntity;
 import top.chengdongqing.common.pay.entity.RefundResEntity;
-import top.chengdongqing.common.pay.wxpay.v3.callback.entity.CallbackEntity;
+import top.chengdongqing.common.pay.wxpay.v3.entity.CallbackEntity;
 
 /**
- * 微信v3回调处理器
+ * 微信支付处理器
+ * v3
  *
  * @author Luyao
  */
-public interface ICallbackHandler {
+public interface IWxpayV3 extends IPayment {
 
     /**
      * 处理支付回调

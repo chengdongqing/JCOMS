@@ -13,7 +13,6 @@ import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.pay.wxpay.WxpayStatus;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
-import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,7 +54,7 @@ public class WxpayHelperV2 {
         // 添加数字签名
         String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
                 buildQueryStr(params),
-                StrToBytes.of(v2configs.getSecretKey()).fromHex()).toHex();
+                v2configs.getSecretKey().getBytes()).toHex();
         params.add("sign", sign);
         // 转换数据类型
         return XmlKit.toXml(params);

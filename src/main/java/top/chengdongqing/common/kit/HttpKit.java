@@ -2,7 +2,7 @@ package top.chengdongqing.common.kit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
-import top.chengdongqing.common.constant.StrEncodingType;
+import top.chengdongqing.common.string.StrEncodingType;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;

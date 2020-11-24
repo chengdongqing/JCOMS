@@ -2,7 +2,6 @@ package top.chengdongqing.common.pay.wxpay.v3;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
@@ -10,15 +9,14 @@ import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.pay.IPayer;
 import top.chengdongqing.common.pay.entity.PayReqEntity;
 import top.chengdongqing.common.pay.entity.RefundReqEntity;
 import top.chengdongqing.common.pay.entity.TradeQueryEntity;
 import top.chengdongqing.common.pay.enums.TradeChannel;
+import top.chengdongqing.common.pay.enums.TradeState;
 import top.chengdongqing.common.pay.enums.TradeType;
 import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
-import top.chengdongqing.common.pay.wxpay.v3.callback.ICallbackHandler;
 import top.chengdongqing.common.pay.wxpay.v3.reqer.*;
 
 import java.net.http.HttpResponse;
@@ -31,18 +29,12 @@ import java.net.http.HttpResponse;
  */
 @Slf4j
 @Component
-public class WxpayerV3 extends ApplicationObjectSupport implements IPayer {
+public class WxpayV3 extends WxpayCallbackHandler {
 
     @Autowired
     private WxpayConfigs configs;
     @Autowired
-    private WxpayConfigsV3 v3Configs;
-    @Autowired
     private WxpayHelper helper;
-    @Autowired
-    private WxpayHelperV3 v3Helper;
-    @Autowired
-    private ICallbackHandler callbackHandler;
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
@@ -159,20 +151,9 @@ public class WxpayerV3 extends ApplicationObjectSupport implements IPayer {
                 .tradeTime(WxpayHelperV3.convertTime(resultMap.get("success_time")))
                 .tradeAmount(WxpayHelper.convertAmount(totalAmount))
                 .tradeChannel(TradeChannel.WXPAY)
-                .tradeType(WxpayHelper.getTradeType(resultMap.get("trade_type")))
-                .tradeState(WxpayHelper.getTradeState(resultMap.get("trade_state")))
+                .tradeType(TradeType.ofWxpayCode(resultMap.get("trade_type")))
+                .tradeState(TradeState.ofWxpayCode(resultMap.get("trade_state")))
                 .build();
         return Ret.ok(tradeQueryEntity);
-    }
-
-    /**
-     * 获取回调处理器
-     * - 支付回调
-     * - 退款回调
-     *
-     * @return 回调处理器
-     */
-    public ICallbackHandler getCallbackHandler() {
-        return callbackHandler;
     }
 }

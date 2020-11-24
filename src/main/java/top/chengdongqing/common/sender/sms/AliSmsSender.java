@@ -8,13 +8,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
-import top.chengdongqing.common.constant.StrEncodingType;
 import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.string.StrEncodingType;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 import javax.mail.SendFailedException;

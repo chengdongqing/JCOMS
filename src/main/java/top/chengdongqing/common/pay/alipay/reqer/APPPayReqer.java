@@ -1,10 +1,10 @@
 package top.chengdongqing.common.pay.alipay.reqer;
 
 import org.springframework.stereotype.Component;
-import top.chengdongqing.common.constant.StrEncodingType;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
+import top.chengdongqing.common.string.StrEncodingType;
 
 /**
  * APP端请求支付宝付款

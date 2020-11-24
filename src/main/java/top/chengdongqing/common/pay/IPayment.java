@@ -7,11 +7,11 @@ import top.chengdongqing.common.pay.entity.TradeQueryEntity;
 import top.chengdongqing.common.pay.enums.TradeType;
 
 /**
- * 支付器顶层接口
+ * 支付处理器顶层接口
  *
  * @author Luyao
  */
-public interface IPayer {
+public interface IPayment {
 
     /**
      * 发起付款

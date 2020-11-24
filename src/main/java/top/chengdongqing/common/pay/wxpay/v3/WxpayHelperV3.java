@@ -12,7 +12,7 @@ import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.pay.wxpay.WxpayStatus;
-import top.chengdongqing.common.pay.wxpay.v3.callback.entity.EncryptedResource;
+import top.chengdongqing.common.pay.wxpay.v3.entity.EncryptedResource;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;

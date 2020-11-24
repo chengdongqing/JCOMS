@@ -1,43 +1,44 @@
-package top.chengdongqing.common.pay.wxpay.v3.callback;
+package top.chengdongqing.common.pay.wxpay.v3;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.context.support.ApplicationObjectSupport;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.pay.entity.PayResEntity;
 import top.chengdongqing.common.pay.entity.RefundResEntity;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.pay.wxpay.WxpayStatus;
-import top.chengdongqing.common.pay.wxpay.v3.WxpayConfigsV3;
-import top.chengdongqing.common.pay.wxpay.v3.WxpayHelperV3;
-import top.chengdongqing.common.pay.wxpay.v3.callback.entity.CallbackEntity;
-import top.chengdongqing.common.pay.wxpay.v3.callback.entity.PayCallbackEntity;
-import top.chengdongqing.common.pay.wxpay.v3.callback.entity.RefundCallbackEntity;
+import top.chengdongqing.common.pay.wxpay.v3.entity.CallbackEntity;
+import top.chengdongqing.common.pay.wxpay.v3.entity.PayCallbackEntity;
+import top.chengdongqing.common.pay.wxpay.v3.entity.RefundCallbackEntity;
 
 /**
- * 回调处理器
+ * 微信回调处理器
+ * v3
  *
  * @author Luyao
  */
 @Slf4j
-@Component
-public class CallbackHandler implements ICallbackHandler {
+public abstract class WxpayCallbackHandler extends ApplicationObjectSupport implements IWxpayV3 {
 
     @Autowired
-    private WxpayConfigsV3 v3Configs;
+    protected WxpayConfigsV3 v3Configs;
     @Autowired
-    private WxpayHelperV3 helper;
+    protected WxpayHelperV3 v3Helper;
 
     @Override
     public Ret<PayResEntity> handlePayCallback(CallbackEntity callback) {
         // 验证签名
-        boolean verify = helper.verify(callback.getSerialNo(),
+        boolean verify = v3Helper.verify(callback.getSerialNo(),
                 v3Configs.getPublicKey(),
                 callback.getSign(),
                 callback.getTimestamp(),
                 callback.getNonceStr(),
                 callback.getBody());
-        if (!verify) return WxpayHelperV3.buildFailCallback("验签失败");
+        if (!verify) {
+            log.warn("微信支付回调验签失败：{}", callback);
+            return WxpayHelperV3.buildFailCallback("验签失败");
+        }
 
         // 解密数据
         PayCallbackEntity payCallback = WxpayHelperV3.decryptData(callback.getBody(), v3Configs.getSecretKey(), PayCallbackEntity.class);
@@ -62,7 +63,7 @@ public class CallbackHandler implements ICallbackHandler {
     @Override
     public Ret<RefundResEntity> handleRefundCallback(CallbackEntity callback) {
         // 验证签名
-        boolean verify = helper.verify(callback.getSerialNo(),
+        boolean verify = v3Helper.verify(callback.getSerialNo(),
                 v3Configs.getPublicKey(),
                 callback.getSign(),
                 callback.getTimestamp(),

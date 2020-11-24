@@ -41,7 +41,7 @@ public abstract class WxpayReqerV2 implements IRequestPay {
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
         // 封装请求参数
-        Kv<String, String> params = Kv.of("trade_type", tradeType.name())
+        Kv<String, String> params = Kv.of("trade_type", tradeType.getWxpayCode())
                 .add("total_fee", WxpayHelper.convertAmount(entity.getAmount()).toString())
                 .add("time_expire", buildExpireTime(configs.getTimeout()))
                 .add("detail", buildGoodsDetail(entity.getItems()))
@@ -57,7 +57,7 @@ public abstract class WxpayReqerV2 implements IRequestPay {
         // 发送请求
         String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getPay());
         String result = HttpKit.post(requestUrl, xml).body();
-        log.info("微信请求付款参数：{}, \n请求付款结果：{}", xml, result);
+        log.info("请求微信付款参数：{}, \n响应结果：{}", xml, result);
 
         // 转换结果格式
         Kv<String, String> response = XmlKit.parseXml(result);
