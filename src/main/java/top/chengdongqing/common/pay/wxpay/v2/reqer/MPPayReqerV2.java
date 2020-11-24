@@ -1,9 +1,10 @@
 package top.chengdongqing.common.pay.wxpay.v2.reqer;
 
+import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
-import top.chengdongqing.common.pay.entities.PayReqEntity;
+import top.chengdongqing.common.pay.entity.PayReqEntity;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
@@ -14,11 +15,12 @@ import top.chengdongqing.common.transformer.StrToBytes;
  *
  * @author Luyao
  */
+@Component
 public class MPPayReqerV2 extends WxpayReqerV2 {
 
     @Override
     protected void addParams(Kv<String, String> params, PayReqEntity entity) {
-        params.add("openid", entity.getOpenId());
+        params.add("openid", entity.getUserId());
     }
 
     @Override

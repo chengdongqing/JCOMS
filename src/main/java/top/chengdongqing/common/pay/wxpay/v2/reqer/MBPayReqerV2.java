@@ -1,14 +1,16 @@
 package top.chengdongqing.common.pay.wxpay.v2.reqer;
 
+import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.pay.entities.PayReqEntity;
+import top.chengdongqing.common.pay.entity.PayReqEntity;
 
 /**
  * 微信外手机浏览器调起微信客户端支付
  *
  * @author Luyao
  */
+@Component
 public class MBPayReqerV2 extends WxpayReqerV2 {
 
     @Override

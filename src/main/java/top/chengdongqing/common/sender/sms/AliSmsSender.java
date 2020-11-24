@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
+import top.chengdongqing.common.constant.StrEncodingType;
 import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
@@ -55,7 +56,7 @@ public class AliSmsSender extends SmsSender {
                 .add("TemplateCode", entity.getTemplate())
                 .add("TemplateParam", entity.getContent());
         String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA1,
-                StrKit.buildQueryStr(params, true),
+                StrKit.buildQueryStr(params, StrEncodingType.POP),
                 StrToBytes.of(configs.getAccessSecret()).fromBase64())
                 .toBase64();
         params.add("Signature", sign);

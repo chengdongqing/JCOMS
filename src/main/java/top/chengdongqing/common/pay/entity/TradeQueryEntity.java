@@ -1,4 +1,4 @@
-package top.chengdongqing.common.pay.entities;
+package top.chengdongqing.common.pay.entity;
 
 import lombok.Builder;
 import lombok.Data;

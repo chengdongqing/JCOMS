@@ -1,9 +1,10 @@
 package top.chengdongqing.common.pay.wxpay.v3.reqer;
 
+import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
-import top.chengdongqing.common.pay.entities.PayReqEntity;
+import top.chengdongqing.common.pay.entity.PayReqEntity;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 
 /**
@@ -11,11 +12,12 @@ import top.chengdongqing.common.pay.wxpay.WxpayHelper;
  *
  * @author Luyao
  */
+@Component
 public class MPPayReqerV3 extends WxpayReqerV3 {
 
     @Override
     protected void addParams(Kv<String, String> params, PayReqEntity entity) {
-        params.add("payer", Kv.of("openid", entity.getOpenId()).toJson());
+        params.add("payer", Kv.of("openid", entity.getUserId()).toJson());
     }
 
     @Override

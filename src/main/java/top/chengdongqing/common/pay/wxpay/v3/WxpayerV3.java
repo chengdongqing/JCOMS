@@ -2,6 +2,7 @@ package top.chengdongqing.common.pay.wxpay.v3;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
@@ -10,15 +11,15 @@ import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.pay.IPayer;
-import top.chengdongqing.common.pay.entities.PayReqEntity;
-import top.chengdongqing.common.pay.entities.RefundReqEntity;
-import top.chengdongqing.common.pay.entities.TradeQueryEntity;
+import top.chengdongqing.common.pay.entity.PayReqEntity;
+import top.chengdongqing.common.pay.entity.RefundReqEntity;
+import top.chengdongqing.common.pay.entity.TradeQueryEntity;
 import top.chengdongqing.common.pay.enums.TradeChannel;
 import top.chengdongqing.common.pay.enums.TradeType;
 import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.pay.wxpay.v3.callback.ICallbackHandler;
-import top.chengdongqing.common.pay.wxpay.v3.reqer.WxpayReqerHolderV3;
+import top.chengdongqing.common.pay.wxpay.v3.reqer.*;
 
 import java.net.http.HttpResponse;
 
@@ -30,7 +31,7 @@ import java.net.http.HttpResponse;
  */
 @Slf4j
 @Component
-public class WxpayerV3 implements IPayer {
+public class WxpayerV3 extends ApplicationObjectSupport implements IPayer {
 
     @Autowired
     private WxpayConfigs configs;
@@ -45,7 +46,13 @@ public class WxpayerV3 implements IPayer {
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
-        return new WxpayReqerHolderV3(tradeType).request(entity);
+        Class<? extends WxpayReqerV3> clazz = switch (tradeType) {
+            case APP -> APPPayReqerV3.class;
+            case MB -> MBPayReqerV3.class;
+            case MP -> MPPayReqerV3.class;
+            case PC -> PCPayReqerV3.class;
+        };
+        return super.getApplicationContext().getBean(clazz).requestPayment(entity, tradeType);
     }
 
     @Override

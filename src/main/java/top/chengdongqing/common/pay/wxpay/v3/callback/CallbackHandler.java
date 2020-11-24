@@ -4,15 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.pay.entities.PayResEntity;
-import top.chengdongqing.common.pay.entities.RefundResEntity;
+import top.chengdongqing.common.pay.entity.PayResEntity;
+import top.chengdongqing.common.pay.entity.RefundResEntity;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.pay.wxpay.WxpayStatus;
 import top.chengdongqing.common.pay.wxpay.v3.WxpayConfigsV3;
 import top.chengdongqing.common.pay.wxpay.v3.WxpayHelperV3;
-import top.chengdongqing.common.pay.wxpay.v3.callback.entities.CallbackEntity;
-import top.chengdongqing.common.pay.wxpay.v3.callback.entities.PayCallbackEntity;
-import top.chengdongqing.common.pay.wxpay.v3.callback.entities.RefundCallbackEntity;
+import top.chengdongqing.common.pay.wxpay.v3.callback.entity.CallbackEntity;
+import top.chengdongqing.common.pay.wxpay.v3.callback.entity.PayCallbackEntity;
+import top.chengdongqing.common.pay.wxpay.v3.callback.entity.RefundCallbackEntity;
 
 /**
  * 回调处理器

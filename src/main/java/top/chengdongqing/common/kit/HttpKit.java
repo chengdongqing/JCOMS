@@ -2,6 +2,7 @@ package top.chengdongqing.common.kit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
+import top.chengdongqing.common.constant.StrEncodingType;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -10,11 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.util.stream.Collectors;
@@ -181,21 +180,13 @@ public class HttpKit {
      * @param params 参数键值对
      * @return 带参数的请求地址
      */
-    private static String buildUrlWithParams(String url, Kv<String, String> params) {
+    public static String buildUrlWithParams(String url, Kv<String, String> params) {
+        // 没有参数则直接返回请求路径
         if (params == null || params.isEmpty()) return url;
-
+        // 构建带键值对查询字符串的完整请求路径
         StringBuilder sb = new StringBuilder(url);
-        // 若已有参数则和之前的参数合并
         sb.append(url.indexOf('?') == -1 ? '?' : '&');
-        // 循环拼接参数
-        params.forEach((key, value) -> {
-            if (StringUtils.isNotBlank(value)) {
-                value = URLEncoder.encode(value, StandardCharsets.UTF_8);
-                sb.append(key).append('=').append(value).append('&');
-            }
-        });
-        // 去掉最后的&
-        return sb.substring(0, sb.length() - 1);
+        return sb.append(StrKit.buildQueryStr(params, StrEncodingType.URL)).toString();
     }
 
     /**
@@ -217,7 +208,7 @@ public class HttpKit {
      *
      * @return 包含Content-Type和Accept的请求头
      */
-    public static Kv<String, String> buildJSONHeaders() {
+    public static Kv<String, String> buildHeaderWithJSON() {
         String type = "application/json";
         return Kv.of("Content-Type", type).add("Accept", type);
     }

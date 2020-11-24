@@ -1,5 +1,6 @@
 package top.chengdongqing.common.pay.wxpay.v2.reqer;
 
+import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
@@ -13,6 +14,7 @@ import top.chengdongqing.common.transformer.StrToBytes;
  *
  * @author Luyao
  */
+@Component
 public class APPPayReqerV2 extends WxpayReqerV2 {
 
     @Override

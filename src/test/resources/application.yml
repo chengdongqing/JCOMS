@@ -17,5 +17,5 @@ upload:
   oss:
     bucket: xx
     endpoint: xx
-    access-id: xx
-    access-secret: xx
+    access-key-id: xx
+    secret-access-key: xx

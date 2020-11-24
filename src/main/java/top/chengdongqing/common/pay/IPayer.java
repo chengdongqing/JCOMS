@@ -1,9 +1,9 @@
 package top.chengdongqing.common.pay;
 
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.pay.entities.PayReqEntity;
-import top.chengdongqing.common.pay.entities.RefundReqEntity;
-import top.chengdongqing.common.pay.entities.TradeQueryEntity;
+import top.chengdongqing.common.pay.entity.PayReqEntity;
+import top.chengdongqing.common.pay.entity.RefundReqEntity;
+import top.chengdongqing.common.pay.entity.TradeQueryEntity;
 import top.chengdongqing.common.pay.enums.TradeType;
 
 /**

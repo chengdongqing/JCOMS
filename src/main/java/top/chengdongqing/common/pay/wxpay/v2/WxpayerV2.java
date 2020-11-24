@@ -3,26 +3,29 @@ package top.chengdongqing.common.pay.wxpay.v2;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Component;
-import top.chengdongqing.common.kit.*;
+import top.chengdongqing.common.kit.HttpKit;
+import top.chengdongqing.common.kit.Kv;
+import top.chengdongqing.common.kit.Ret;
+import top.chengdongqing.common.kit.XmlKit;
 import top.chengdongqing.common.pay.IPayer;
-import top.chengdongqing.common.pay.entities.PayReqEntity;
-import top.chengdongqing.common.pay.entities.PayResEntity;
-import top.chengdongqing.common.pay.entities.RefundReqEntity;
-import top.chengdongqing.common.pay.entities.TradeQueryEntity;
+import top.chengdongqing.common.pay.entity.PayReqEntity;
+import top.chengdongqing.common.pay.entity.PayResEntity;
+import top.chengdongqing.common.pay.entity.RefundReqEntity;
+import top.chengdongqing.common.pay.entity.TradeQueryEntity;
 import top.chengdongqing.common.pay.enums.TradeChannel;
 import top.chengdongqing.common.pay.enums.TradeType;
 import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.pay.wxpay.WxpayStatus;
-import top.chengdongqing.common.pay.wxpay.v2.reqer.WxpayReqerHolderV2;
+import top.chengdongqing.common.pay.wxpay.v2.reqer.*;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Map;
 
 /**
  * 微信支付
@@ -32,7 +35,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class WxpayerV2 implements IPayer {
+public class WxpayerV2 extends ApplicationObjectSupport implements IPayer {
 
     @Autowired
     private WxpayConfigs configs;
@@ -45,7 +48,13 @@ public class WxpayerV2 implements IPayer {
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
-        return new WxpayReqerHolderV2(tradeType).request(entity);
+        Class<? extends WxpayReqerV2> clazz = switch (tradeType) {
+            case APP -> APPPayReqerV2.class;
+            case MB -> MBPayReqerV2.class;
+            case MP -> MPPayReqerV2.class;
+            case PC -> PCPayReqerV2.class;
+        };
+        return super.getApplicationContext().getBean(clazz).requestPayment(entity, tradeType);
     }
 
     @Override
@@ -96,20 +105,20 @@ public class WxpayerV2 implements IPayer {
         log.info("请求查询订单，参数：{}，\n结果：{}", xml, result);
 
         // 转换数据类型
-        Map<String, String> resultMap = XmlKit.parseXml(result);
+        Kv<String, String> response = XmlKit.parseXml(result);
         // 判断请求结果
-        Ret<TradeQueryEntity> queryResult = WxpayHelperV2.getResult(resultMap);
+        Ret<TradeQueryEntity> queryResult = WxpayHelperV2.getResult(response);
         if (queryResult.isFail()) return queryResult;
 
         // 封装响应数据
         TradeQueryEntity tradeQueryEntity = TradeQueryEntity.builder()
-                .orderNo(resultMap.get("out_trade_no"))
-                .paymentNo(resultMap.get("transaction_id"))
-                .tradeTime(WxpayHelperV2.convertTime(resultMap.get("time_end")))
-                .tradeAmount(WxpayHelper.convertAmount(Integer.parseInt(resultMap.get("total_fee"))))
+                .orderNo(response.get("out_trade_no"))
+                .paymentNo(response.get("transaction_id"))
+                .tradeTime(WxpayHelperV2.convertTime(response.get("time_end")))
+                .tradeAmount(WxpayHelper.convertAmount(Integer.parseInt(response.get("total_fee"))))
                 .tradeChannel(TradeChannel.WXPAY)
-                .tradeType(WxpayHelper.getTradeType(resultMap.get("trade_type")))
-                .tradeState(WxpayHelper.getTradeState(resultMap.get("trade_state")))
+                .tradeType(WxpayHelper.getTradeType(response.get("trade_type")))
+                .tradeState(WxpayHelper.getTradeState(response.get("trade_state")))
                 .build();
         return Ret.ok(tradeQueryEntity);
     }
@@ -122,16 +131,15 @@ public class WxpayerV2 implements IPayer {
      */
     public Ret<PayResEntity> handlePayCallback(String xml) {
         // 将xml转为map
-        Map<String, String> params = XmlKit.parseXml(xml);
+        Kv<String, String> params = XmlKit.parseXml(xml);
         // 判断参数是否为空
         if (params == null || params.isEmpty() || StringUtils.isBlank(params.get("sign"))) {
             throw new IllegalArgumentException("wx callback params is error");
         }
 
         // 验证签名
-        params.put("key", v2configs.getSecretKey());
         boolean isOk = DigitalSigner.verify(SignatureAlgorithm.HMAC_SHA256,
-                StrKit.buildQueryStr(params),
+                helperV2.buildQueryStr(params),
                 StrToBytes.of(v2configs.getSecretKey()).fromHex(),
                 StrToBytes.of(params.get("sign")).fromHex());
         if (!isOk) return buildFailCallback("验签失败");

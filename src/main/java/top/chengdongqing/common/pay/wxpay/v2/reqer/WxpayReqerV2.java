@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.*;
-import top.chengdongqing.common.pay.IPayReqer;
+import top.chengdongqing.common.pay.IRequestPay;
 import top.chengdongqing.common.pay.PayConfigs;
-import top.chengdongqing.common.pay.entities.PayReqEntity;
+import top.chengdongqing.common.pay.entity.PayReqEntity;
 import top.chengdongqing.common.pay.enums.TradeType;
 import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
@@ -26,8 +25,7 @@ import java.util.stream.Collectors;
  * @author Luyao
  */
 @Slf4j
-@Component
-public abstract class WxpayReqerV2 implements IPayReqer {
+public abstract class WxpayReqerV2 implements IRequestPay {
 
     @Autowired
     protected PayConfigs configs;
@@ -50,7 +48,7 @@ public abstract class WxpayReqerV2 implements IPayReqer {
                 .add("notify_url", v2configs.getNotifyUrl())
                 .add("out_trade_no", entity.getOrderNo())
                 .add("spbill_create_ip", entity.getIp())
-                .add("body", configs.getWebTitle());
+                .add("body", entity.getDescription());
         // 不同客户端添加不同的参数
         addParams(params, entity);
 
@@ -59,7 +57,7 @@ public abstract class WxpayReqerV2 implements IPayReqer {
         // 发送请求
         String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getPay());
         String result = HttpKit.post(requestUrl, xml).body();
-        log.info("请求付款参数：{}, \n请求付款结果：{}", xml, result);
+        log.info("微信请求付款参数：{}, \n请求付款结果：{}", xml, result);
 
         // 转换结果格式
         Kv<String, String> response = XmlKit.parseXml(result);

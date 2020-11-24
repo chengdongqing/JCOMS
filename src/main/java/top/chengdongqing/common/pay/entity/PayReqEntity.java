@@ -1,4 +1,4 @@
-package top.chengdongqing.common.pay.entities;
+package top.chengdongqing.common.pay.entity;
 
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +20,10 @@ public class PayReqEntity {
      */
     private String orderNo;
     /**
+     * 订单描述
+     */
+    private String description;
+    /**
      * 订单详情
      */
     private List<OrderItem> items;
@@ -32,9 +36,9 @@ public class PayReqEntity {
      */
     private String ip;
     /**
-     * 用户openid
+     * 用户open_id或buyer_id
      */
-    private String openId;
+    private String userId;
 
     @Data
     @Builder
@@ -60,13 +64,5 @@ public class PayReqEntity {
          * 商品图片
          */
         private String pictureUrl;
-        /**
-         * 商品类别
-         */
-        private String category;
-        /**
-         * 商品描述
-         */
-        private String description;
     }
 }

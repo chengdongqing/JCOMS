@@ -12,7 +12,7 @@ import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.pay.wxpay.WxpayStatus;
-import top.chengdongqing.common.pay.wxpay.v3.callback.entities.EncryptedResource;
+import top.chengdongqing.common.pay.wxpay.v3.callback.entity.EncryptedResource;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
@@ -65,7 +65,7 @@ public class WxpayHelperV3 {
                         .concat(item.getValue())
                         .concat("\""))
                 .collect(Collectors.joining(","));
-        return HttpKit.buildJSONHeaders().add("Authorization", v3Configs.getAuthSchema().concat(" ").concat(token));
+        return HttpKit.buildHeaderWithJSON().add("Authorization", v3Configs.getAuthSchema().concat(" ").concat(token));
     }
 
     /**

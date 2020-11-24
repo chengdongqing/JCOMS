@@ -42,27 +42,36 @@ public class WxpayHelperV2 {
     /**
      * 构建请求的xml
      *
-     * @param tradeType     交易类型
-     * @param requestParams 请求参数
+     * @param tradeType 交易类型
+     * @param params    请求参数
      * @return 构建的xml
      */
-    public String buildRequestXml(TradeType tradeType, Kv<String, String> requestParams) {
-        // 构建公共参数
-        Kv<String, String> params = Kv.of("appid", helper.getAppId(tradeType))
+    public String buildRequestXml(TradeType tradeType, Kv<String, String> params) {
+        // 添加公共参数
+        params.add("appid", helper.getAppId(tradeType))
                 .add("mch_id", configs.getMchId())
                 .add("nonce_str", StrKit.getRandomUUID())
-                .add("key", v2configs.getSecretKey())
                 .add("sign_type", v2configs.getSignType());
-        // 添加业务参数
-        params.putAll(requestParams);
-        // 数字签名
+        // 添加数字签名
         String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
-                StrKit.buildQueryStr(params),
+                buildQueryStr(params),
                 StrToBytes.of(v2configs.getSecretKey()).fromHex()).toHex();
         params.add("sign", sign);
-        params.remove("key");
         // 转换数据类型
         return XmlKit.toXml(params);
+    }
+
+    /**
+     * 构建查询字符串
+     *
+     * @param params 键值对
+     * @return 查询字符串
+     */
+    public String buildQueryStr(Kv<String, String> params) {
+        // 构建查询字符串
+        String paramsStr = StrKit.buildQueryStr(params, null, (k, v) -> !k.equals("sign"));
+        // 将密钥加在最后
+        return paramsStr.concat("&").concat("key=").concat(v2configs.getSecretKey());
     }
 
     /**

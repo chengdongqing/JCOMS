@@ -21,7 +21,7 @@ public class WxpayFactory extends ApplicationObjectSupport {
     /**
      * 使用的微信接口版本
      */
-    @Value("${pay.wx.active:3}")
+    @Value("${pay.wx.active:2}")
     private Integer active;
 
     /**
@@ -31,7 +31,7 @@ public class WxpayFactory extends ApplicationObjectSupport {
      */
     public IPayer getPayer() throws CannotLoadBeanClassException {
         Objects.requireNonNull(active, "pay.wx.active cannot be blank.");
-        String beanName = "WxpayerV%d".formatted(active);
+        String beanName = "wxpayerV%d".formatted(active);
         return super.getApplicationContext().getBean(beanName, IPayer.class);
     }
 }

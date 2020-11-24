@@ -1,13 +1,13 @@
 package top.chengdongqing.common.kit;
 
 import org.apache.commons.lang3.StringUtils;
+import top.chengdongqing.common.constant.StrEncodingType;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiFunction;
 
 /**
  * 字符串工具类
@@ -32,36 +32,69 @@ public class StrKit {
         return ThreadLocalRandom.current().nextInt(100000, 999999) + "";
     }
 
-    public static String buildQueryStr(Map<String, String> params) {
-        return buildQueryStr(params, false);
+    /**
+     * 字符串编码
+     *
+     * @param value 待编码的字符串
+     * @param type  编码类型
+     * @return 编码后的字符串
+     */
+    public static String encode(String value, StrEncodingType type) {
+        return type.getEncodeLogic().apply(value);
     }
 
     /**
-     * 构建键值对参数字符串
+     * 字符串解码
+     *
+     * @param value 待解码的字符串
+     * @param type  编码类型
+     * @return 解码后的字符串
      */
-    public static String buildQueryStr(Map<String, String> params, boolean popEncode) {
-        // 将map转为有序的treemap
-        Map<String, String> sortedParams = new TreeMap<>(params);
+    public static String decode(String value, StrEncodingType type) {
+        return type.getDecodeLogic().apply(value);
+    }
 
-        // 所有参数的字符串集合
-        StringBuilder sb = new StringBuilder();
-        sortedParams.forEach((key, value) -> {
-            if (StringUtils.isNotBlank(value) && !key.equals("key") && !key.equals("sign")) {
-                sb.append(key).append("=").append(popEncode ? popUrlEncode(value) : value).append("&");
+    /**
+     * 构建查询字符串
+     *
+     * @param params 键值对
+     * @return 查询字符串
+     */
+    public static String buildQueryStr(Kv<String, String> params) {
+        return buildQueryStr(params, null);
+    }
+
+    /**
+     * 构建查询字符串
+     *
+     * @param params 键值对
+     * @param type   编码类型
+     * @return 查询字符串
+     */
+    public static String buildQueryStr(Kv<String, String> params, StrEncodingType type) {
+        return buildQueryStr(params, type, (k, v) -> true);
+    }
+
+
+    /**
+     * 构建键值对形式的查询字符串
+     *
+     * @param params    键值对
+     * @param type      编码类型
+     * @param joinLogic 是否加入到查询字符串的判断逻辑
+     * @return 查询字符串
+     */
+    public static String buildQueryStr(Kv<String, String> params, StrEncodingType type, BiFunction<String, String, Boolean> joinLogic) {
+        // 转为有序的map
+        Map<String, String> sortedParams = new TreeMap<>(params);
+        // 构建键值对字符串
+        StringBuilder str = new StringBuilder();
+        sortedParams.forEach((k, v) -> {
+            if (StringUtils.isNoneBlank(k, v) && joinLogic.apply(k, v)) {
+                str.append(k).append("=").append(type == null ? v : encode(v, type)).append("&");
             }
         });
-        // 将key放在最后，仅微信支付
-        if (params.containsKey("key")) {
-            sb.append("key").append("=").append(params.get("key")).append("&");
-        }
-        return sb.substring(0, sb.length() - 1);
-    }
-
-    /**
-     * 符合POP规则的特殊编码
-     */
-    private static String popUrlEncode(String value) {
-        return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20").replace("*", "%2A")
-                .replace("%7E", "~");
+        // 去除最后的&符合
+        return str.substring(0, str.length() - 1);
     }
 }

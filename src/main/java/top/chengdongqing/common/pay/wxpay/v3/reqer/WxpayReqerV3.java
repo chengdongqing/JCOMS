@@ -5,15 +5,14 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.pay.IPayReqer;
+import top.chengdongqing.common.pay.IRequestPay;
 import top.chengdongqing.common.pay.PayConfigs;
-import top.chengdongqing.common.pay.entities.PayReqEntity;
+import top.chengdongqing.common.pay.entity.PayReqEntity;
 import top.chengdongqing.common.pay.enums.TradeType;
 import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
@@ -35,8 +34,7 @@ import java.util.stream.Collectors;
  * @author Luyao
  */
 @Slf4j
-@Component
-public abstract class WxpayReqerV3 implements IPayReqer {
+public abstract class WxpayReqerV3 implements IRequestPay {
 
     @Autowired
     protected PayConfigs configs;
@@ -58,7 +56,7 @@ public abstract class WxpayReqerV3 implements IPayReqer {
                 .add("detail", buildGoodsDetail(entity.getItems()))
                 .add("scene_info", buildSceneInfo(entity.getIp()))
                 .add("amount", buildAmount(entity.getAmount()))
-                .add("description", configs.getWebTitle())
+                .add("description", entity.getDescription())
                 .add("out_trade_no", entity.getOrderNo())
                 .add("mchid", wxConfigs.getMchId());
         addParams(params, entity);
@@ -71,7 +69,7 @@ public abstract class WxpayReqerV3 implements IPayReqer {
         // 发送支付请求
         String requestUrl = helper.buildRequestUrl(apiPath);
         HttpResponse<String> response = HttpKit.post(requestUrl, headers, body);
-        log.info("请求订单付款：{}，\n请求头：{}，\n请求体：{}，\n响应结果：{}",
+        log.info("微信请求订单付款：{}，\n请求头：{}，\n请求体：{}，\n响应结果：{}",
                 requestUrl,
                 headers,
                 body,

@@ -1,19 +1,18 @@
-package top.chengdongqing.common.pay.entities;
+package top.chengdongqing.common.pay.entity;
 
 import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
- * 退款响应数据实体
+ * 退款请求参数实体
  *
  * @author Luyao
  */
 @Data
 @Builder
-public class RefundResEntity {
+public class RefundReqEntity {
 
     /**
      * 订单号
@@ -24,19 +23,15 @@ public class RefundResEntity {
      */
     private String refundNo;
     /**
-     * 平台退款单号
+     * 订单金额
      */
-    private String refundId;
-    /**
-     * 退款成功时间
-     */
-    private LocalDateTime refundTime;
+    private BigDecimal totalAmount;
     /**
      * 退款金额
      */
     private BigDecimal refundAmount;
     /**
-     * 是否退款成功
+     * 退款原因
      */
-    private boolean success;
+    private String reason;
 }

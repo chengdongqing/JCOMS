@@ -92,16 +92,15 @@ public class WxpayConfigsV3 {
 
         @Getter
         @Component
-        @ConfigurationProperties("/v3/pay/transactions")
         public static class WxpayTradeApiV3 {
 
-            @Value("/native")
+            @Value("/v3/pay/transactions/native")
             private String pc;
-            @Value("/jsapi")
+            @Value("/v3/pay/transactions/jsapi")
             private String mp;
-            @Value("/app")
+            @Value("/v3/pay/transactions/app")
             private String app;
-            @Value("/h5")
+            @Value("/v3/pay/transactions/h5")
             private String mb;
         }
     }

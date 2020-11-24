@@ -1,9 +1,9 @@
 package top.chengdongqing.common.pay.wxpay.v3.callback;
 
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.pay.entities.PayResEntity;
-import top.chengdongqing.common.pay.entities.RefundResEntity;
-import top.chengdongqing.common.pay.wxpay.v3.callback.entities.CallbackEntity;
+import top.chengdongqing.common.pay.entity.PayResEntity;
+import top.chengdongqing.common.pay.entity.RefundResEntity;
+import top.chengdongqing.common.pay.wxpay.v3.callback.entity.CallbackEntity;
 
 /**
  * 微信v3回调处理器

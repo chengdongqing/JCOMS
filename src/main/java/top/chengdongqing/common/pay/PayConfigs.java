@@ -2,6 +2,7 @@ package top.chengdongqing.common.pay;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,20 +12,18 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Component
+@ConfigurationProperties("pay")
 public class PayConfigs {
 
     /**
      * 支付超时配置，单位：分钟
      */
-    @Value("${timeout:30}")
+    @Value("${pay.timeout:30}")
     private Long timeout;
 
     /**
-     * 网站标题
-     */
-    private String webTitle;
-    /**
      * 网站域名
      */
+    @Value("${pay.web-domain:https://www.chengdongqing.top}")
     private String webDomain;
 }

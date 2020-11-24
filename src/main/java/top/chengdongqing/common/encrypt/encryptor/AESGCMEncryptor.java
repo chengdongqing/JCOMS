@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 /**
  * GCM (Galois/Counter Mode) 指的是该对称加密采用Counter模式，并带有GMAC消息认证码。
  * GCM可以提供对消息的加密和完整性校验，另外，它还可以提供附加消息的完整性校验。
+ *
  * @author Luyao
  */
 public class AESGCMEncryptor implements IEncryptor {

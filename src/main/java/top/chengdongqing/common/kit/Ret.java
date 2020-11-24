@@ -1,6 +1,7 @@
 package top.chengdongqing.common.kit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
 import top.chengdongqing.common.constant.Status;
 
 import java.io.Serializable;
@@ -10,6 +11,7 @@ import java.io.Serializable;
  *
  * @author Luyao
  */
+@Getter
 public record Ret<T>(int code, T data, String msg) implements Serializable {
 
     public static <T> Ret<T> ok() {

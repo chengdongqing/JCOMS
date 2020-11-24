@@ -71,7 +71,7 @@ public abstract class AbstractUploader {
      * @return 检查结果，正常将返回文件后缀名
      */
     private Ret<String> check(MultipartFile file, String[] formats, int maxSize) {
-        if(file.isEmpty()) throw new IllegalArgumentException("The file is empty.");
+        if (file.isEmpty()) throw new IllegalArgumentException("The file is empty.");
 
         // 检查文件格式
         String format = FileManager.getFormat(file.getName());
