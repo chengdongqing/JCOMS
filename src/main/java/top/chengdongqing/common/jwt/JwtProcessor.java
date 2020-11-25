@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.signature.DigitalSigner;
-import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.security.SignatureException;
@@ -20,7 +19,6 @@ import java.util.Base64;
 
 /**
  * JWT处理器
- * 基于EdDSA数字签名算法
  *
  * @author Luyao
  */
@@ -28,11 +26,6 @@ import java.util.Base64;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JwtProcessor implements IJwtProcessor {
-
-    /**
-     * 签名算法
-     */
-    private static final SignatureAlgorithm ALGORITHM = SignatureAlgorithm.EdDSA_ED25519;
 
     @Autowired
     private JwtConfigs configs;
@@ -116,30 +109,4 @@ class JwtConfigs {
      * 有效时长，单位：分钟
      */
     private Long effectiveDuration;
-}
-
-@Data
-class JwtHeader {
-
-    /**
-     * 签名算法
-     */
-    private String algorithm;
-    /**
-     * 签发时间
-     */
-    private Long issueTime;
-    /**
-     * 过期时间
-     */
-    private Long expiryTime;
-
-    /**
-     * 转JSON字节数组
-     *
-     * @return 当前对象的JSON字节数组
-     */
-    public byte[] toJson() {
-        return JsonKit.toJsonBytes(this);
-    }
 }

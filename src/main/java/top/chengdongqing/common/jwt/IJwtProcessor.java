@@ -1,6 +1,7 @@
 package top.chengdongqing.common.jwt;
 
 import top.chengdongqing.common.kit.Kv;
+import top.chengdongqing.common.signature.SignatureAlgorithm;
 
 import java.security.SignatureException;
 
@@ -11,6 +12,11 @@ import java.security.SignatureException;
  * @see JwtProcessor
  */
 public interface IJwtProcessor {
+
+    /**
+     * 签名算法
+     */
+    SignatureAlgorithm ALGORITHM = SignatureAlgorithm.EdDSA_ED25519;
 
     /**
      * 生成token
