@@ -24,6 +24,6 @@ public class PayConfigs {
     /**
      * 网站域名
      */
-    @Value("${web-domain:https://www.chengdongqing.top}")
+    @Value("${web-domain:https://zwmall.chengdongqing.top}")
     private String webDomain;
 }
