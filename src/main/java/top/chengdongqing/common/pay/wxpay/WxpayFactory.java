@@ -31,7 +31,7 @@ public class WxpayFactory extends ApplicationObjectSupport {
      */
     public IPayment getPayer() throws NoSuchBeanDefinitionException {
         Objects.requireNonNull(active, "pay.wx.active cannot be blank.");
-        String beanName = "wxpayV%d".formatted(active);
+        String beanName = "wxpayV" + active;
         return super.getApplicationContext().getBean(beanName, IPayment.class);
     }
 }

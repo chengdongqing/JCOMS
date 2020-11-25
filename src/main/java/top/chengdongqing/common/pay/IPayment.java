@@ -2,6 +2,7 @@ package top.chengdongqing.common.pay;
 
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.pay.entity.PayReqEntity;
+import top.chengdongqing.common.pay.entity.PayResEntity;
 import top.chengdongqing.common.pay.entity.RefundReqEntity;
 import top.chengdongqing.common.pay.entity.TradeQueryEntity;
 import top.chengdongqing.common.pay.enums.TradeType;
@@ -9,9 +10,10 @@ import top.chengdongqing.common.pay.enums.TradeType;
 /**
  * 支付处理器顶层接口
  *
+ * @param <T> 支付回调数据类型
  * @author Luyao
  */
-public interface IPayment {
+public interface IPayment<T> {
 
     /**
      * 发起付款
@@ -48,4 +50,12 @@ public interface IPayment {
      * @return 查询结果
      */
     Ret<TradeQueryEntity> requestQuery(String orderNo, TradeType tradeType);
+
+    /**
+     * 处理支付回调
+     *
+     * @param data 回调数据
+     * @return 处理结果
+     */
+    Ret<PayResEntity> handlePayCallback(T data);
 }

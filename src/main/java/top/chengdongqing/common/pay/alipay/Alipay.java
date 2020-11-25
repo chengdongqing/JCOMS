@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
+import top.chengdongqing.common.pay.IPayment;
 import top.chengdongqing.common.pay.alipay.reqer.*;
 import top.chengdongqing.common.pay.entity.PayReqEntity;
 import top.chengdongqing.common.pay.entity.PayResEntity;
@@ -29,7 +30,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class Alipay extends ApplicationObjectSupport implements IAlipay {
+public class Alipay extends ApplicationObjectSupport implements IPayment<Map<String, String[]>> {
 
     @Autowired
     private AlipayConfigs configs;

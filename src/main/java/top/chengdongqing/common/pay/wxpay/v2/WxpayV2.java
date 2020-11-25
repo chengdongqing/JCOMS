@@ -8,6 +8,7 @@ import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.XmlKit;
+import top.chengdongqing.common.pay.IPayment;
 import top.chengdongqing.common.pay.entity.PayReqEntity;
 import top.chengdongqing.common.pay.entity.PayResEntity;
 import top.chengdongqing.common.pay.entity.RefundReqEntity;
@@ -34,7 +35,7 @@ import java.nio.file.Paths;
  */
 @Slf4j
 @Component
-public class WxpayV2 extends ApplicationObjectSupport implements IWxpayV2 {
+public class WxpayV2 extends ApplicationObjectSupport implements IPayment<String> {
 
     @Autowired
     private WxpayConfigs configs;

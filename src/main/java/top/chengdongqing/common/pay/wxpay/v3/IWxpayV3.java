@@ -12,15 +12,7 @@ import top.chengdongqing.common.pay.wxpay.v3.entity.CallbackEntity;
  *
  * @author Luyao
  */
-public interface IWxpayV3 extends IPayment {
-
-    /**
-     * 处理支付回调
-     *
-     * @param entity 回调数据实体
-     * @return 处理结果
-     */
-    Ret<PayResEntity> handlePayCallback(CallbackEntity entity);
+public interface IWxpayV3 extends IPayment<CallbackEntity> {
 
     /**
      * 处理退款回调

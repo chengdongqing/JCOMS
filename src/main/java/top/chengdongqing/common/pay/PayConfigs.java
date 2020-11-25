@@ -18,12 +18,12 @@ public class PayConfigs {
     /**
      * 支付超时配置，单位：分钟
      */
-    @Value("${pay.timeout:30}")
+    @Value("${timeout:30}")
     private Long timeout;
 
     /**
      * 网站域名
      */
-    @Value("${pay.web-domain:https://www.chengdongqing.top}")
+    @Value("${web-domain:https://www.chengdongqing.top}")
     private String webDomain;
 }

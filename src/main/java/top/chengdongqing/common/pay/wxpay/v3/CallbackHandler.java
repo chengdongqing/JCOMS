@@ -19,7 +19,7 @@ import top.chengdongqing.common.pay.wxpay.v3.entity.RefundCallbackEntity;
  * @author Luyao
  */
 @Slf4j
-public abstract class WxpayCallbackHandler extends ApplicationObjectSupport implements IWxpayV3 {
+public abstract class CallbackHandler extends ApplicationObjectSupport implements IWxpayV3 {
 
     @Autowired
     protected WxpayConfigsV3 v3Configs;
