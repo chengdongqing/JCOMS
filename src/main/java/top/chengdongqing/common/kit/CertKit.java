@@ -3,6 +3,7 @@ package top.chengdongqing.common.kit;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.transformer.BytesToStr;
 
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
@@ -40,6 +41,20 @@ public class CertKit {
                 }
                 return null;
             }).filter(item -> item != null).collect(Collectors.joining("_"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 读取证书文件里的公钥
+     *
+     * @param certPath 证书文件路径
+     * @return 公钥
+     */
+    public static BytesToStr readPublicKey(String certPath) {
+        try {
+            return BytesToStr.of(CertKit.readCerts(certPath).get(0).getPublicKey().getEncoded());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

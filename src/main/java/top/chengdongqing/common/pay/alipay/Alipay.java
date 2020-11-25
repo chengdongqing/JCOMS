@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.CertKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
-import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.pay.IPayment;
 import top.chengdongqing.common.pay.alipay.reqer.*;
 import top.chengdongqing.common.pay.entity.PayReqEntity;
@@ -113,17 +112,13 @@ public class Alipay extends ApplicationObjectSupport implements IPayment<Map<Str
         }
 
         // 验证签名
-        try {
-            boolean isOk = DigitalSigner.verify(SignatureAlgorithm.RSA_SHA256,
-                    StrKit.buildQueryStr(params, (k, v) -> !k.equals("sign")),
-                    CertKit.readCerts(configs.getAlipayCertPath()).get(0).getPublicKey().getEncoded(),
-                    StrToBytes.of(params.get("sign")).fromBase64());
-            if (!isOk) {
-                log.warn("支付宝回调验签失败：{}", params);
-                return Ret.fail(AlipayStatus.CALLBACK_CODE);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        boolean isOk = DigitalSigner.verify(SignatureAlgorithm.RSA_SHA256,
+                helper.buildQueryStr(params),
+                CertKit.readPublicKey(configs.getAlipayCertPath()).bytes(),
+                StrToBytes.of(params.get("sign")).fromBase64());
+        if (!isOk) {
+            log.warn("支付宝回调验签失败：{}", params);
+            return Ret.fail(AlipayStatus.CALLBACK_CODE);
         }
 
         // 校验支付结果

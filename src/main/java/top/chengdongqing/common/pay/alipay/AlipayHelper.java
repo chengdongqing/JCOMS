@@ -47,9 +47,19 @@ public class AlipayHelper {
 
         // 生成签名
         String sign = DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256,
-                StrKit.buildQueryStr(params),
+                buildQueryStr(params),
                 StrToBytes.of(configs.getPrivateKey()).fromBase64()).toBase64();
         params.add("sign", sign);
+    }
+
+    /**
+     * 构建查询字符串
+     *
+     * @param params 键值对
+     * @return 查询字符串
+     */
+    public String buildQueryStr(Kv<String, String> params) {
+        return StrKit.buildQueryStr(params, (k, v) -> !k.equals("sign") && !k.equals("sign_type"));
     }
 
     /**

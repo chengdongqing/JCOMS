@@ -68,7 +68,7 @@ public class WxpayHelperV2 {
      */
     public String buildQueryStr(Kv<String, String> params) {
         // 构建查询字符串
-        String paramsStr = StrKit.buildQueryStr(params, null, (k, v) -> !k.equals("sign"));
+        String paramsStr = StrKit.buildQueryStr(params, (k, v) -> !k.equals("sign"));
         // 将密钥加在最后
         return paramsStr.concat("&").concat("key=").concat(v2configs.getSecretKey());
     }
