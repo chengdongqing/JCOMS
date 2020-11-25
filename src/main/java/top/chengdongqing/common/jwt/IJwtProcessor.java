@@ -28,5 +28,5 @@ public interface IJwtProcessor {
      * @param token 令牌
      * @return 有效载荷
      */
-    Kv<String, Object> verify(String token) throws IllegalArgumentException, SignatureException, TokenExpiredException;
+    Kv<String, Object> verify(String token) throws SignatureException, TokenExpiredException;
 }
