@@ -99,12 +99,11 @@ public class WxpayHelperV3 {
      * 验证签名
      *
      * @param serialNo 证书序列号
-     * @param key      公钥
      * @param sign     签名
      * @param params   参数数组
      * @return 验证结果
      */
-    public boolean verify(String serialNo, String key, String sign, String... params) {
+    public boolean verify(String serialNo, String sign, String... params) {
         // 验证序列号
         String wxpaySerialNo = CertKit.readSerialNo(v3Configs.getWxpayCertPath());
         if (!Objects.equals(serialNo, wxpaySerialNo)) return false;
@@ -114,7 +113,7 @@ public class WxpayHelperV3 {
         // 验证签名
         return DigitalSigner.verify(SignatureAlgorithm.RSA_SHA256,
                 content,
-                StrToBytes.of(key).fromBase64(),
+                CertKit.readPublicKey(v3Configs.getWxpayCertPath()).bytes(),
                 StrToBytes.of(sign).fromBase64());
     }
 

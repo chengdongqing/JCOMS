@@ -30,7 +30,6 @@ public abstract class CallbackHandler extends ApplicationObjectSupport implement
     public Ret<PayResEntity> handlePayCallback(CallbackEntity callback) {
         // 验证签名
         boolean verify = v3Helper.verify(callback.getSerialNo(),
-                v3Configs.getPublicKey(),
                 callback.getSign(),
                 callback.getTimestamp(),
                 callback.getNonceStr(),
@@ -64,7 +63,6 @@ public abstract class CallbackHandler extends ApplicationObjectSupport implement
     public Ret<RefundResEntity> handleRefundCallback(CallbackEntity callback) {
         // 验证签名
         boolean verify = v3Helper.verify(callback.getSerialNo(),
-                v3Configs.getPublicKey(),
                 callback.getSign(),
                 callback.getTimestamp(),
                 callback.getNonceStr(),
