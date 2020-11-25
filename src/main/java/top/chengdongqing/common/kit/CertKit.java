@@ -12,6 +12,7 @@ import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -53,8 +54,28 @@ public class CertKit {
      * @return 公钥
      */
     public static BytesToStr readPublicKey(String certPath) {
+        return BytesToStr.of(CertKit.readCert(certPath).getPublicKey().getEncoded());
+    }
+
+    /**
+     * 读取证书序列号
+     *
+     * @param certPath 证书路径
+     * @return 序列号
+     */
+    public static String readSerialNo(String certPath) {
+        return CertKit.readCert(certPath).getSerialNumber().toString(16);
+    }
+
+    /**
+     * 读取证书
+     *
+     * @param certPath 证书路径
+     * @return X.509证书
+     */
+    public static X509Certificate readCert(String certPath) {
         try {
-            return BytesToStr.of(CertKit.readCerts(certPath).get(0).getPublicKey().getEncoded());
+            return Objects.requireNonNull(readCerts(certPath).get(0));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

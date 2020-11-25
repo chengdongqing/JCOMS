@@ -19,6 +19,7 @@ import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -53,7 +54,7 @@ public class WxpayHelperV3 {
         // 商户号
         String mchId = configs.getMchId();
         // 证书序列号
-        String serialNo = v3Configs.getCertSerialNo();
+        String serialNo = CertKit.readSerialNo(v3Configs.getAppCertPath());
         // 构建签名信息
         String token = Kv.of("mchid", mchId)
                 .add("nonce_str", nonceStr)
@@ -90,10 +91,8 @@ public class WxpayHelperV3 {
         // 构建待签名字符串
         String content = buildContent(params);
         // 生成签名
-        return DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256,
-                content,
-                StrToBytes.of(v3Configs.getPrivateKey()).fromBase64())
-                .toBase64();
+        return DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256, content,
+                StrToBytes.of(v3Configs.getPrivateKey()).fromBase64()).toBase64();
     }
 
     /**
@@ -107,7 +106,8 @@ public class WxpayHelperV3 {
      */
     public boolean verify(String serialNo, String key, String sign, String... params) {
         // 验证序列号
-        // TODO
+        String wxpaySerialNo = CertKit.readSerialNo(v3Configs.getWxpayCertPath());
+        if (!Objects.equals(serialNo, wxpaySerialNo)) return false;
 
         // 构建待签名字符串
         String content = buildContent(params);

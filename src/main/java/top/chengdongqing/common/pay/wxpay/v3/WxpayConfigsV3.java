@@ -20,29 +20,22 @@ import org.springframework.stereotype.Component;
 public class WxpayConfigsV3 {
 
     /**
-     * 认证类型描述
-     */
-    @Value("WECHATPAY2-SHA256-RSA2048")
-    private String authSchema;
-    /**
-     * 证书序列号
-     */
-    private String certSerialNo;
-
-    /**
      * 微信接口请求地址
      */
     @Autowired
     private WxpayRequestApiV3 requestApi;
 
-    /**
-     * 签名私钥
-     */
+    // 认证方案
+    @Value("WECHATPAY2-SHA256-RSA2048")
+    private String authSchema;
+    // 应用私钥
     private String privateKey;
-    /**
-     * 验签公钥
-     */
+    // 应用公钥
     private String publicKey;
+    // 微信公钥证书路径
+    private String wxpayCertPath;
+    // 应用公钥证书路径
+    private String appCertPath;
 
     /**
      * 解密密钥
