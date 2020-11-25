@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Component;
+import top.chengdongqing.common.kit.CertKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
@@ -112,13 +113,17 @@ public class Alipay extends ApplicationObjectSupport implements IPayment<Map<Str
         }
 
         // 验证签名
-        boolean isOk = DigitalSigner.verify(SignatureAlgorithm.RSA_SHA256,
-                StrKit.buildQueryStr(params, (k, v) -> !k.equals("sign")),
-                StrToBytes.of(configs.getAlipayPublicKey()).fromBase64(),
-                StrToBytes.of(params.get("sign")).fromBase64());
-        if (!isOk) {
-            log.warn("支付宝回调验签失败：{}", params);
-            return Ret.fail(AlipayStatus.CALLBACK_CODE);
+        try {
+            boolean isOk = DigitalSigner.verify(SignatureAlgorithm.RSA_SHA256,
+                    StrKit.buildQueryStr(params, (k, v) -> !k.equals("sign")),
+                    CertKit.readCerts(configs.getAlipayCertPath()).get(0).getPublicKey().getEncoded(),
+                    StrToBytes.of(params.get("sign")).fromBase64());
+            if (!isOk) {
+                log.warn("支付宝回调验签失败：{}", params);
+                return Ret.fail(AlipayStatus.CALLBACK_CODE);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         // 校验支付结果

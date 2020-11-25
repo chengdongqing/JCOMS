@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class AlipayConfigs {
 
     /**
-     * 支付宝网关地址
+     * 网关地址
      */
     @Value("${gateway:https://openapi.alipaydev.com/gateway.do}")
     private String gateway;
@@ -29,7 +29,7 @@ public class AlipayConfigs {
     @Value("${app-id:2016081900286989}")
     private String appId;
     /**
-     * 支付业务请求方法名
+     * 请求方法
      */
     @Autowired
     private AlipayMethod method;
@@ -39,20 +39,26 @@ public class AlipayConfigs {
     @Value("utf-8")
     private String charset;
     /**
-     * 签名算法类型
+     * 签名类型
      */
     @Value("RSA2")
     private String signType;
-    /**
-     * 签名私钥
-     */
-    @Value("${private-key:MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCo9JWeFuw+SmZnjjbBZ+TNQTY6Ny7aYYPekFc8Mdo4+kbemvnOkcr30HX1NiTEpRCSgvJ+elZFm2yZLEwRfuwZjVtAxQ0tGoFyuPgrl+5Ah3rRg3MF6KdOMgtbqZF9pG5vslQ0pKVYHI8h8FqjNr5wlQiWtnLD07MwppWZJ3OaebqnCAkuwYxbPU3olocDRjpivQ7ZAD/iGWz/SJVcxp03j0X2zuau0ddmcurd60oF3pJwbL3ZnnPbwQNibUlocRM8U3TWbU3tmJWPEPLhRsQPPGXIzeqNkOXm08NiEjKwt9ASH7HgcvmBpI1AzgXqC93sv77qoSX4LIhxYXB8sve9AgMBAAECggEACSePf8xgKpPfbpb/EoWtmQ2Cga8Bw+VqvsF1aJaO621sL52YEYBGzhymd43ieiEzf6zGtOGuEQF15erHiF8nLc9B9YV3zEzWXL/2+m22BBsTJY0Iy3Yqsor1oJbUgklJjpXMCDovl1Gc08rxLkzGDtWUbI4gM8ohuG4eRvkjQ2hkPa5sBDPK2t9Q5A6g6pyQ2eM3g/z74qvxvjHZ98G6KWivgiWboRlRmCYetgYUNRS8p9tYUFRzNuKu6xa2QbnX5jaaMeZr127MYCoe52He0yvGh5pGpRmml9R+qH+gjd7Z+skdz9Vae6kVLyI9oNCdJYA1IQsTHCWJ19CipdQAhQKBgQD2tuPEGjL6R5YIJuTBNRHoaOxHFrw6RjeI1LQOe8P2Mxq9E/INEW1DhvLVleNnvzKXX31Vcg22xBo0wvxFCNEVe9/NH0Us1NcfXPXKnfXgIh2KB3OK92mwU9oC9ArhhPPEEONiPAWgWEk6DHr3GXPDlO0LcY6nOjtHSAeEOEFm4wKBgQCvUHs8Kv3OFPBRsnILgGHG8vY9QS8yQkiqRCFPwawTSlLfoBjGYyVf7s3z9t6z1kioC4c42Nbq2MtfQa0LjRuoGhk4zRm6vG5s046k8kzpCrUMY+9xS0zKoGDhctaULlT2nps2s7LlBQ2xV2cd4MwoCEeW6AH5kkefN3JmpZPI3wKBgEuWZxwa5sl1i0r+F5H2X4E0PEffeFXmU3dxq6TQWI6iw6twY/WLBE3vF5FGtgCAPNDR6cV3Byqa1Gib4MyJ0f1iEYR38yq0HyC1y3yDfuRnr2Mtu0G1YcUrO50yBe9oW4MTpYbgWtzwj6bgUgBI5QXkJ+gcp5cmqSjCscLZtXf/AoGAL1cbP/8X9CtBTb5S/3oWbSO0jIvqk7bEan3lROU2cysRv+M6bW/eas5QfP1/264UhpQ+WoJrXpVWLY3NjZ34BuetQeJYfU1ewDJMhYwMaq2CgCsIQF6mCN1P6/EXsoHkXYgsv5O8zg0USnwgkzfdyT2bH0vdJKh0gLD3SnKRup8CgYEAhgKlBetTwQl4ZRvbD3CpkDW5JfJr8SDnkP1lp42l04sBYOljqflxXqc7H/eLRttZ0AnS+CezAa2bUeEvkiO0PWHx7YsxX+RlZk+c6NprhKEv+pCEW9piwfPGX5hk1XdzmftBnymZWp+spW1RKT8eGrde+wdULqfm9daszzmMa4o=}")
+
+    // 应用私钥
+    @Value("${private-key:MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCgaRwZ01SBRUVP7kXUWK92jNgTv8QhbTNIxcaEvHO/M0BjUy8swiuZflLX3vckUTky/0nz+IROqrzb4Sk78GF329m8XBIEy+XmONi68sjxW/UptCp5gDVy9zZcuiv8j+OsjXBUHcvlGIC09MokYnYsA6FgxrR69GUz8DEUATmtzjdl1rZpLY96i21NsLNeluiHHlDXd13Wa7ofPA72Y/LlJa+V2TsPmxZJRIxXShlXu9QeNp/axu/S6zCv9Y1acXqGOVWykI255SRfikwSsgRvXWHrv65t7yO6029wj1mD8EMmeaFCaihxOQI0SVXCEkcuK1CSxtiIjQ07Gs9oJe/jAgMBAAECggEALkPinPg8yUQHZ7RbY5FomhKpR5jpopJyVizkwufvolfP3FXjp08hcBXlIunl8g2TJ8hFth4ZWu8XpXtdfzInioBYXmFXuRZt6ma+67yWhDZ3kV2rWnvF7rCqdzgi86c0jVIF8dzeL+dPR+HKY5AacTti0hy9dTED92TxYsmvrxb0EU8jx+FvYdfj/JEQsejcqk43FnoDbYgzbHX2iV1uECTuLy7LuTCXIgWK6xjmG3OycIzPK1QSXPyAKJ6UxUuTJHowpCWrjkcAS2UCW/KIU3Y4EiDuWCP0P5m+yCWNddezvLR6CoiVFoQzZIMqjwKe3Kf6PPm2SFzB4ug41OB7wQKBgQDUZmNl2XynMvu/+9CSK5AE8eir6dFIR2usik6amDXnFC/HZ8U8JaudVH1Cgfl59MNMK3QD7RDbbobqg2Z5ByVuIqm53yhquuSp16Z2KGxbZJIQVK/TM2A933F4l7cLWdJc/wAi5n6AV4ZE3RhC0mziwtfkU9SE/P8SXe59C5QDUQKBgQDBVq58NjuoSFRbzwDqQObIc+9HvUiNxveWxNNpDfm4vvYXlLKh7I8C0jTJ613FRtR6x9ZcAE2i1Csa2L3QGD4XteosOPO4b600iE5Dmtc4+6Uoys/Q68/f4HKy6gN8yiGremKfOqYu87tT06Y2CeCiKRYqtZazZ8IsYjkxDoOq8wKBgElVDG5mt432oUq4g1tkJPZAG0f3k2U0G23X1qmzcbDVnGVpY4SPsP/B4vlqbJr5sdADlKuiVtacA4LGWUPh/r9WwmjFLmwjGL23Eebrr/Wh9Hgk9QujSlAybDfpka4ele27sO1bzUM8dMQj3bN8eVGVWfqgItjDjMFnouaTb8fxAoGAE+Os845IuNkoBIHZIEAo/bofhYvNaPhtBA+fiBEt/Xl3q5lafxns5GdnktYpwV+2ACOKw9AsLHITNSHS9RNpX9sRCheZywGCGgNjucS2G2CX7wheNKntqqRWaF12mmHY8OEYQDUyX2YngUomsSx29Xewlhg0NqSX7yTzqT5LAU0CgYByoRghGan9L0wTSfAOw9385SXuDYI1RKkAFL9N1RUc7DZBqpmts9qBapHZuz/9CqBkutDJrvYLQzLuUaOACeB1XH9b+t5dPLl8eJsYfbSgIXEHQRsqYwWhLgYeh7xkLMjSvgrFt8nbRK+wBrMfYrtRLt/azAg8c1ew+fznVlLY2w==}")
     private String privateKey;
-    /**
-     * 验签公钥
-     */
-    @Value("${public-key:MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6YtnH8lfW41r/84fRGxKT+Sn4LCXY7ki6cxUV8iIVuzgGBGlrW47mznkD03Xt02kUJcyKlQRByWTWc21XtT9KinvF51oYoQnnS9QRyGV0MBDx9CNcWVU3veEK1uRkILAHrBFl/sGTPWTBiLA2iNDEqHZO3yVik3Cx0gRYY2gObZ7tKxiplxQrBmXZCHC20Ew7PxfcO/mSAF58WMQidTtbZqhLm94akff+afXn0+kKt9JEwdRD3gnG30/DoETRjmSQo1HodGa7eYXeSG1sLCQ+SjiRUkGRfwxSIJ5UG857DhADZrw15PUlOZzz0zkFewglfoe5IGFqxJyDfc35LKR9wIDAQAB}")
-    private String alipayPublicKey;
+    // 应用公钥
+    @Value("${public-key:MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoGkcGdNUgUVFT+5F1FivdozYE7/EIW0zSMXGhLxzvzNAY1MvLMIrmX5S1973JFE5Mv9J8/iETqq82+EpO/Bhd9vZvFwSBMvl5jjYuvLI8Vv1KbQqeYA1cvc2XLor/I/jrI1wVB3L5RiAtPTKJGJ2LAOhYMa0evRlM/AxFAE5rc43Zda2aS2PeottTbCzXpbohx5Q13dd1mu6HzwO9mPy5SWvldk7D5sWSUSMV0oZV7vUHjaf2sbv0uswr/WNWnF6hjlVspCNueUkX4pMErIEb11h67+ube8jutNvcI9Zg/BDJnmhQmoocTkCNElVwhJHLitQksbYiI0NOxrPaCXv4wIDAQAB}")
+    private String publicKey;
+    // 支付宝根证书路径
+    @Value("${alipay-root-cert-path:/certificates/alipayRootCert.crt}")
+    private String alipayRootCertPath;
+    // 支付宝公钥证书路径
+    @Value("${alipay-cert-path:/certificates/alipayCert.crt}")
+    private String alipayCertPath;
+    // 应用公钥证书路径
+    @Value("${app-cert-path:/certificates/appCert.crt}")
+    private String appCertPath;
     /**
      * 接口版本
      */

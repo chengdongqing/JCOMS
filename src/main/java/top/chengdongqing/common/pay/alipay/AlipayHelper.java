@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import top.chengdongqing.common.kit.HttpKit;
-import top.chengdongqing.common.kit.JsonKit;
-import top.chengdongqing.common.kit.Kv;
-import top.chengdongqing.common.kit.StrKit;
+import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
@@ -40,11 +37,13 @@ public class AlipayHelper {
         // 封装公共请求参数
         params.add("app_id", configs.getAppId())
                 .add("method", method)
+                .add("biz_content", bizContent)
+                .add("version", configs.getVersion())
                 .add("charset", configs.getCharset())
                 .add("sign_type", configs.getSignType())
                 .add("timestamp", LocalDateTime.now().format(FORMATTER))
-                .add("version", configs.getVersion())
-                .add("biz_content", bizContent);
+                .add("app_cert_sn", CertKit.calcAlipayCertSN(configs.getAppCertPath(), false))
+                .add("alipay_root_cert_sn", CertKit.calcAlipayCertSN(configs.getAlipayRootCertPath(), true));
 
         // 生成签名
         String sign = DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256,
