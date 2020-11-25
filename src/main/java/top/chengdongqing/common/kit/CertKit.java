@@ -38,10 +38,10 @@ public class CertKit {
             return readCerts(certPath).stream().map(item -> {
                 if (!alipayRoot || item.getSigAlgOID().startsWith("1.2.840.113549.1.1")) {
                     String signContent = item.getIssuerX500Principal().getName() + item.getSerialNumber();
-                    return fillMD5(DigitalSigner.signature(SignatureAlgorithm.MD5, signContent, null).toHex());
+                    return DigitalSigner.signature(SignatureAlgorithm.MD5, signContent, null).toMD5Hex();
                 }
                 return null;
-            }).filter(item -> item != null).collect(Collectors.joining("_"));
+            }).filter(Objects::nonNull).collect(Collectors.joining("_"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -54,7 +54,7 @@ public class CertKit {
      * @return 公钥
      */
     public static BytesToStr readPublicKey(String certPath) {
-        return BytesToStr.of(CertKit.readCert(certPath).getPublicKey().getEncoded());
+        return BytesToStr.of(readCert(certPath).getPublicKey().getEncoded());
     }
 
     /**
@@ -64,7 +64,7 @@ public class CertKit {
      * @return 序列号
      */
     public static String readSerialNo(String certPath) {
-        return CertKit.readCert(certPath).getSerialNumber().toString(16);
+        return readCert(certPath).getSerialNumber().toString(16);
     }
 
     /**
@@ -100,15 +100,5 @@ public class CertKit {
             CertificateFactory certFactory = CertificateFactory.getInstance("X.509", "BC");
             return (List<X509Certificate>) certFactory.generateCertificates(stream);
         }
-    }
-
-    /**
-     * 填充MD5的长度到32位
-     *
-     * @param md5 原始MD5
-     * @return 32位长度的MD5值
-     */
-    private static String fillMD5(String md5) {
-        return md5.length() == 32 ? md5 : fillMD5("0" + md5);
     }
 }

@@ -25,6 +25,25 @@ public record BytesToStr(byte[] bytes) {
     }
 
     /**
+     * 转MD5签名16进制字符串
+     * BigInteger会将签名串前面的0去除，导致长度不够
+     * 这里填充0到签名串前面直到长度为32
+     */
+    public String toMD5Hex() {
+        return fillMD5(toHex());
+    }
+
+    /**
+     * 填充MD5的长度到32
+     *
+     * @param md5 原始MD5
+     * @return 固定长度的MD5值
+     */
+    private static String fillMD5(String md5) {
+        return md5.length() == 32 ? md5 : fillMD5("0" + md5);
+    }
+
+    /**
      * 转base64字符串
      */
     public String toBase64() {
