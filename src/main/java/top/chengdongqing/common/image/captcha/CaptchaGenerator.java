@@ -32,7 +32,7 @@ public class CaptchaGenerator implements ImageGenerator {
     private CaptchaEntity captchaEntity;
 
     // 随机数生成器
-    private static final Random RANDOM = ThreadLocalRandom.current();
+    private final Random RANDOM = ThreadLocalRandom.current();
     // 验证码字体
     private static final Font[] RANDOM_FONT = new Font[]{
             new Font(Font.DIALOG, Font.BOLD, 33),
@@ -41,6 +41,8 @@ public class CaptchaGenerator implements ImageGenerator {
             new Font(Font.SANS_SERIF, Font.BOLD, 34),
             new Font(Font.MONOSPACED, Font.BOLD, 34)
     };
+    // 图片格式
+    private static final String FORMAT = "jpg";
 
     public CaptchaGenerator(int width, int height, int randomLength, CaptchaType type) {
         this.width = width;
@@ -81,7 +83,7 @@ public class CaptchaGenerator implements ImageGenerator {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         drawGraphic(captchaEntity.key(), image);
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-            ImageIO.write(image, "jpg", os);
+            ImageIO.write(image, FORMAT, os);
             return os.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -167,6 +169,6 @@ public class CaptchaGenerator implements ImageGenerator {
 
     @Override
     public void render() {
-        ImageRenderer.ofPNG(generate()).render();
+        ImageRenderer.of(FORMAT, generate()).render();
     }
 }

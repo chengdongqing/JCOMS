@@ -21,7 +21,7 @@ public class CaptchaRandom {
     private static final char[] LETTERS = getLetters();
     private static final char[] NUMBERS = getNumbers();
     private static final char[] OPERATORS = {'+', '-', '*'};
-    private static final Random RANDOM = ThreadLocalRandom.current();
+    private final Random random = ThreadLocalRandom.current();
 
     public CaptchaRandom(CaptchaType captchaType, int randomLength) {
         this.captchaType = captchaType;
@@ -47,7 +47,7 @@ public class CaptchaRandom {
 
         char[] randomChars = new char[randomLength];
         for (int i = 0; i < randomLength; i++) {
-            int index = RANDOM.nextInt(chars.length);
+            int index = random.nextInt(chars.length);
             randomChars[i] = chars[index];
         }
         String randomStr = String.valueOf(randomChars);
@@ -59,15 +59,15 @@ public class CaptchaRandom {
      *
      * @return 随机数
      */
-    private static CaptchaEntity getFormula() {
+    private CaptchaEntity getFormula() {
         String key, value;
 
-        String a1 = NUMBERS[RANDOM.nextInt(NUMBERS.length)] + "";
-        String b1 = NUMBERS[RANDOM.nextInt(NUMBERS.length)] + "";
-        String o = OPERATORS[RANDOM.nextInt(OPERATORS.length)] + "";
+        String a1 = NUMBERS[random.nextInt(NUMBERS.length)] + "";
+        String b1 = NUMBERS[random.nextInt(NUMBERS.length)] + "";
+        String o = OPERATORS[random.nextInt(OPERATORS.length)] + "";
         if (o.equals("+") || o.equals("-")) {
-            char a2 = NUMBERS[RANDOM.nextInt(NUMBERS.length)];
-            char b2 = NUMBERS[RANDOM.nextInt(NUMBERS.length)];
+            char a2 = NUMBERS[random.nextInt(NUMBERS.length)];
+            char b2 = NUMBERS[random.nextInt(NUMBERS.length)];
             int a = Integer.parseInt(a1) + a2;
             int b = Integer.parseInt(b1) + b2;
 
