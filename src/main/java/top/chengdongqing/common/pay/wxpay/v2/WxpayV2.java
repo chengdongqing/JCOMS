@@ -24,6 +24,7 @@ import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.StrToBytes;
 
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -79,12 +80,11 @@ public class WxpayV2 extends ApplicationObjectSupport implements IPayment<String
                 .add("refund_fee", WxpayHelper.convertAmount(entity.getRefundAmount()).toString());
         String xml = helperV2.buildRequestXml(tradeType, params);
 
-        try {
-            // 读取证书
-            byte[] certBytes = Files.readAllBytes(Paths.get(v2configs.getCertPath()));
+        // 读取证书
+        try (InputStream certStream = Files.newInputStream(Paths.get(v2configs.getCertPath()))) {
             // 发送请求
             String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getRefund());
-            String result = HttpKit.post(requestUrl, xml, certBytes, configs.getMchId()).body();
+            String result = HttpKit.post(requestUrl, xml, certStream, configs.getMchId()).body();
             log.info("请求订单退款，参数：{}，\n结果：{}", xml, result);
             // 判断结果
             return WxpayHelperV2.getResult(XmlKit.parseXml(result));

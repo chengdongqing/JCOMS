@@ -8,8 +8,8 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -60,24 +60,24 @@ public class HttpKit {
         return post(url, params, headers, data, null, null);
     }
 
-    public static HttpResponse<String> post(String url, String data, byte[] certBytes, String certPwd) {
-        return post(url, null, null, data, certBytes, certPwd);
+    public static HttpResponse<String> post(String url, String data, InputStream certStream, String certPwd) {
+        return post(url, null, null, data, certStream, certPwd);
     }
 
     /**
      * 发送POST请求
      *
-     * @param url       请求地址
-     * @param params    参数键值对
-     * @param headers   请求头
-     * @param data      请求体
-     * @param certBytes 证书数据
-     * @param certPwd   证书密码
+     * @param url        请求地址
+     * @param params     参数键值对
+     * @param headers    请求头
+     * @param data       请求体
+     * @param certStream 证书数据
+     * @param certPwd    证书密码
      * @return 响应结果
      */
     public static HttpResponse<String> post(String url, Kv<String, String> params, Kv<String, String> headers,
-                                            String data, byte[] certBytes, String certPwd) {
-        return send(HttpMethod.POST, url, params, headers, data, certBytes, certPwd);
+                                            String data, InputStream certStream, String certPwd) {
+        return send(HttpMethod.POST, url, params, headers, data, certStream, certPwd);
     }
 
     /**
@@ -111,23 +111,23 @@ public class HttpKit {
     /**
      * 发送HTTP请求
      *
-     * @param method    请求方式
-     * @param url       请求地址
-     * @param params    参数键值对
-     * @param headers   请求头
-     * @param data      请求体
-     * @param certBytes 证书数据
-     * @param certPwd   证书密码
+     * @param method     请求方式
+     * @param url        请求地址
+     * @param params     参数键值对
+     * @param headers    请求头
+     * @param data       请求体
+     * @param certStream 证书数据
+     * @param certPwd    证书密码
      * @return 响应结果
      */
     public static HttpResponse<String> send(HttpMethod method, String url, Kv<String, String> params,
                                             Kv<String, String> headers, String data,
-                                            byte[] certBytes, String certPwd) {
+                                            InputStream certStream, String certPwd) {
         try {
             // 构建HTTP客户端
             HttpClient.Builder clientBuilder = HttpClient.newBuilder();
-            if (certBytes != null && StringUtils.isNotBlank(certPwd)) {
-                clientBuilder.sslContext(buildSSLContext(certBytes, certPwd));
+            if (certStream != null && StringUtils.isNotBlank(certPwd)) {
+                clientBuilder.sslContext(buildSSLContext(certStream, certPwd));
             }
             HttpClient client = clientBuilder.build();
 
@@ -151,26 +151,22 @@ public class HttpKit {
     /**
      * 构建SSL上下文
      *
-     * @param certBytes 证书数据
-     * @param certPwd   证书密码
+     * @param certStream 证书数据
+     * @param certPwd    证书密码
      * @return SSL上下文
      */
-    private static SSLContext buildSSLContext(byte[] certBytes, String certPwd) throws Exception {
+    private static SSLContext buildSSLContext(InputStream certStream, String certPwd) throws Exception {
         // 将证书密码字符串转为字符数组
         char[] password = certPwd.toCharArray();
-
-        // 读取证书流
-        try (ByteArrayInputStream stream = new ByteArrayInputStream(certBytes)) {
-            // 构建ssl上下文
-            SSLContext sslContext = SSLContext.getInstance("TLS");
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(stream, password);
-            keyManagerFactory.init(keyStore, password);
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
-            return sslContext;
-        }
+        // 构建ssl上下文
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        keyStore.load(certStream, password);
+        keyManagerFactory.init(keyStore, password);
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom.getInstanceStrong());
+        return sslContext;
     }
 
     /**
