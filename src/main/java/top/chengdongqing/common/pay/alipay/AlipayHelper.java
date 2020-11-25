@@ -59,7 +59,7 @@ public class AlipayHelper {
      * @return 查询字符串
      */
     public String buildQueryStr(Kv<String, String> params) {
-        return StrKit.buildQueryStr(params, (k, v) -> !k.equals("sign") && !k.equals("sign_type"));
+        return StrKit.buildQueryStr(params, (k, v) -> !k.equals("sign"));
     }
 
     /**

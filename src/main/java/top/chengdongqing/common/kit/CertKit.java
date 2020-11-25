@@ -5,7 +5,7 @@ import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.BytesToStr;
 
-import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Security;
@@ -73,10 +73,12 @@ public class CertKit {
      */
     public static List<X509Certificate> readCerts(String certPath) throws Exception {
         // 读取证书内容
-        String content = Files.readString(Path.of(CertKit.class.getResource(certPath).toURI()));
-        // 生成X.509证书集合
-        CertificateFactory certFactory = CertificateFactory.getInstance("X.509", "BC");
-        return (List<X509Certificate>) certFactory.generateCertificates(new ByteArrayInputStream(content.getBytes()));
+        Path path = Path.of(CertKit.class.getResource(certPath).toURI());
+        try (InputStream stream = Files.newInputStream(path)) {
+            // 生成X.509证书集合
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509", "BC");
+            return (List<X509Certificate>) certFactory.generateCertificates(stream);
+        }
     }
 
     /**
