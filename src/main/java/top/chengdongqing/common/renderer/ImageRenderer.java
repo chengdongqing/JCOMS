@@ -54,7 +54,7 @@ public class ImageRenderer extends Renderer {
         try (OutputStream os = response.getOutputStream()) {
             os.write(data);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RenderException("图片渲染异常", e);
         }
     }
 }

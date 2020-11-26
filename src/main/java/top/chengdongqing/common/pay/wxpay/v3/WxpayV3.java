@@ -81,7 +81,7 @@ public class WxpayV3 extends CallbackHandler {
                 .add("out_refund_no", entity.getRefundNo())
                 .add("reason", entity.getReason())
                 .add("amount", buildRefundAmount(entity))
-                .add("notify_url", v3Configs.getNotifyUrl().getRefund())
+                .add("notify_url", v3Configs.getRefundNotifyUrl())
                 .toJson();
 
         // 构建请求头

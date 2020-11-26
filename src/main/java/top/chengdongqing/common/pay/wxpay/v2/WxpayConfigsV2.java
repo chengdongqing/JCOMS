@@ -26,23 +26,21 @@ public class WxpayConfigsV2 {
     @Autowired
     private WxpayRequestApiV2 requestApi;
     /**
-     * 签名用的密钥
+     * 签名的key
      */
-    @Value("${pay.wx.v2.secret-key:3u24y3jdksfjksdu3y432bndbf}")
-    private String secretKey;
+    private String key;
     /**
      * 签名方式
      */
-    @Value("HMAC-SHA256")
     private String signType;
+    /**
+     * 请求退款需要的双向证书路径
+     */
+    private String certPath;
     /**
      * 支付通知回调地址
      */
     private String notifyUrl;
-    /**
-     * 双向证书路径
-     */
-    private String certPath;
 
     @Getter
     @Component

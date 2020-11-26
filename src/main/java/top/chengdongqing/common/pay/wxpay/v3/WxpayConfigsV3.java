@@ -1,5 +1,6 @@
 package top.chengdongqing.common.pay.wxpay.v3;
 
+import lombok.Data;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Luyao
  */
-@Getter
+@Data
 @Component
 @RefreshScope
 @ConfigurationProperties("pay.wx.v3")
@@ -26,7 +27,6 @@ public class WxpayConfigsV3 {
     private WxpayRequestApiV3 requestApi;
 
     // 认证方案
-    @Value("WECHATPAY2-SHA256-RSA2048")
     private String authSchema;
     // 应用私钥
     private String privateKey;
@@ -38,33 +38,19 @@ public class WxpayConfigsV3 {
     private String appCertPath;
 
     /**
-     * 解密密钥
+     * AES解密密钥
      */
-    private String secretKey;
+    private String key;
 
     /**
      * 币种
      */
-    @Value("CNY")
     private String currency;
 
-    /**
-     * 回调地址
-     */
-    @Autowired
-    private WxpayNotifyUrlV3 notifyUrl;
-
-    @Getter
-    @Component
-    @RefreshScope
-    @ConfigurationProperties("pay.wx.v3.notify-url")
-    public static class WxpayNotifyUrlV3 {
-
-        // 支付回调地址
-        private String payment;
-        // 退款回调地址
-        private String refund;
-    }
+    // 支付回调地址
+    private String paymentNotifyUrl;
+    // 退款回调地址
+    private String refundNotifyUrl;
 
     @Getter
     @Component

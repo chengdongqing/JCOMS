@@ -40,7 +40,7 @@ public abstract class CallbackHandler extends ApplicationObjectSupport implement
         }
 
         // 解密数据
-        PayCallbackEntity payCallback = WxpayHelperV3.decryptData(callback.getBody(), v3Configs.getSecretKey(), PayCallbackEntity.class);
+        PayCallbackEntity payCallback = WxpayHelperV3.decryptData(callback.getBody(), v3Configs.getKey(), PayCallbackEntity.class);
         log.info("支付回调解密后的数据：{}", payCallback);
 
         // 判断支付结果
@@ -70,7 +70,7 @@ public abstract class CallbackHandler extends ApplicationObjectSupport implement
         if (!verify) return WxpayHelperV3.buildFailCallback("验签失败");
 
         // 解密数据
-        RefundCallbackEntity refundCallback = WxpayHelperV3.decryptData(callback.getBody(), v3Configs.getSecretKey(), RefundCallbackEntity.class);
+        RefundCallbackEntity refundCallback = WxpayHelperV3.decryptData(callback.getBody(), v3Configs.getKey(), RefundCallbackEntity.class);
         log.info("退款回调解密后的数据：{}", refundCallback);
 
         // 封装退款信息

@@ -34,7 +34,7 @@ public class MPPayReqerV2 extends WxpayReqerV2 {
         String sign = DigitalSigner.signature(
                 SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(data),
-                StrToBytes.of(v2configs.getSecretKey()).fromHex()).toHex();
+                StrToBytes.of(v2configs.getKey()).fromHex()).toHex();
         data.add("paySign", sign);
         return Ret.ok(data);
     }

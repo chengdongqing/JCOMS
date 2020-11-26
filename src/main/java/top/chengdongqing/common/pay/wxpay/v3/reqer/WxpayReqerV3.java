@@ -2,7 +2,6 @@ package top.chengdongqing.common.pay.wxpay.v3.reqer;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -53,7 +52,7 @@ public abstract class WxpayReqerV3 implements IRequestPay {
         // 封装请求参数
         Kv<String, String> params = Kv.of("appid", helper.getAppId(tradeType))
                 .add("time_expire", buildExpireTime(configs.getTimeout()))
-                .add("notify_url", v3Configs.getNotifyUrl().getPayment())
+                .add("notify_url", v3Configs.getPaymentNotifyUrl())
                 .add("detail", buildGoodsDetail(entity.getItems()))
                 .add("scene_info", buildSceneInfo(entity.getIp()))
                 .add("amount", buildAmount(entity.getAmount()))

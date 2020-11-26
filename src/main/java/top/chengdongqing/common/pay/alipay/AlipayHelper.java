@@ -42,7 +42,7 @@ public class AlipayHelper {
                 .add("charset", configs.getCharset())
                 .add("sign_type", configs.getSignType())
                 .add("timestamp", LocalDateTime.now().format(FORMATTER))
-                .add("app_cert_sn", CertKit.calcAlipayCertSN(configs.getAppCertPath(), false))
+                .add("app_cert_sn", CertKit.calcAlipayCertSN(configs.getAppPublicKeyCertPath(), false))
                 .add("alipay_root_cert_sn", CertKit.calcAlipayCertSN(configs.getAlipayRootCertPath(), true));
 
         // 生成签名

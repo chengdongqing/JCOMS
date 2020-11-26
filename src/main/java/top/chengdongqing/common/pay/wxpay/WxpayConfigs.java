@@ -1,6 +1,6 @@
 package top.chengdongqing.common.pay.wxpay;
 
-import lombok.Getter;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Luyao
  */
-@Getter
+@Data
 @Component
 @RefreshScope
 @ConfigurationProperties("pay.wx")
@@ -31,13 +31,12 @@ public class WxpayConfigs {
     /**
      * 微信支付域名
      */
-    @Value("${wx-domain:https://api.mch.weixin.qq.com}")
     private String wxDomain;
 
-    @Getter
+    @Data
     @Component
     @RefreshScope
-    @ConfigurationProperties("pay.wx.appid")
+    @ConfigurationProperties("pay.wx.app-id")
     public static class AppId {
 
         private String mp;

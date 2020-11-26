@@ -2,7 +2,6 @@ package top.chengdongqing.common.pay.wxpay.v2;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
@@ -13,6 +12,7 @@ import top.chengdongqing.common.pay.wxpay.WxpayHelper;
 import top.chengdongqing.common.pay.wxpay.WxpayStatus;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.transformer.StrToBytes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -54,7 +54,7 @@ public class WxpayHelperV2 {
         // 添加数字签名
         String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
                 buildQueryStr(params),
-                v2configs.getSecretKey().getBytes()).toHex();
+                StrToBytes.of(v2configs.getKey()).fromHex()).toHex();
         params.add("sign", sign);
         // 转换数据类型
         return XmlKit.toXml(params);
@@ -69,8 +69,8 @@ public class WxpayHelperV2 {
     public String buildQueryStr(Kv<String, String> params) {
         // 构建查询字符串
         String paramsStr = StrKit.buildQueryStr(params, (k, v) -> !k.equals("sign"));
-        // 将密钥加在最后
-        return paramsStr.concat("&").concat("key=").concat(v2configs.getSecretKey());
+        // 将签名需要的key加在最后
+        return paramsStr.concat("&").concat("key=").concat(v2configs.getKey());
     }
 
     /**
@@ -90,7 +90,13 @@ public class WxpayHelperV2 {
      * @return 验证结果
      */
     public static <T> Ret<T> getResult(Map<String, String> response) {
-        boolean isOk = WxpayStatus.isOk(response.get("return_code")) && WxpayStatus.isOk(response.get("result_code"));
-        return isOk ? Ret.ok() : Ret.fail(ErrorMsg.REQUEST_FAILED);
+        // 请求接受结果
+        if (!WxpayStatus.isOk(response.get("return_code"))) {
+            return Ret.fail(response.get("return_msg"));
+            // 业务响应结果
+        } else if (!WxpayStatus.isOk(response.get("result_code"))) {
+            return Ret.fail(response.get("err_code_des"));
+        }
+        return Ret.ok();
     }
 }

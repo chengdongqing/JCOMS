@@ -1,7 +1,6 @@
 package top.chengdongqing.common.pay;
 
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Luyao
  */
-@Getter
+@Data
 @Component
 @ConfigurationProperties("pay")
 public class PayConfigs {
@@ -18,12 +17,10 @@ public class PayConfigs {
     /**
      * 支付超时配置，单位：分钟
      */
-    @Value("${timeout:30}")
     private Long timeout;
 
     /**
      * 网站域名
      */
-    @Value("${web-domain:https://zwmall.chengdongqing.top}")
     private String webDomain;
 }
