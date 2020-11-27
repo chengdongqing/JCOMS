@@ -6,8 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import top.chengdongqing.common.file.FilePath;
-import top.chengdongqing.common.kit.Ret;
+import top.chengdongqing.common.file.FileException;
+import top.chengdongqing.common.file.FileManagerFactory;
+import top.chengdongqing.common.file.entity.FileMetadata;
+import top.chengdongqing.common.file.FileType;
 
 /**
  * 上传器
@@ -20,41 +22,37 @@ public class Uploader {
     @Autowired
     private UploadConfigs configs;
     @Autowired
-    private UploaderFactory uploaderFactory;
+    private FileManagerFactory managerFactory;
 
     /**
      * 上传图片
      *
      * @param file 图片文件
-     * @param path 存放路径
-     * @return 上传结果
+     * @param type 图片类型
+     * @return 文件元数据
      */
-    public Ret<String> uploadImage(MultipartFile file, FilePath path) {
-        return uploaderFactory.getUploader().upload(file, path,
-                configs.getImageFormats(),
-                configs.getImageMaxSize());
+    public FileMetadata uploadImage(MultipartFile file, FileType type) throws FileException {
+        return managerFactory.getManager().upload(file, type, configs.getImageFormats(), configs.getImageMaxSize());
     }
 
     /**
      * 上传视频
      *
      * @param file 视频文件
-     * @param path 存放路径
-     * @return 上传结果
+     * @param type 图片类型
+     * @return 文件元数据
      */
-    public Ret<String> uploadVideo(MultipartFile file, FilePath path) {
-        return uploaderFactory.getUploader().upload(file, path,
-                configs.getVideoFormats(),
-                configs.getVideoMaxSize());
+    public FileMetadata uploadVideo(MultipartFile file, FileType type) throws FileException {
+        return managerFactory.getManager().upload(file, type, configs.getVideoFormats(), configs.getVideoMaxSize());
     }
 }
 
 @Data
 @Component
 @RefreshScope
-@ConfigurationProperties("upload")
+@ConfigurationProperties("file")
 class UploadConfigs {
 
     private String[] imageFormats, videoFormats;
-    private Integer imageMaxSize, videoMaxSize;
+    private long imageMaxSize, videoMaxSize;
 }

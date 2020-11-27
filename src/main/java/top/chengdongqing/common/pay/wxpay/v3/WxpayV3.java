@@ -29,7 +29,7 @@ import java.net.http.HttpResponse;
  */
 @Slf4j
 @Component
-public class WxpayV3 extends CallbackHandler {
+public class WxpayV3 extends CallbackHandler implements IWxpayV3 {
 
     @Autowired
     private WxpayConfigs configs;

@@ -1,4 +1,4 @@
-package top.chengdongqing.common.file.upload;
+package top.chengdongqing.common.file;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,25 +9,25 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 /**
- * 上传器工厂
+ * 文件管理器工厂
  *
  * @author Luyao
  */
 @Component
 @RefreshScope
-public class UploaderFactory extends ApplicationObjectSupport {
+public class FileManagerFactory extends ApplicationObjectSupport {
 
-    @Value("${upload.active}")
+    @Value("${file.active}")
     private String active;
 
     /**
-     * 获取上传器实例
+     * 获取文件管理器实例
      *
-     * @return 上传器实例
+     * @return 文件管理器实例
      */
-    public AbstractUploader getUploader() throws NoSuchBeanDefinitionException {
+    public FileManager getManager() throws NoSuchBeanDefinitionException {
         Objects.requireNonNull(active, "upload.active cannot be null.");
         String beanName = active + "FileManager";
-        return super.getApplicationContext().getBean(beanName, AbstractUploader.class);
+        return super.getApplicationContext().getBean(beanName, FileManager.class);
     }
 }

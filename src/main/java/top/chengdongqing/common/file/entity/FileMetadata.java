@@ -1,4 +1,4 @@
-package top.chengdongqing.common.file;
+package top.chengdongqing.common.file.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 文件
+ * 文件元数据
  *
  * @author Luyao
  */
@@ -16,24 +16,20 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class File {
+public class FileMetadata {
 
     /**
-     * 文件名
+     * 文件唯一键名
      */
-    private String name;
+    private String key;
     /**
-     * 是否是文件夹
+     * 原始文件名
      */
-    private boolean isDirectory;
+    private String originalName;
     /**
-     * 文件大小
+     * 文件大小（字节）
      */
     private Long size;
-    /**
-     * 文件路径
-     */
-    private String path;
     /**
      * 文件格式
      */
@@ -42,8 +38,4 @@ public class File {
      * 上传时间
      */
     private LocalDateTime uploadTime;
-    /**
-     * 文件二进制数据
-     */
-    private byte[] bytes;
 }

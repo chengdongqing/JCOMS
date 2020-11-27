@@ -1,139 +1,75 @@
 package top.chengdongqing.common.file.manager;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
-import top.chengdongqing.common.file.File;
+import top.chengdongqing.common.file.FileException;
 import top.chengdongqing.common.file.FileManager;
-import top.chengdongqing.common.file.FilePath;
+import top.chengdongqing.common.file.entity.DownloadFile;
 import top.chengdongqing.common.file.upload.AbstractUploader;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 本地文件管理器
  *
  * @author Luyao
  */
+@Slf4j
 @Component
 @RefreshScope
 public class LocalFileManager extends AbstractUploader implements FileManager {
 
-    @Value("${upload.local.base-path}")
+    @Value("${file.local.base-path}")
     private String basePath;
 
     @Override
-    protected void upload(byte[] fileBytes, String path, String filename) throws Exception {
-        // 获取文件夹对象
-        Path directory = Path.of(basePath + path);
-        // 文件夹不存在则自动创建
-        if (!Files.isDirectory(directory)) Files.createDirectories(directory);
-        // 获取将要存放在该路径的文件对象
-        Path targetFile = directory.resolve(filename);
-        // 如果已存在则删除
-        Files.deleteIfExists(targetFile);
-        // 创建指定路径的文件
-        Path file = Files.createFile(targetFile);
-        // 将数据写入到文件中
-        Files.write(file, fileBytes);
-    }
-
-    @Override
-    public File getFile(String fileUrl, boolean content) throws Exception {
-        Path path = Paths.get(basePath + fileUrl);
-        String filename = path.getFileName().toString();
-        return File.builder()
-                .name(filename)
-                .size(Files.size(path))
-                .path(path.toUri().toString())
-                .isDirectory(Files.isDirectory(path))
-                .format(FileManager.getFormat(filename))
-                .bytes(content ? Files.readAllBytes(path) : null)
-                .uploadTime(Files.getLastModifiedTime(path).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
-                .build();
-    }
-
-    @Override
-    public List<File> getFiles(FilePath path, boolean content) throws Exception {
-        // 获取文件夹
-        Path directory = Paths.get(basePath + path.getPath());
-        if (!Files.isDirectory(directory)) {
-            throw new IllegalArgumentException(path.getPath() + " does not a directory.");
-        }
-
-        // 获取该文件夹下的每个文件信息
-        ArrayList<File> files = new ArrayList<>();
-        List<Path> pathFiles = Files.list(directory).collect(Collectors.toList());
-        for (Path file : pathFiles) {
-            files.add(getFile(path.getPath() + file.getFileName(), content));
-        }
-        return files;
-    }
-
-    @Override
-    public void deleteFile(String fileUrl) throws Exception {
-        Files.deleteIfExists(Paths.get(basePath + fileUrl));
-    }
-
-    @Override
-    public void deleteFiles(List<String> fileUrls) throws Exception {
-        for (String fileUrl : fileUrls) {
-            deleteFile(fileUrl);
-        }
-    }
-
-    @Override
-    public void clearDirectory(FilePath path) throws Exception {
-        // 获取文件夹
-        Path directory = Paths.get(basePath + path.getPath());
-        if (!Files.isDirectory(directory)) {
-            throw new IllegalArgumentException(path.getPath() + " does not a directory.");
-        }
-        recursiveDelete(directory);
-    }
-
-    /**
-     * 递归删除文件
-     *
-     * @param directory 文件夹
-     */
-    private void recursiveDelete(Path directory) throws Exception {
-        List<Path> files = Files.list(directory).collect(Collectors.toList());
-        for (Path file : files) {
-            if (Files.isDirectory(file) && Files.list(file).count() > 0) {
-                recursiveDelete(file);
+    protected void upload(InputStream fileStream, String fileKey) throws FileException {
+        try {
+            // 文件应该存放的位置
+            Path filePath = Path.of(basePath + fileKey);
+            // 如果该位置已有文件则删除
+            Files.deleteIfExists(filePath);
+            // 获取文件所属的文件夹
+            Path directory = Path.of(filePath.getParent().toString());
+            // 判断该文件夹是否存在
+            if (!Files.isDirectory(directory)) {
+                // 如果该文件夹不存在则创建，无论多少层级
+                Files.createDirectories(directory);
             }
-            Files.delete(file);
+            // 创建文件并将文件数据流向该文件
+            Files.copy(fileStream, filePath);
+        } catch (IOException e) {
+            log.error("文件上传到本地错误", e);
+            throw new FileException();
         }
     }
 
     @Override
-    public void renameFile(String fileUrl, String name) throws Exception {
-        Path file = Paths.get(basePath + fileUrl);
-        String fileName = file.getFileName().toString();
-        Path newFile = Path.of(basePath + fileUrl.replace(fileName, name));
-        Files.move(file, newFile, StandardCopyOption.REPLACE_EXISTING);
+    public DownloadFile download(String fileKey) throws FileException {
+        try {
+            Path file = Path.of(basePath + fileKey);
+            return DownloadFile.builder()
+                    .length(Files.size(file))
+                    .content(Files.newInputStream(file))
+                    .build();
+        } catch (Exception e) {
+            log.error("从本地下载文件错误", e);
+            throw new FileException();
+        }
     }
 
     @Override
-    public void moveFile(String fileUrl, FilePath targetPath) throws Exception {
-        Path file = Paths.get(basePath + fileUrl);
-        Path directory = Paths.get(basePath + targetPath.getPath());
-        if (!Files.isDirectory(directory)) Files.createDirectories(directory);
-        Files.move(file, directory.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    @Override
-    public void moveFiles(List<String> fileUrls, FilePath targetPath) throws Exception {
-        for (String fileUrl : fileUrls) {
-            moveFile(fileUrl, targetPath);
+    public void delete(String fileKey) throws FileException {
+        try {
+            Files.delete(Path.of(basePath + fileKey));
+        } catch (Exception e) {
+            log.error("从本地删除文件错误", e);
+            throw new FileException();
         }
     }
 }

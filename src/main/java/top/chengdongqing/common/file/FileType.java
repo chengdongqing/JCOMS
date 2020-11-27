@@ -4,21 +4,25 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 文件路径枚举
+ * 文件类型枚举
  *
  * @author Luyao
  */
 @Getter
 @AllArgsConstructor
-public enum FilePath {
+public enum FileType {
 
     /**
      * 用户头像
      */
-    AVATAR("/user/avatar/");
+    AVATAR("/user/avatar/"),
+    /**
+     * 商品评论
+     */
+    COMMENT("/goods/comment/");
 
     /**
-     * 存放路径
+     * 路径名称
      */
-    private final String path;
+    private final String pathname;
 }

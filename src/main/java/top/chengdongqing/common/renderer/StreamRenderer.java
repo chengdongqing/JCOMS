@@ -12,25 +12,28 @@ import java.io.InputStream;
  */
 public class StreamRenderer extends Renderer {
 
-    private final String filename;
     private final InputStream stream;
+    private final long length;
+    private final String filename;
 
-    public StreamRenderer(String filename, InputStream stream) {
-        this.filename = filename;
+    public StreamRenderer(InputStream stream, long length, String filename) {
         this.stream = stream;
+        this.length = length;
+        this.filename = filename;
     }
 
-    public static StreamRenderer of(String filename, InputStream stream) {
-        return new StreamRenderer(filename, stream);
+    public static StreamRenderer of(InputStream stream, long length, String filename) {
+        return new StreamRenderer(stream, length, filename);
     }
 
     @Override
     public void render() {
-        // 每次缓冲大小
+        // 每次渲染大小
         int bufferSize = 2048;
         byte[] buffer = new byte[bufferSize];
         // 定义响应头
         response.setBufferSize(bufferSize);
+        response.setContentLengthLong(length);
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "filename=" + filename);
         try (ServletOutputStream os = response.getOutputStream();
