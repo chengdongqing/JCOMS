@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.chengdongqing.common.file.entity.DownloadFile;
 import top.chengdongqing.common.file.entity.FileMetadata;
-import top.chengdongqing.common.file.upload.Uploader;
+import top.chengdongqing.common.file.uploader.Uploader;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.renderer.StreamRenderer;
 

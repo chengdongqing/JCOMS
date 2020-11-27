@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import top.chengdongqing.common.file.FileException;
 import top.chengdongqing.common.file.FileManager;
 import top.chengdongqing.common.file.entity.DownloadFile;
-import top.chengdongqing.common.file.upload.AbstractUploader;
+import top.chengdongqing.common.file.uploader.AbstractUploader;
 
 import java.io.InputStream;
 import java.util.Objects;

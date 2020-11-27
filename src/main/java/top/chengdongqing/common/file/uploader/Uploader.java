@@ -1,4 +1,4 @@
-package top.chengdongqing.common.file.upload;
+package top.chengdongqing.common.file.uploader;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +8,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import top.chengdongqing.common.file.FileException;
 import top.chengdongqing.common.file.FileManagerFactory;
-import top.chengdongqing.common.file.entity.FileMetadata;
 import top.chengdongqing.common.file.FileType;
+import top.chengdongqing.common.file.entity.FileMetadata;
 
 /**
  * 上传器
+ * 自动获取上传器实例
+ * 自动获取不同文件的上传配置
  *
  * @author Luyao
  */

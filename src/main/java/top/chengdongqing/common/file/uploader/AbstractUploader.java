@@ -1,4 +1,4 @@
-package top.chengdongqing.common.file.upload;
+package top.chengdongqing.common.file.uploader;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 /**
- * 文件上传前统一逻辑
+ * 抽象文件上传器
  *
  * @author Luyao
  * @see LocalFileManager
