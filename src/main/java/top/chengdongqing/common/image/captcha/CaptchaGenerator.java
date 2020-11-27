@@ -1,5 +1,6 @@
 package top.chengdongqing.common.image.captcha;
 
+import top.chengdongqing.common.constant.media.ImageFormat;
 import top.chengdongqing.common.image.ImageGenerator;
 import top.chengdongqing.common.renderer.ImageRenderer;
 
@@ -42,7 +43,7 @@ public class CaptchaGenerator implements ImageGenerator {
             new Font(Font.MONOSPACED, Font.BOLD, 34)
     };
     // 图片格式
-    private static final String FORMAT = "jpg";
+    private static final ImageFormat FORMAT = ImageFormat.JPG;
 
     public CaptchaGenerator(int width, int height, int randomLength, CaptchaType type) {
         this.width = width;
@@ -83,7 +84,7 @@ public class CaptchaGenerator implements ImageGenerator {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         drawGraphic(captchaEntity.key(), image);
         try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
-            ImageIO.write(image, FORMAT, os);
+            ImageIO.write(image, FORMAT.toString(), os);
             return os.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -169,6 +170,6 @@ public class CaptchaGenerator implements ImageGenerator {
 
     @Override
     public void render() {
-        ImageRenderer.of(FORMAT, generate()).render();
+        ImageRenderer.of(generate(), FORMAT, false).render();
     }
 }

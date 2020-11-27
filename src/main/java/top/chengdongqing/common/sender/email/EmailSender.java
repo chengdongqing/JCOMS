@@ -1,7 +1,7 @@
 package top.chengdongqing.common.sender.email;
 
 import org.apache.commons.lang3.StringUtils;
-import top.chengdongqing.common.constant.Regexps;
+import top.chengdongqing.common.constant.Regexp;
 import top.chengdongqing.common.sender.ISender;
 
 import javax.mail.SendFailedException;
@@ -18,7 +18,7 @@ public abstract class EmailSender implements ISender<EmailEntity> {
     /**
      * 预编译邮箱校验正则，提高性能
      */
-    private static final Pattern PATTERN = Pattern.compile(Regexps.EMAIL_ADDRESS.getRegex());
+    private static final Pattern PATTERN = Pattern.compile(Regexp.EMAIL_ADDRESS.getValue());
 
     @Override
     public void send(EmailEntity entity) throws SendFailedException {

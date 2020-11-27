@@ -1,9 +1,10 @@
 package top.chengdongqing.common.renderer;
 
-import org.apache.commons.lang3.StringUtils;
+import top.chengdongqing.common.constant.media.ImageFormat;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Objects;
 
 /**
  * 图片渲染器
@@ -12,45 +13,33 @@ import java.io.OutputStream;
  */
 public class ImageRenderer extends Renderer {
 
-    /**
-     * 图片格式
-     */
-    private final String format;
-    /**
-     * 图片二进制数据
-     */
     private final byte[] data;
-    /**
-     * 是否允许缓存
-     */
-    private final boolean cache;
+    private final ImageFormat format;
+    private final boolean allowCache;
 
-    public ImageRenderer(String format, byte[] data, boolean cache) {
-        if (StringUtils.isBlank(format) || data == null) {
-            throw new IllegalArgumentException("image format and data cannot be null");
-        }
-        this.format = format;
-        this.data = data;
-        this.cache = cache;
+    public ImageRenderer(byte[] data, ImageFormat format, boolean allowCache) {
+        this.data = Objects.requireNonNull(data);
+        this.format = Objects.requireNonNull(format);
+        this.allowCache = allowCache;
     }
 
-    public static ImageRenderer ofPNG(byte[] data) {
-        return of("png", data, false);
+    public static ImageRenderer ofPNG(byte[] data, boolean allowCache) {
+        return of(data, ImageFormat.PNG, allowCache);
     }
 
-    public static ImageRenderer of(String format, byte[] data) {
-        return of(format, data, true);
+    public static ImageRenderer of(byte[] data, ImageFormat format) {
+        return of(data, format, true);
     }
 
-    public static ImageRenderer of(String format, byte[] data, boolean cache) {
-        return new ImageRenderer(format, data, cache);
+    public static ImageRenderer of(byte[] data, ImageFormat format, boolean allowCache) {
+        return new ImageRenderer(data, format, allowCache);
     }
 
     @Override
     public void render() {
         // 定义响应头
         response.setContentType("image/" + format);
-        if (!cache) response.setHeader("Cache-Control", "no-store");
+        if (!allowCache) response.setHeader("Cache-Control", "no-cache");
         try (OutputStream os = response.getOutputStream()) {
             os.write(data);
         } catch (IOException e) {

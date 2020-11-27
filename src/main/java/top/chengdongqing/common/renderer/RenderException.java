@@ -3,7 +3,7 @@ package top.chengdongqing.common.renderer;
 /**
  * 渲染异常
  *
- * @author James Lu
+ * @author Luyao
  */
 public class RenderException extends RuntimeException {
 

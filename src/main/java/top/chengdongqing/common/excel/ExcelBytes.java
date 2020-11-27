@@ -1,6 +1,6 @@
 package top.chengdongqing.common.excel;
 
-import top.chengdongqing.common.renderer.FileRenderer;
+import top.chengdongqing.common.renderer.BytesRenderer;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -10,15 +10,15 @@ import java.time.format.DateTimeFormatter;
  *
  * @author Luyao
  */
-public record ExcelBytes(byte[] bytes) {
+public record ExcelBytes(byte[] data) {
 
     /**
      * 默认文件后缀名
      */
     private static final String EXCEL_SUFFIX = ".xlsx";
 
-    public static ExcelBytes of(byte[] bytes) {
-        return new ExcelBytes(bytes);
+    public static ExcelBytes of(byte[] data) {
+        return new ExcelBytes(data);
     }
 
     /**
@@ -27,7 +27,7 @@ public record ExcelBytes(byte[] bytes) {
      * @param name excel名称
      */
     public void render(String name) {
-        FileRenderer.of(name + EXCEL_SUFFIX, bytes).render();
+        BytesRenderer.of(data, name + EXCEL_SUFFIX).render();
     }
 
     /**
@@ -38,6 +38,6 @@ public record ExcelBytes(byte[] bytes) {
      */
     public void renderWithDate(String name) {
         String date = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
-        render(String.join("-", name, date));
+        render(name.concat("_").concat(date));
     }
 }

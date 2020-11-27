@@ -3,6 +3,7 @@ package top.chengdongqing.common.image.qrcode;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
+import lombok.extern.slf4j.Slf4j;
 import top.chengdongqing.common.image.ImageReader;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.transformer.BytesToStr;
@@ -20,6 +21,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Luyao
  */
+@Slf4j
 public class QRCodeReader implements ImageReader {
 
     @Override
@@ -31,10 +33,9 @@ public class QRCodeReader implements ImageReader {
             Kv<DecodeHintType, Charset> hints = Kv.of(DecodeHintType.CHARACTER_SET, StandardCharsets.UTF_8);
             Result result = formatReader.decode(binaryBitmap, hints);
             return BytesToStr.of(result.getRawBytes());
-        } catch (NotFoundException e) {
-            return null;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | NotFoundException e) {
+            log.error("二维码识别异常", e);
+            throw new QRCodeException("二维码识别失败");
         }
     }
 }

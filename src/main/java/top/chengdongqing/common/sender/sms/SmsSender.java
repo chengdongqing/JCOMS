@@ -1,7 +1,7 @@
 package top.chengdongqing.common.sender.sms;
 
 import org.apache.commons.lang3.StringUtils;
-import top.chengdongqing.common.constant.Regexps;
+import top.chengdongqing.common.constant.Regexp;
 import top.chengdongqing.common.sender.ISender;
 
 import javax.mail.SendFailedException;
@@ -18,7 +18,7 @@ public abstract class SmsSender implements ISender<SmsEntity> {
     /**
      * 预编译手机号校验正则，提高性能
      */
-    private static final Pattern PATTERN = Pattern.compile(Regexps.PHONE_NUMBER.getRegex());
+    private static final Pattern PATTERN = Pattern.compile(Regexp.PHONE_NUMBER.getValue());
 
     @Override
     public void send(SmsEntity entity) throws SendFailedException {

@@ -5,8 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Lkv;
@@ -78,10 +76,10 @@ public class POIExcelProcessor implements ExcelProcessor {
 
     @Override
     public ExcelBytes write(Lkv<String, String> titles, JSONArray rows) {
-        try (XSSFWorkbook workbook = new XSSFWorkbook();
+        try (Workbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             // 创建表格
-            XSSFSheet sheet = workbook.createSheet();
+            Sheet sheet = workbook.createSheet();
             // 列宽
             sheet.setDefaultColumnWidth(20);
 
@@ -97,7 +95,7 @@ public class POIExcelProcessor implements ExcelProcessor {
             titleCellStyle.setFont(font);
 
             // 创建标题行
-            XSSFRow titleRow = sheet.createRow(0);
+            Row titleRow = sheet.createRow(0);
             int cellIndex = 0;
             for (String title : titles.values()) {
                 Cell cell = titleRow.createCell(cellIndex);

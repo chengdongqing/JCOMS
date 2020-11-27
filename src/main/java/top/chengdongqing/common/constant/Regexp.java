@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum Regexps {
+public enum Regexp {
 
     /**
      * 手机号
@@ -31,11 +31,11 @@ public enum Regexps {
     /**
      * 账号
      */
-    ACCOUNT(PHONE_NUMBER.getRegex() + "|" + EMAIL_ADDRESS.getRegex()),
+    ACCOUNT(PHONE_NUMBER.getValue() + "|" + EMAIL_ADDRESS.getValue()),
     /**
      * 昵称
      */
     NICKNAME("[a-zA-Z\\u4E00-\\u9FA5][a-zA-Z0-9_\\u4E00-\\u9FA5]{1,20}");
 
-    private final String regex;
+    private final String value;
 }
