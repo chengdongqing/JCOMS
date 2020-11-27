@@ -15,11 +15,11 @@ public enum FileType {
     /**
      * 用户头像
      */
-    AVATAR("/user/avatar/"),
+    AVATAR("user/avatar"),
     /**
      * 商品评论
      */
-    COMMENT("/goods/comment/");
+    COMMENT("goods/comment");
 
     /**
      * 路径名称

@@ -23,7 +23,7 @@ file:
   image-formats: jpg, png, jpeg, gif
   video-formats: mp4, 3gp, mkv, flv
   local:
-    base-path: E:\upload
+    base-path: E:\upload\
   oss:
     bucket: xx
     endpoint: xx

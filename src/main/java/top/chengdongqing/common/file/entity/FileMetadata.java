@@ -29,7 +29,7 @@ public class FileMetadata {
     /**
      * 文件大小（字节）
      */
-    private Long size;
+    private Long length;
     /**
      * 文件格式
      */

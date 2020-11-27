@@ -38,7 +38,7 @@ public abstract class AbstractUploader implements FileManager {
         // 唯一编号
         String id = StrKit.getRandomUUID();
         // 完整键名
-        String key = type.getPathname().concat(id);
+        String key = type.getPathname().concat("/").concat(id);
         // 构建元数据
         FileMetadata metadata = buildMetadata(file, key, format);
 
@@ -74,7 +74,7 @@ public abstract class AbstractUploader implements FileManager {
         return FileMetadata.builder()
                 .key(key)
                 .format(format)
-                .size(file.getSize())
+                .length(file.getSize())
                 .uploadTime(LocalDateTime.now())
                 .originalName(file.getOriginalFilename())
                 .build();

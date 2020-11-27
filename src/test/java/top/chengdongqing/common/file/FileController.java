@@ -43,9 +43,9 @@ public class FileController {
     @GetMapping
     @ApiOperation("下载文件")
     public void download(@ApiParam("文件键名") @RequestParam String fileKey,
-                         @ApiParam("文件原始名称") @RequestParam String originalName,
                          HttpServletResponse response) throws IOException {
         try {
+            String originalName = "test.jpg";
             DownloadFile file = managerFactory.getManager().download(fileKey);
             StreamRenderer.of(file.getContent(), file.getLength(), originalName).render();
         } catch (FileException e) {

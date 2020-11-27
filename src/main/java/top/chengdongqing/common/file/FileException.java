@@ -1,7 +1,7 @@
 package top.chengdongqing.common.file;
 
 /**
- * 文件异常
+ * 文件处理异常
  *
  * @author Luyao
  */
