@@ -23,7 +23,7 @@ public class PCPagePayReqer extends AlipayReqer {
     }
 
     @Override
-    protected void addBizContent(Kv<Object, Object> params, PayReqEntity entity) {
+    protected void addBizContent(Kv<String, Object> params, PayReqEntity entity) {
         params.add("product_code", "FAST_INSTANT_TRADE_PAY");
     }
 

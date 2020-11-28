@@ -19,7 +19,7 @@ public class MPPayReqer extends AlipayReqer {
     }
 
     @Override
-    protected void addBizContent(Kv<Object, Object> params, PayReqEntity entity) {
+    protected void addBizContent(Kv<String, Object> params, PayReqEntity entity) {
         params.add("buyer_id", entity.getUserId());
     }
 

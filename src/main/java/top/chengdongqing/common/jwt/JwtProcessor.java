@@ -1,8 +1,6 @@
 package top.chengdongqing.common.jwt;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -23,8 +21,6 @@ import java.util.Base64;
  * @author Luyao
  */
 @Component
-@NoArgsConstructor
-@AllArgsConstructor
 public class JwtProcessor implements IJwtProcessor {
 
     @Autowired

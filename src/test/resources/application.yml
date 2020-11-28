@@ -73,3 +73,8 @@ pay:
     alipay-public-key-cert-path: /certificates/alipay/alipayCert.crt
     app-public-key-cert-path: /certificates/alipay/appCert.crt
     notify-url: xx
+
+jwt:
+  publicKey: MCowBQYDK2VwAyEAAQnh07w6s6OpSD6pFMkDat/qVK05NpxvTGEGUkh7B4k=
+  privateKey: MC4CAQAwBQYDK2VwBCIEIF2eV5yKIm4qW9ccQJxgARDUBTvzXifEku5bVMbBf8i7
+  effectiveDuration: 10080

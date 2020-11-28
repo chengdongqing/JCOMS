@@ -17,8 +17,8 @@ public class Kv<K, V> extends HashMap<K, V> {
      * @param value 值
      * @return Kv实例
      */
-    public static Kv<Object, Object> ofAny(Object key, Object value) {
-        return new Kv<>().add(key, value);
+    public static <K> Kv<K, Object> ofAny(K key, Object value) {
+        return new Kv<K, Object>().add(key, value);
     }
 
     /**

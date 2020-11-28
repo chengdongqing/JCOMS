@@ -2,7 +2,6 @@ package top.chengdongqing.common.pay.wxpay.v3;
 
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.pay.IPayment;
-import top.chengdongqing.common.pay.entity.PayResEntity;
 import top.chengdongqing.common.pay.entity.RefundResEntity;
 import top.chengdongqing.common.pay.wxpay.v3.entity.CallbackEntity;
 

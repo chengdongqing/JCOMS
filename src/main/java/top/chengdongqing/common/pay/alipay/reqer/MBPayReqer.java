@@ -20,7 +20,7 @@ public class MBPayReqer extends AlipayReqer {
     }
 
     @Override
-    protected void addBizContent(Kv<Object, Object> params, PayReqEntity entity) {
+    protected void addBizContent(Kv<String, Object> params, PayReqEntity entity) {
         params.add("quit_url", payConfigs.getWebDomain());
     }
 

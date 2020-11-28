@@ -46,14 +46,14 @@ public abstract class AlipayReqer implements IRequestPay {
      */
     private String buildBizContent(PayReqEntity entity) {
         // 构建商品详情
-        List<Kv<Object, Object>> goodsDetail = entity.getItems().stream().map(item -> Kv.ofAny("goods_id", item.getId())
+        List<Kv<String, Object>> goodsDetail = entity.getItems().stream().map(item -> Kv.ofAny("goods_id", item.getId())
                 .add("goods_name", item.getName())
                 .add("quantity", item.getQuantity())
                 .add("price", item.getPrice())
                 .add("show_url", item.getPictureUrl()))
                 .collect(Collectors.toList());
         // 构建业务参数
-        Kv<Object, Object> bizContent = Kv.ofAny("out_trade_no", entity.getOrderNo())
+        Kv<String, Object> bizContent = Kv.ofAny("out_trade_no", entity.getOrderNo())
                 .add("total_amount", entity.getAmount())
                 .add("subject", entity.getDescription())
                 .add("goods_detail", goodsDetail)
@@ -76,7 +76,7 @@ public abstract class AlipayReqer implements IRequestPay {
      * @param params 业务参数容器
      * @param entity 参数实体
      */
-    protected void addBizContent(Kv<Object, Object> params, PayReqEntity entity) {
+    protected void addBizContent(Kv<String, Object> params, PayReqEntity entity) {
     }
 
     /**
