@@ -11,9 +11,9 @@ spring:
 # 发送配置
 send:
   sms:
-    active: Ali
+    active: ali
   email:
-    active: Apache
+    active: apache
 
 # 文件配置
 file:
@@ -31,7 +31,7 @@ file:
     secret-access-key: xx
 
 pay:
-  # 下单后多久支付超时，单位：分钟
+  # 下单后多久没支付会超时，单位：分钟
   timeout: 30
   # 支付中断或完成跳转地址
   web-domain: https://zwmall.chengdongqing.top
@@ -75,6 +75,6 @@ pay:
     notify-url: xx
 
 jwt:
-  publicKey: MCowBQYDK2VwAyEAAQnh07w6s6OpSD6pFMkDat/qVK05NpxvTGEGUkh7B4k=
-  privateKey: MC4CAQAwBQYDK2VwBCIEIF2eV5yKIm4qW9ccQJxgARDUBTvzXifEku5bVMbBf8i7
-  effectiveDuration: 10080
+  public-key: MCowBQYDK2VwAyEAAQnh07w6s6OpSD6pFMkDat/qVK05NpxvTGEGUkh7B4k=
+  private-key: MC4CAQAwBQYDK2VwBCIEIF2eV5yKIm4qW9ccQJxgARDUBTvzXifEku5bVMbBf8i7
+  effective-duration: 10080

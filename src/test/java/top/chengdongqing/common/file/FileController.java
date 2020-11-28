@@ -9,9 +9,11 @@ import org.springframework.web.multipart.MultipartFile;
 import top.chengdongqing.common.file.entity.DownloadFile;
 import top.chengdongqing.common.file.entity.FileMetadata;
 import top.chengdongqing.common.file.uploader.Uploader;
+import top.chengdongqing.common.kit.PathVariableKit;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.renderer.StreamRenderer;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
@@ -40,12 +42,12 @@ public class FileController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/**")
     @ApiOperation("下载文件")
-    public void download(@ApiParam("文件键名") @RequestParam String fileKey,
-                         HttpServletResponse response) throws IOException {
+    public void download(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             String originalName = "test.jpg";
+            String fileKey = PathVariableKit.getPathVariable(request);
             DownloadFile file = managerFactory.getManager().download(fileKey);
             StreamRenderer.of(file.getContent(), file.getLength(), originalName).render();
         } catch (FileException e) {
@@ -53,10 +55,11 @@ public class FileController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/**")
     @ApiOperation("删除文件")
-    public Ret<Void> delete(@ApiParam("文件键名") @RequestParam String fileKey) {
+    public Ret<Void> delete(HttpServletRequest request) {
         try {
+            String fileKey = PathVariableKit.getPathVariable(request);
             managerFactory.getManager().delete(fileKey);
             return Ret.ok();
         } catch (FileException e) {
