@@ -7,7 +7,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import top.chengdongqing.common.kit.Kv;
-import top.chengdongqing.common.kit.Lkv;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -75,7 +74,7 @@ public class POIExcelProcessor implements ExcelProcessor {
     }
 
     @Override
-    public ExcelBytes write(Lkv<String, String> titles, JSONArray rows) {
+    public ExcelBytes write(String[][] titles, JSONArray rows) {
         try (Workbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             // 创建表格
@@ -97,9 +96,9 @@ public class POIExcelProcessor implements ExcelProcessor {
             // 创建标题行
             Row titleRow = sheet.createRow(0);
             int cellIndex = 0;
-            for (String title : titles.values()) {
+            for (String[] title : titles) {
                 Cell cell = titleRow.createCell(cellIndex);
-                cell.setCellValue(title);
+                cell.setCellValue(title[1]);
                 cell.setCellStyle(titleCellStyle);
                 cellIndex++;
             }
@@ -110,7 +109,7 @@ public class POIExcelProcessor implements ExcelProcessor {
                 Row row = sheet.createRow(i + 1);
 
                 // 如果只有一列则直接获取值，否则根据键名获取对应的值
-                if (titles.size() == 1) {
+                if (titles.length == 1) {
                     Cell cell = row.createCell(0);
                     cell.setCellValue(rows.getString(i));
                     cell.setCellStyle(valueCellStyle);
@@ -120,9 +119,9 @@ public class POIExcelProcessor implements ExcelProcessor {
 
                     // 单位格索引复位
                     cellIndex = 0;
-                    for (String key : titles.keySet()) {
+                    for (String[] key : titles) {
                         Cell cell = row.createCell(cellIndex);
-                        cell.setCellValue(item.getString(key));
+                        cell.setCellValue(item.getString(key[0]));
                         cell.setCellStyle(valueCellStyle);
                         cellIndex++;
                     }

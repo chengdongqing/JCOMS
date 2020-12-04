@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import top.chengdongqing.common.kit.Lkv;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -22,7 +21,7 @@ public class ExcelController {
     @GetMapping("/render")
     @ApiOperation("输出excel文件")
     public void render(@ApiParam("用户姓名列表，逗号分隔") @RequestParam String[] usernames) {
-        Lkv<String, String> titles = Lkv.of("name", "名字");
+        String[][] titles = {{"name", "名字"}};
         JSONArray rows = new JSONArray();
         rows.addAll(Arrays.asList(usernames));
         ExcelProcessor.getInstance().write(titles, rows).renderWithDate("用户姓名列表");

@@ -2,7 +2,6 @@ package top.chengdongqing.common.excel;
 
 import com.alibaba.fastjson.JSONArray;
 import top.chengdongqing.common.kit.Kv;
-import top.chengdongqing.common.kit.Lkv;
 
 /**
  * excel处理器
@@ -38,5 +37,5 @@ public interface ExcelProcessor {
      * @param rows   数据行。特别注意：单列直接传值集合，多列传键值对集合
      * @return excel字节码
      */
-    ExcelBytes write(Lkv<String, String> titles, JSONArray rows);
+    ExcelBytes write(String[][] titles, JSONArray rows);
 }

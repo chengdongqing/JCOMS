@@ -12,6 +12,9 @@ import java.nio.charset.StandardCharsets;
  * 渲染器
  *
  * @author Luyao
+ * @see BytesRenderer
+ * @see ImageRenderer
+ * @see StreamRenderer
  */
 public abstract class Renderer {
 
