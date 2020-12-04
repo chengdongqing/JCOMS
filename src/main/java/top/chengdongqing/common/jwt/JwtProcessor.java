@@ -67,7 +67,7 @@ public class JwtProcessor implements IJwtProcessor {
             JwtParser jwt = JwtParser.of(token);
 
             // 获取被签名的数据
-            String content = jwt.getHeaders().rawStr().concat(".").concat(jwt.getPayloads().rawStr());
+            String content = jwt.getHeaders().rawStr().concat(".") + jwt.getPayloads().rawStr();
             // 验签
             boolean verified = DigitalSigner.verify(ALGORITHM, content,
                     StrToBytes.of(configs.getPublicKey()).fromBase64(),
