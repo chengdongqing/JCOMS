@@ -1,6 +1,5 @@
 package top.chengdongqing.common.kit;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import top.chengdongqing.common.constant.Status;
 
@@ -23,7 +22,7 @@ public record Ret<T>(int code, T data, String msg) implements Serializable {
     }
 
     public static <T> Ret<T> ok(T data, String msg) {
-        return new Ret<>(RetCode.OK, data, msg);
+        return new Ret<>(Status.ENABLED, data, msg);
     }
 
     public static <T> Ret<T> fail() {
@@ -31,30 +30,14 @@ public record Ret<T>(int code, T data, String msg) implements Serializable {
     }
 
     public static <T> Ret<T> fail(String msg) {
-        return new Ret<>(RetCode.FAIL, null, msg);
+        return new Ret<>(Status.DISABLED, null, msg);
     }
 
-    @JsonIgnore
     public boolean isOk() {
-        return code == RetCode.OK;
+        return code == Status.ENABLED;
     }
 
-    @JsonIgnore
     public boolean isFail() {
         return !isOk();
-    }
-
-    /**
-     * 返回代码定义
-     */
-    private interface RetCode {
-        /**
-         * 成功
-         */
-        int OK = Status.ENABLED;
-        /**
-         * 失败
-         */
-        int FAIL = Status.DISABLED;
     }
 }
