@@ -3,7 +3,6 @@ package top.chengdongqing.common.string;
 import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.kit.Kv;
 
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.BiFunction;
 
@@ -56,16 +55,12 @@ public abstract class StrBuilder extends StrEncoder {
      * @return 查询字符串
      */
     public static String buildQueryStr(Kv<String, String> params, StrEncodingType type, BiFunction<String, String, Boolean> joinLogic) {
-        // 转为有序的map
-        Map<String, String> sortedParams = new TreeMap<>(params);
-        // 构建键值对字符串
         StringBuilder str = new StringBuilder();
-        sortedParams.forEach((k, v) -> {
+        new TreeMap<>(params).forEach((k, v) -> {
             if (StringUtils.isNoneBlank(k, v) && joinLogic.apply(k, v)) {
                 str.append(k).append("=").append(type == null ? v : encode(v, type)).append("&");
             }
         });
-        // 去除最后的&符合
         return str.substring(0, str.length() - 1);
     }
 }
