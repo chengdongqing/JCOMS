@@ -7,8 +7,8 @@ import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.kit.XmlKit;
 import top.chengdongqing.common.pay.enums.TradeType;
-import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
+import top.chengdongqing.common.pay.wxpay.WxpayProps;
 import top.chengdongqing.common.pay.wxpay.WxpayStatus;
 import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
@@ -27,9 +27,9 @@ import java.util.Map;
 public class WxpayHelperV2 {
 
     @Autowired
-    private WxpayConfigs configs;
+    private WxpayProps props;
     @Autowired
-    private WxpayConfigsV2 v2configs;
+    private WxpayPropsV2 v2props;
     @Autowired
     private WxpayHelper helper;
 
@@ -48,13 +48,13 @@ public class WxpayHelperV2 {
     public String buildRequestXml(TradeType tradeType, Kv<String, String> params) {
         // 添加公共参数
         params.add("appid", helper.getAppId(tradeType))
-                .add("mch_id", configs.getMchId())
+                .add("mch_id", props.getMchId())
                 .add("nonce_str", StrKit.getRandomUUID())
-                .add("sign_type", v2configs.getSignType());
+                .add("sign_type", v2props.getSignType());
         // 添加数字签名
         String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
                 buildQueryStr(params),
-                StrToBytes.of(v2configs.getKey()).fromHex()).toHex();
+                StrToBytes.of(v2props.getKey()).fromHex()).toHex();
         params.add("sign", sign);
         // 转换数据类型
         return XmlKit.toXml(params);
@@ -70,7 +70,7 @@ public class WxpayHelperV2 {
         // 构建查询字符串
         String paramsStr = StrKit.buildQueryStr(params, (k, v) -> !k.equals("sign"));
         // 将签名需要的key加在最后
-        return paramsStr.concat("&").concat("key=").concat(v2configs.getKey());
+        return paramsStr.concat("&").concat("key=").concat(v2props.getKey());
     }
 
     /**

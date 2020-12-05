@@ -19,7 +19,7 @@ public class MBPayReqerV3 extends WxpayReqerV3 {
 
     @Override
     protected String getTradeApi() {
-        return v3Configs.getRequestApi().getPay().getMb();
+        return v3Props.getRequestApi().getPay().getMb();
     }
 
     @Override

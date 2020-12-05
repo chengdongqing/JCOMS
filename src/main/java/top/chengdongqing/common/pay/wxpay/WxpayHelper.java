@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 public class WxpayHelper {
 
     @Autowired
-    private WxpayConfigs configs;
+    private WxpayProps props;
 
     /**
      * 转换金额，从元转为分
@@ -54,7 +54,7 @@ public class WxpayHelper {
      * @return 完整请求地址
      */
     public String buildRequestUrl(String path) {
-        return configs.getWxDomain().concat(path);
+        return props.getWxDomain().concat(path);
     }
 
     /**
@@ -65,10 +65,10 @@ public class WxpayHelper {
      */
     public String getAppId(TradeType tradeType) {
         return switch (tradeType) {
-            case APP -> configs.getAppId().getApp();
-            case MB -> configs.getAppId().getMb();
-            case MP -> configs.getAppId().getMp();
-            case PC -> configs.getAppId().getPc();
+            case APP -> props.getAppId().getApp();
+            case MB -> props.getAppId().getMb();
+            case MP -> props.getAppId().getMp();
+            case PC -> props.getAppId().getPc();
         };
     }
 }

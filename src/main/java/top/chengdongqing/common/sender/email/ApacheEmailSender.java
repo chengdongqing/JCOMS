@@ -24,21 +24,21 @@ import java.nio.charset.StandardCharsets;
 public class ApacheEmailSender extends EmailSender {
 
     @Autowired
-    private ApacheEmailConfigs configs;
+    private ApacheEmailProps props;
 
     @Override
     public void sendEmail(EmailEntity entity) throws SendFailedException {
         // 实例化网页邮件客户端
         HtmlEmail he = new HtmlEmail();
-        he.setHostName(configs.getHost());
-        he.setSmtpPort(configs.getPort());
+        he.setHostName(props.getHost());
+        he.setSmtpPort(props.getPort());
         he.setSSLOnConnect(true);
-        he.setAuthentication(configs.getAccount(), configs.getPassword());
+        he.setAuthentication(props.getAccount(), props.getPassword());
         he.setCharset(StandardCharsets.UTF_8.name());
         try {
-            he.setFrom(configs.getAccount(), configs.getApplicationName());
-            he.addTo(entity.getTo(), configs.getApplicationName() + "用户");
-            he.setSubject(entity.getTitle() + " - " + configs.getApplicationName());
+            he.setFrom(props.getAccount(), props.getApplicationName());
+            he.addTo(entity.getTo(), props.getApplicationName() + "用户");
+            he.setSubject(entity.getTitle() + " - " + props.getApplicationName());
             he.setMsg(entity.getContent());
             he.send();
             log.info("发送邮件成功：{}", he);
@@ -52,7 +52,7 @@ public class ApacheEmailSender extends EmailSender {
 @Component
 @RefreshScope
 @ConfigurationProperties("send.email.apache")
-class ApacheEmailConfigs {
+class ApacheEmailProps {
 
     /**
      * 邮箱服务商IP地址

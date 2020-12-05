@@ -16,16 +16,16 @@ public class MBPayReqer extends AlipayReqer {
 
     @Override
     protected String getMethodName() {
-        return alipayConfigs.getMethod().getPay().getWapPay();
+        return alipayProps.getMethod().getPay().getWapPay();
     }
 
     @Override
     protected void addBizContent(Kv<String, Object> params, PayReqEntity entity) {
-        params.add("quit_url", payConfigs.getWebDomain());
+        params.add("quit_url", payProps.getWebDomain());
     }
 
     @Override
     protected Ret<Object> buildResponse(Kv<String, String> params) {
-        return Ret.ok(HttpKit.buildUrlWithParams(alipayConfigs.getGateway(), params));
+        return Ret.ok(HttpKit.buildUrlWithParams(alipayProps.getGateway(), params));
     }
 }

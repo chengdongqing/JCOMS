@@ -16,7 +16,7 @@ public class APPPayReqer extends AlipayReqer {
 
     @Override
     protected String getMethodName() {
-        return alipayConfigs.getMethod().getPay().getAppPay();
+        return alipayProps.getMethod().getPay().getAppPay();
     }
 
     @Override

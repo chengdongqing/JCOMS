@@ -19,7 +19,7 @@ public class PCPagePayReqer extends AlipayReqer {
 
     @Override
     protected String getMethodName() {
-        return alipayConfigs.getMethod().getPay().getPagePay();
+        return alipayProps.getMethod().getPay().getPagePay();
     }
 
     @Override
@@ -29,6 +29,6 @@ public class PCPagePayReqer extends AlipayReqer {
 
     @Override
     protected Ret<Object> buildResponse(Kv<String, String> params) {
-        return Ret.ok(HttpKit.buildUrlWithParams(alipayConfigs.getGateway(), params));
+        return Ret.ok(HttpKit.buildUrlWithParams(alipayProps.getGateway(), params));
     }
 }

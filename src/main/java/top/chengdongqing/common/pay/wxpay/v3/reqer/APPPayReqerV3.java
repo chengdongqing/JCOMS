@@ -16,7 +16,7 @@ public class APPPayReqerV3 extends WxpayReqerV3 {
 
     @Override
     protected String getTradeApi() {
-        return v3Configs.getRequestApi().getPay().getApp();
+        return v3Props.getRequestApi().getPay().getApp();
     }
 
     @Override
@@ -28,10 +28,10 @@ public class APPPayReqerV3 extends WxpayReqerV3 {
         // 随机数
         String nonceStr = StrKit.getRandomUUID();
         // appId
-        String appId = wxConfigs.getAppId().getApp();
+        String appId = wxProps.getAppId().getApp();
         // 封装参数
         Kv<String, String> data = Kv.of("appid", appId)
-                .add("partnerid", wxConfigs.getMchId())
+                .add("partnerid", wxProps.getMchId())
                 .add("prepayid", prepayId)
                 .add("package", "Sign=WXPay")
                 .add("noncestr", nonceStr)

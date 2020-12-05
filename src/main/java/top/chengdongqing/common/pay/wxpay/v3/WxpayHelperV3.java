@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import top.chengdongqing.common.encrypt.EncryptAlgorithm;
 import top.chengdongqing.common.encrypt.Encryptor;
 import top.chengdongqing.common.kit.*;
-import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
+import top.chengdongqing.common.pay.wxpay.WxpayProps;
 import top.chengdongqing.common.pay.wxpay.WxpayStatus;
 import top.chengdongqing.common.pay.wxpay.v3.entity.EncryptedResource;
 import top.chengdongqing.common.signature.DigitalSigner;
@@ -32,9 +32,9 @@ import java.util.stream.Collectors;
 public class WxpayHelperV3 {
 
     @Autowired
-    private WxpayConfigs configs;
+    private WxpayProps props;
     @Autowired
-    private WxpayConfigsV3 v3Configs;
+    private WxpayPropsV3 v3Props;
 
     /**
      * 构建包含认证信息的请求头
@@ -52,9 +52,9 @@ public class WxpayHelperV3 {
         // 数字签名
         String signature = signature(method.name(), apiPath, body, timestamp, nonceStr);
         // 商户号
-        String mchId = configs.getMchId();
+        String mchId = props.getMchId();
         // 证书序列号
-        String serialNo = CertKit.readSerialNo(v3Configs.getAppCertPath());
+        String serialNo = CertKit.readSerialNo(v3Props.getAppCertPath());
         // 构建签名信息
         String token = Kv.of("mchid", mchId)
                 .add("nonce_str", nonceStr)
@@ -66,7 +66,7 @@ public class WxpayHelperV3 {
                         .concat(item.getValue())
                         .concat("\""))
                 .collect(Collectors.joining(","));
-        return HttpKit.buildHeaderWithJSON().add("Authorization", v3Configs.getAuthSchema().concat(" ").concat(token));
+        return HttpKit.buildHeaderWithJSON().add("Authorization", v3Props.getAuthSchema().concat(" ").concat(token));
     }
 
     /**
@@ -92,7 +92,7 @@ public class WxpayHelperV3 {
         String content = buildContent(params);
         // 生成签名
         return DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256, content,
-                StrToBytes.of(v3Configs.getPrivateKey()).fromBase64()).toBase64();
+                StrToBytes.of(v3Props.getPrivateKey()).fromBase64()).toBase64();
     }
 
     /**
@@ -105,7 +105,7 @@ public class WxpayHelperV3 {
      */
     public boolean verify(String serialNo, String sign, String... params) {
         // 验证序列号
-        String wxpaySerialNo = CertKit.readSerialNo(v3Configs.getWxpayCertPath());
+        String wxpaySerialNo = CertKit.readSerialNo(v3Props.getWxpayCertPath());
         if (!Objects.equals(serialNo, wxpaySerialNo)) return false;
 
         // 构建待签名字符串
@@ -113,7 +113,7 @@ public class WxpayHelperV3 {
         // 验证签名
         return DigitalSigner.verify(SignatureAlgorithm.RSA_SHA256,
                 content,
-                CertKit.readPublicKey(v3Configs.getWxpayCertPath()).bytes(),
+                CertKit.readPublicKey(v3Props.getWxpayCertPath()).bytes(),
                 StrToBytes.of(sign).fromBase64());
     }
 

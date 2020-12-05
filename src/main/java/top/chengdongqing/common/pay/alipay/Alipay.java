@@ -33,7 +33,7 @@ import java.util.Map;
 public class Alipay extends ApplicationObjectSupport implements IPayment<Map<String, String[]>> {
 
     @Autowired
-    private AlipayConfigs configs;
+    private AlipayProps props;
     @Autowired
     private AlipayHelper helper;
 
@@ -52,7 +52,7 @@ public class Alipay extends ApplicationObjectSupport implements IPayment<Map<Str
     public Ret<Void> requestClose(String orderNo, TradeType tradeType) {
         // 构建请求参数
         Kv<String, String> params = new Kv<>();
-        helper.buildRequestParams(params, Kv.of("out_trade_no", orderNo).toJson(), configs.getMethod().getClose());
+        helper.buildRequestParams(params, Kv.of("out_trade_no", orderNo).toJson(), props.getMethod().getClose());
         // 发送关闭请求
         try {
             helper.requestAlipay(params, "close");
@@ -70,7 +70,7 @@ public class Alipay extends ApplicationObjectSupport implements IPayment<Map<Str
                 .add("refund_amount", entity.getRefundAmount())
                 .add("refund_reason", entity.getReason())
                 .add("out_request_no", entity.getRefundNo()).toJson();
-        helper.buildRequestParams(params, bizContent, configs.getMethod().getRefund());
+        helper.buildRequestParams(params, bizContent, props.getMethod().getRefund());
         // 发送退款请求
         try {
             helper.requestAlipay(params, "refund");
@@ -84,7 +84,7 @@ public class Alipay extends ApplicationObjectSupport implements IPayment<Map<Str
     public Ret<TradeQueryEntity> requestQuery(String orderNo, TradeType tradeType) {
         // 构建请求参数
         Kv<String, String> params = new Kv<>();
-        helper.buildRequestParams(params, Kv.of("out_trade_no", orderNo).toJson(), configs.getMethod().getQuery());
+        helper.buildRequestParams(params, Kv.of("out_trade_no", orderNo).toJson(), props.getMethod().getQuery());
         // 发送查询请求
         try {
             Kv<String, String> response = helper.requestAlipay(params, "query");
@@ -114,7 +114,7 @@ public class Alipay extends ApplicationObjectSupport implements IPayment<Map<Str
         // 验证签名
         boolean isOk = DigitalSigner.verify(SignatureAlgorithm.RSA_SHA256,
                 helper.buildQueryStr(params),
-                CertKit.readPublicKey(configs.getAlipayPublicKeyCertPath()).bytes(),
+                CertKit.readPublicKey(props.getAlipayPublicKeyCertPath()).bytes(),
                 StrToBytes.of(params.get("sign")).fromBase64());
         if (!isOk) {
             log.warn("支付宝回调验签失败：{}", params);

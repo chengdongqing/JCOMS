@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @ConfigurationProperties("pay")
-public class PayConfigs {
+public class PayProps {
 
     /**
      * 支付超时配置，单位：分钟

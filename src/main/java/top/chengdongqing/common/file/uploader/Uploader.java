@@ -22,7 +22,7 @@ import top.chengdongqing.common.file.entity.FileMetadata;
 public class Uploader {
 
     @Autowired
-    private UploadConfigs configs;
+    private UploadProps props;
     @Autowired
     private FileManagerFactory managerFactory;
 
@@ -34,7 +34,7 @@ public class Uploader {
      * @return 文件元数据
      */
     public FileMetadata uploadImage(MultipartFile file, FileType type) throws FileException {
-        return managerFactory.getManager().upload(file, type, configs.getImageFormats(), configs.getImageMaxSize());
+        return managerFactory.getManager().upload(file, type, props.getImageFormats(), props.getImageMaxSize());
     }
 
     /**
@@ -45,7 +45,7 @@ public class Uploader {
      * @return 文件元数据
      */
     public FileMetadata uploadVideo(MultipartFile file, FileType type) throws FileException {
-        return managerFactory.getManager().upload(file, type, configs.getVideoFormats(), configs.getVideoMaxSize());
+        return managerFactory.getManager().upload(file, type, props.getVideoFormats(), props.getVideoMaxSize());
     }
 }
 
@@ -53,7 +53,7 @@ public class Uploader {
 @Component
 @RefreshScope
 @ConfigurationProperties("file")
-class UploadConfigs {
+class UploadProps {
 
     private String[] imageFormats, videoFormats;
     private long imageMaxSize, videoMaxSize;

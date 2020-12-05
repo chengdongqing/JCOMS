@@ -15,7 +15,7 @@ public class PCPayReqer extends AlipayReqer {
 
     @Override
     protected String getMethodName() {
-        return alipayConfigs.getMethod().getPay().getPreCreate();
+        return alipayProps.getMethod().getPay().getPreCreate();
     }
 
     @Override

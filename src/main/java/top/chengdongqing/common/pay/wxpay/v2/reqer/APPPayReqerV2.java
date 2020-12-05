@@ -19,15 +19,15 @@ public class APPPayReqerV2 extends WxpayReqerV2 {
 
     @Override
     protected Ret<Object> buildResponse(Kv<String, String> response) {
-        Kv<String, String> data = Kv.of("appid", wxConfigs.getAppId().getApp())
-                .add("partnerid", wxConfigs.getMchId())
+        Kv<String, String> data = Kv.of("appid", wxProps.getAppId().getApp())
+                .add("partnerid", wxProps.getMchId())
                 .add("prepayid", response.get("prepay_id"))
                 .add("package", "Sign=WXPay")
                 .add("noncestr", StrKit.getRandomUUID())
                 .add("timestamp", WxpayHelper.getTimestamp());
         String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(data),
-                StrToBytes.of(v2configs.getKey()).fromHex()).toHex();
+                StrToBytes.of(v2props.getKey()).fromHex()).toHex();
         data.add("sign", sign);
         return Ret.ok(data);
     }

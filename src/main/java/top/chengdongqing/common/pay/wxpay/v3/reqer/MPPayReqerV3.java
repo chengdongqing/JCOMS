@@ -22,7 +22,7 @@ public class MPPayReqerV3 extends WxpayReqerV3 {
 
     @Override
     protected String getTradeApi() {
-        return v3Configs.getRequestApi().getPay().getMp();
+        return v3Props.getRequestApi().getPay().getMp();
     }
 
     @Override
@@ -34,7 +34,7 @@ public class MPPayReqerV3 extends WxpayReqerV3 {
         // 随机数
         String nonceStr = StrKit.getRandomUUID();
         // appId
-        String appId = wxConfigs.getAppId().getMp();
+        String appId = wxProps.getAppId().getMp();
         // 封装参数
         Kv<String, String> data = Kv.of("appid", appId)
                 .add("timestamp", timestamp)

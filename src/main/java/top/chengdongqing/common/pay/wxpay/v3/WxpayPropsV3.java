@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RefreshScope
 @ConfigurationProperties("pay.wx.v3")
-public class WxpayConfigsV3 {
+public class WxpayPropsV3 {
 
     /**
      * 微信接口请求地址

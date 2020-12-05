@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.pay.IRequestPay;
-import top.chengdongqing.common.pay.PayConfigs;
-import top.chengdongqing.common.pay.alipay.AlipayConfigs;
+import top.chengdongqing.common.pay.PayProps;
 import top.chengdongqing.common.pay.alipay.AlipayHelper;
+import top.chengdongqing.common.pay.alipay.AlipayProps;
 import top.chengdongqing.common.pay.entity.PayReqEntity;
 import top.chengdongqing.common.pay.enums.TradeType;
 
@@ -23,17 +23,17 @@ import java.util.stream.Collectors;
 public abstract class AlipayReqer implements IRequestPay {
 
     @Autowired
-    protected PayConfigs payConfigs;
+    protected PayProps payProps;
     @Autowired
-    protected AlipayConfigs alipayConfigs;
+    protected AlipayProps alipayProps;
     @Autowired
     protected AlipayHelper helper;
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
         // 封装请求参数
-        Kv<String, String> params = Kv.of("notify_url", alipayConfigs.getNotifyUrl())
-                .add("return_url", payConfigs.getWebDomain());
+        Kv<String, String> params = Kv.of("notify_url", alipayProps.getNotifyUrl())
+                .add("return_url", payProps.getWebDomain());
         helper.buildRequestParams(params, buildBizContent(entity), getMethodName());
         return buildResponse(params);
     }
@@ -57,7 +57,7 @@ public abstract class AlipayReqer implements IRequestPay {
                 .add("total_amount", entity.getAmount())
                 .add("subject", entity.getDescription())
                 .add("goods_detail", goodsDetail)
-                .add("timeout_express", payConfigs.getTimeout() + "m");
+                .add("timeout_express", payProps.getTimeout() + "m");
         // 添加额外的业务参数
         addBizContent(bizContent, entity);
         return bizContent.toJson();

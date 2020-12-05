@@ -15,7 +15,7 @@ public class PCPayReqerV3 extends WxpayReqerV3 {
 
     @Override
     protected String getTradeApi() {
-        return v3Configs.getRequestApi().getPay().getPc();
+        return v3Props.getRequestApi().getPay().getPc();
     }
 
     @Override

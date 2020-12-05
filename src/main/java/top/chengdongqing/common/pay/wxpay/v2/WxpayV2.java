@@ -16,8 +16,8 @@ import top.chengdongqing.common.pay.entity.TradeQueryEntity;
 import top.chengdongqing.common.pay.enums.TradeChannel;
 import top.chengdongqing.common.pay.enums.TradeState;
 import top.chengdongqing.common.pay.enums.TradeType;
-import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
+import top.chengdongqing.common.pay.wxpay.WxpayProps;
 import top.chengdongqing.common.pay.wxpay.WxpayStatus;
 import top.chengdongqing.common.pay.wxpay.v2.reqer.*;
 import top.chengdongqing.common.signature.DigitalSigner;
@@ -39,9 +39,9 @@ import java.nio.file.Paths;
 public class WxpayV2 extends ApplicationObjectSupport implements IPayment<String> {
 
     @Autowired
-    private WxpayConfigs configs;
+    private WxpayProps props;
     @Autowired
-    private WxpayConfigsV2 v2configs;
+    private WxpayPropsV2 v2props;
     @Autowired
     private WxpayHelper helper;
     @Autowired
@@ -64,7 +64,7 @@ public class WxpayV2 extends ApplicationObjectSupport implements IPayment<String
         Kv<String, String> params = Kv.of("out_trade_no", orderNo);
         String xml = helperV2.buildRequestXml(tradeType, params);
         // 发送请求
-        String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getClose());
+        String requestUrl = helper.buildRequestUrl(v2props.getRequestApi().getClose());
         String result = HttpKit.post(requestUrl, xml).body();
         log.info("请求订单关闭，参数：{}，\n结果：{}", xml, result);
         // 判断结果
@@ -81,10 +81,10 @@ public class WxpayV2 extends ApplicationObjectSupport implements IPayment<String
         String xml = helperV2.buildRequestXml(tradeType, params);
 
         // 读取证书
-        try (InputStream certStream = Files.newInputStream(Paths.get(v2configs.getCertPath()))) {
+        try (InputStream certStream = Files.newInputStream(Paths.get(v2props.getCertPath()))) {
             // 发送请求
-            String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getRefund());
-            String result = HttpKit.post(requestUrl, xml, certStream, configs.getMchId()).body();
+            String requestUrl = helper.buildRequestUrl(v2props.getRequestApi().getRefund());
+            String result = HttpKit.post(requestUrl, xml, certStream, props.getMchId()).body();
             log.info("请求订单退款，参数：{}，\n结果：{}", xml, result);
             // 判断结果
             return WxpayHelperV2.getResult(XmlKit.parseXml(result));
@@ -100,7 +100,7 @@ public class WxpayV2 extends ApplicationObjectSupport implements IPayment<String
         String xml = helperV2.buildRequestXml(tradeType, params);
 
         // 发送请求
-        String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getQuery());
+        String requestUrl = helper.buildRequestUrl(v2props.getRequestApi().getQuery());
         String result = HttpKit.post(requestUrl, xml).body();
         log.info("请求查询订单，参数：{}，\n结果：{}", xml, result);
 
@@ -135,7 +135,7 @@ public class WxpayV2 extends ApplicationObjectSupport implements IPayment<String
         // 验证签名
         boolean isOk = DigitalSigner.verify(SignatureAlgorithm.HMAC_SHA256,
                 helperV2.buildQueryStr(params),
-                v2configs.getKey().getBytes(),
+                v2props.getKey().getBytes(),
                 StrToBytes.of(params.get("sign")).fromHex());
         if (!isOk) {
             log.warn("微信支付回调验签失败：{}", params);

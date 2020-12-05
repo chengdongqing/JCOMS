@@ -6,13 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.chengdongqing.common.kit.*;
 import top.chengdongqing.common.pay.IRequestPay;
-import top.chengdongqing.common.pay.PayConfigs;
+import top.chengdongqing.common.pay.PayProps;
 import top.chengdongqing.common.pay.entity.PayReqEntity;
 import top.chengdongqing.common.pay.enums.TradeType;
-import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
-import top.chengdongqing.common.pay.wxpay.v2.WxpayConfigsV2;
+import top.chengdongqing.common.pay.wxpay.WxpayProps;
 import top.chengdongqing.common.pay.wxpay.v2.WxpayHelperV2;
+import top.chengdongqing.common.pay.wxpay.v2.WxpayPropsV2;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,11 +28,11 @@ import java.util.stream.Collectors;
 public abstract class WxpayReqerV2 implements IRequestPay {
 
     @Autowired
-    protected PayConfigs configs;
+    protected PayProps props;
     @Autowired
-    protected WxpayConfigs wxConfigs;
+    protected WxpayProps wxProps;
     @Autowired
-    protected WxpayConfigsV2 v2configs;
+    protected WxpayPropsV2 v2props;
     @Autowired
     protected WxpayHelper helper;
     @Autowired
@@ -43,9 +43,9 @@ public abstract class WxpayReqerV2 implements IRequestPay {
         // 封装请求参数
         Kv<String, String> params = Kv.of("trade_type", tradeType.getWxpayCode())
                 .add("total_fee", WxpayHelper.convertAmount(entity.getAmount()).toString())
-                .add("time_expire", buildExpireTime(configs.getTimeout()))
+                .add("time_expire", buildExpireTime(props.getTimeout()))
                 .add("detail", buildGoodsDetail(entity.getItems()))
-                .add("notify_url", v2configs.getNotifyUrl())
+                .add("notify_url", v2props.getNotifyUrl())
                 .add("out_trade_no", entity.getOrderNo())
                 .add("spbill_create_ip", entity.getIp())
                 .add("body", entity.getDescription());
@@ -55,7 +55,7 @@ public abstract class WxpayReqerV2 implements IRequestPay {
         // 构建请求xml
         String xml = helperV2.buildRequestXml(tradeType, params);
         // 发送请求
-        String requestUrl = helper.buildRequestUrl(v2configs.getRequestApi().getPay());
+        String requestUrl = helper.buildRequestUrl(v2props.getRequestApi().getPay());
         String result = HttpKit.post(requestUrl, xml).body();
         log.info("请求微信付款参数：{}, \n响应结果：{}", xml, result);
 

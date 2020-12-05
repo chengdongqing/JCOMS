@@ -24,7 +24,7 @@ public class AlipayHelper {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
-    private AlipayConfigs configs;
+    private AlipayProps props;
 
     /**
      * 构建请求参数
@@ -35,20 +35,20 @@ public class AlipayHelper {
      */
     public void buildRequestParams(Kv<String, String> params, String bizContent, String method) {
         // 封装公共请求参数
-        params.add("app_id", configs.getAppId())
+        params.add("app_id", props.getAppId())
                 .add("method", method)
-                .add("version", configs.getVersion())
-                .add("charset", configs.getCharset())
-                .add("sign_type", configs.getSignType())
+                .add("version", props.getVersion())
+                .add("charset", props.getCharset())
+                .add("sign_type", props.getSignType())
                 .add("timestamp", LocalDateTime.now().format(FORMATTER))
-                .add("app_cert_sn", CertKit.calcAlipayCertSN(configs.getAppPublicKeyCertPath(), false))
-                .add("alipay_root_cert_sn", CertKit.calcAlipayCertSN(configs.getAlipayRootCertPath(), true));
+                .add("app_cert_sn", CertKit.calcAlipayCertSN(props.getAppPublicKeyCertPath(), false))
+                .add("alipay_root_cert_sn", CertKit.calcAlipayCertSN(props.getAlipayRootCertPath(), true));
         if (bizContent != null) params.add("biz_content", bizContent);
 
         // 生成签名
         String sign = DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256,
                 buildQueryStr(params),
-                StrToBytes.of(configs.getPrivateKey()).fromBase64()).toBase64();
+                StrToBytes.of(props.getPrivateKey()).fromBase64()).toBase64();
         params.add("sign", sign);
     }
 
@@ -70,8 +70,8 @@ public class AlipayHelper {
      * @return 业务数据响应
      */
     public Kv<String, String> requestAlipay(Kv<String, String> params, String responseType) {
-        String response = HttpKit.get(configs.getGateway(), params).body();
-        log.info("请求支付宝{}，\n参数：{}，\n响应：{}", configs.getGateway(), params, response);
+        String response = HttpKit.get(props.getGateway(), params).body();
+        log.info("请求支付宝{}，\n参数：{}，\n响应：{}", props.getGateway(), params, response);
         // 获取业务数据
         String resJsonStr = JSON.parseObject(response).getString("alipay_trade_%s_response".formatted(responseType));
         Kv<String, String> resKv = JsonKit.parseKv(resJsonStr);

@@ -22,7 +22,7 @@ import top.chengdongqing.common.pay.wxpay.v3.entity.RefundCallbackEntity;
 public abstract class CallbackHandler extends ApplicationObjectSupport implements IWxpayV3 {
 
     @Autowired
-    protected WxpayConfigsV3 v3Configs;
+    protected WxpayPropsV3 v3Props;
     @Autowired
     protected WxpayHelperV3 v3Helper;
 
@@ -40,7 +40,7 @@ public abstract class CallbackHandler extends ApplicationObjectSupport implement
         }
 
         // 解密数据
-        PayCallbackEntity payCallback = WxpayHelperV3.decryptData(callback.getBody(), v3Configs.getKey(), PayCallbackEntity.class);
+        PayCallbackEntity payCallback = WxpayHelperV3.decryptData(callback.getBody(), v3Props.getKey(), PayCallbackEntity.class);
         log.info("支付回调解密后的数据：{}", payCallback);
 
         // 判断支付结果
@@ -70,7 +70,7 @@ public abstract class CallbackHandler extends ApplicationObjectSupport implement
         if (!verify) return WxpayHelperV3.buildFailCallback("验签失败");
 
         // 解密数据
-        RefundCallbackEntity refundCallback = WxpayHelperV3.decryptData(callback.getBody(), v3Configs.getKey(), RefundCallbackEntity.class);
+        RefundCallbackEntity refundCallback = WxpayHelperV3.decryptData(callback.getBody(), v3Props.getKey(), RefundCallbackEntity.class);
         log.info("退款回调解密后的数据：{}", refundCallback);
 
         // 封装退款信息

@@ -28,19 +28,19 @@ import java.io.InputStream;
 public class OSSFileManager extends AbstractUploader implements FileManager {
 
     @Autowired
-    private OSSConfigs configs;
+    private OSSProps props;
     @Autowired
     private OSS client;
 
     @Bean
     public OSS ossClient() {
-        return new OSSClientBuilder().build(configs.getEndpoint(), configs.getAccessKeyId(), configs.getSecretAccessKey());
+        return new OSSClientBuilder().build(props.getEndpoint(), props.getAccessKeyId(), props.getSecretAccessKey());
     }
 
     @Override
     protected void upload(InputStream fileStream, String fileKey) throws FileException {
         try {
-            client.putObject(configs.getBucket(), fileKey, fileStream);
+            client.putObject(props.getBucket(), fileKey, fileStream);
         } catch (Exception e) {
             log.error("文件上传到OSS异常", e);
             throw new FileException();
@@ -50,7 +50,7 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
     @Override
     public DownloadFile download(String fileKey) throws FileException {
         try {
-            OSSObject file = client.getObject(configs.getBucket(), fileKey);
+            OSSObject file = client.getObject(props.getBucket(), fileKey);
             return DownloadFile.builder()
                     .length(file.getObjectMetadata().getContentLength())
                     .content(file.getObjectContent())
@@ -64,7 +64,7 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
     @Override
     public void delete(String fileKey) throws FileException {
         try {
-            client.deleteObject(configs.getBucket(), fileKey);
+            client.deleteObject(props.getBucket(), fileKey);
         } catch (Exception e) {
             log.error("从OSS删除文件异常", e);
             throw new FileException();
@@ -75,7 +75,7 @@ public class OSSFileManager extends AbstractUploader implements FileManager {
 @Data
 @Component
 @ConfigurationProperties("file.oss")
-class OSSConfigs {
+class OSSProps {
 
     private String bucket;
     private String endpoint;

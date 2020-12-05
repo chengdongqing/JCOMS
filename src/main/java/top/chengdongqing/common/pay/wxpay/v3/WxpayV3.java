@@ -15,8 +15,8 @@ import top.chengdongqing.common.pay.entity.TradeQueryEntity;
 import top.chengdongqing.common.pay.enums.TradeChannel;
 import top.chengdongqing.common.pay.enums.TradeState;
 import top.chengdongqing.common.pay.enums.TradeType;
-import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
+import top.chengdongqing.common.pay.wxpay.WxpayProps;
 import top.chengdongqing.common.pay.wxpay.v3.reqer.*;
 
 import java.net.http.HttpResponse;
@@ -32,7 +32,7 @@ import java.net.http.HttpResponse;
 public class WxpayV3 extends CallbackHandler implements IWxpayV3 {
 
     @Autowired
-    private WxpayConfigs configs;
+    private WxpayProps props;
     @Autowired
     private WxpayHelper helper;
 
@@ -50,8 +50,8 @@ public class WxpayV3 extends CallbackHandler implements IWxpayV3 {
     @Override
     public Ret<Void> requestClose(String orderNo, TradeType tradeType) {
         // 构建请求头
-        String apiPath = v3Configs.getRequestApi().getClose().formatted(orderNo);
-        String body = Kv.of("mchid", configs.getMchId()).toJson();
+        String apiPath = v3Props.getRequestApi().getClose().formatted(orderNo);
+        String body = Kv.of("mchid", props.getMchId()).toJson();
         Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
         // 发送请求
@@ -74,18 +74,18 @@ public class WxpayV3 extends CallbackHandler implements IWxpayV3 {
     @Override
     public Ret<Void> requestRefund(RefundReqEntity entity, TradeType tradeType) {
         // 构建请求体
-        String body = Kv.of("sub_mchid", v3Configs.getSubMchId())
-                .add("sp_appid", v3Configs.getSpAppId())
-                .add("sub_appid", v3Configs.getSubAppId())
+        String body = Kv.of("sub_mchid", v3Props.getSubMchId())
+                .add("sp_appid", v3Props.getSpAppId())
+                .add("sub_appid", v3Props.getSubAppId())
                 .add("out_trade_no", entity.getOrderNo())
                 .add("out_refund_no", entity.getRefundNo())
                 .add("reason", entity.getReason())
                 .add("amount", buildRefundAmount(entity))
-                .add("notify_url", v3Configs.getRefundNotifyUrl())
+                .add("notify_url", v3Props.getRefundNotifyUrl())
                 .toJson();
 
         // 构建请求头
-        String apiPath = v3Configs.getRequestApi().getRefund();
+        String apiPath = v3Props.getRequestApi().getRefund();
         Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.POST, apiPath, body);
 
         // 发送退款请求
@@ -114,15 +114,15 @@ public class WxpayV3 extends CallbackHandler implements IWxpayV3 {
     private String buildRefundAmount(RefundReqEntity entity) {
         return Kv.ofAny("refund", WxpayHelper.convertAmount(entity.getRefundAmount()))
                 .add("total", WxpayHelper.convertAmount(entity.getTotalAmount()))
-                .add("currency", v3Configs.getCurrency())
+                .add("currency", v3Props.getCurrency())
                 .toJson();
     }
 
     @Override
     public Ret<TradeQueryEntity> requestQuery(String orderNo, TradeType tradeType) {
         // 构建请求头
-        Kv<String, String> params = Kv.of("mchid", configs.getMchId());
-        String apiPath = WxpayHelperV3.buildTradeApi(v3Configs.getRequestApi().getQuery().formatted(orderNo), params);
+        Kv<String, String> params = Kv.of("mchid", props.getMchId());
+        String apiPath = WxpayHelperV3.buildTradeApi(v3Props.getRequestApi().getQuery().formatted(orderNo), params);
         Kv<String, String> headers = v3Helper.buildHeaders(HttpMethod.GET, apiPath, "");
 
         // 发送请求

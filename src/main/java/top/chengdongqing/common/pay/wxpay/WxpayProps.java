@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RefreshScope
 @ConfigurationProperties("pay.wx")
-public class WxpayConfigs {
+public class WxpayProps {
 
     /**
      * 应用编号

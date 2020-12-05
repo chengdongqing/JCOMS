@@ -15,7 +15,7 @@ public class MPPayReqer extends AlipayReqer {
 
     @Override
     protected String getMethodName() {
-        return alipayConfigs.getMethod().getPay().getCreate();
+        return alipayProps.getMethod().getPay().getCreate();
     }
 
     @Override

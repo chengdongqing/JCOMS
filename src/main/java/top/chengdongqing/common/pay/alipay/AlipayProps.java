@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RefreshScope
 @ConfigurationProperties("pay.ali")
-public class AlipayConfigs {
+public class AlipayProps {
 
     /**
      * 网关地址

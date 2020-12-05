@@ -11,13 +11,13 @@ import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.pay.IRequestPay;
-import top.chengdongqing.common.pay.PayConfigs;
+import top.chengdongqing.common.pay.PayProps;
 import top.chengdongqing.common.pay.entity.PayReqEntity;
 import top.chengdongqing.common.pay.enums.TradeType;
-import top.chengdongqing.common.pay.wxpay.WxpayConfigs;
 import top.chengdongqing.common.pay.wxpay.WxpayHelper;
-import top.chengdongqing.common.pay.wxpay.v3.WxpayConfigsV3;
+import top.chengdongqing.common.pay.wxpay.WxpayProps;
 import top.chengdongqing.common.pay.wxpay.v3.WxpayHelperV3;
+import top.chengdongqing.common.pay.wxpay.v3.WxpayPropsV3;
 
 import java.math.BigDecimal;
 import java.net.http.HttpResponse;
@@ -37,11 +37,11 @@ import java.util.stream.Collectors;
 public abstract class WxpayReqerV3 implements IRequestPay {
 
     @Autowired
-    protected PayConfigs configs;
+    protected PayProps props;
     @Autowired
-    protected WxpayConfigs wxConfigs;
+    protected WxpayProps wxProps;
     @Autowired
-    protected WxpayConfigsV3 v3Configs;
+    protected WxpayPropsV3 v3Props;
     @Autowired
     protected WxpayHelper helper;
     @Autowired
@@ -51,14 +51,14 @@ public abstract class WxpayReqerV3 implements IRequestPay {
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
         // 封装请求参数
         Kv<String, String> params = Kv.of("appid", helper.getAppId(tradeType))
-                .add("time_expire", buildExpireTime(configs.getTimeout()))
-                .add("notify_url", v3Configs.getPaymentNotifyUrl())
+                .add("time_expire", buildExpireTime(props.getTimeout()))
+                .add("notify_url", v3Props.getPaymentNotifyUrl())
                 .add("detail", buildGoodsDetail(entity.getItems()))
                 .add("scene_info", buildSceneInfo(entity.getIp()))
                 .add("amount", buildAmount(entity.getAmount()))
                 .add("description", entity.getDescription())
                 .add("out_trade_no", entity.getOrderNo())
-                .add("mchid", wxConfigs.getMchId());
+                .add("mchid", wxProps.getMchId());
         addParams(params, entity);
 
         // 构建请求头
@@ -99,7 +99,7 @@ public abstract class WxpayReqerV3 implements IRequestPay {
      * @return 订单金额JSON字符串
      */
     private String buildAmount(BigDecimal amount) {
-        return Kv.ofAny("currency", v3Configs.getCurrency())
+        return Kv.ofAny("currency", v3Props.getCurrency())
                 .add("total", WxpayHelper.convertAmount(amount)).toJson();
     }
 

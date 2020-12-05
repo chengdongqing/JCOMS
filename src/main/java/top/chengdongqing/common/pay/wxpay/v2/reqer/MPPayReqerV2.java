@@ -25,16 +25,16 @@ public class MPPayReqerV2 extends WxpayReqerV2 {
 
     @Override
     protected Ret<Object> buildResponse(Kv<String, String> response) {
-        Kv<String, String> data = Kv.of("appId", wxConfigs.getAppId().getMp())
+        Kv<String, String> data = Kv.of("appId", wxProps.getAppId().getMp())
                 .add("timeStamp", WxpayHelper.getTimestamp())
                 .add("nonceStr", StrKit.getRandomUUID())
                 .add("package", "prepay_id=" + response.get("prepay_id"))
-                .add("signType", v2configs.getSignType());
+                .add("signType", v2props.getSignType());
         // 获取签名
         String sign = DigitalSigner.signature(
                 SignatureAlgorithm.HMAC_SHA256,
                 StrKit.buildQueryStr(data),
-                StrToBytes.of(v2configs.getKey()).fromHex()).toHex();
+                StrToBytes.of(v2props.getKey()).fromHex()).toHex();
         data.add("paySign", sign);
         return Ret.ok(data);
     }

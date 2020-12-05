@@ -24,7 +24,7 @@ import java.util.Base64;
 public class JwtProcessor implements IJwtProcessor {
 
     @Autowired
-    private JwtConfigs configs;
+    private JwtProps props;
 
     @Override
     public JsonWebToken generate(Kv<String, Object> payloads) {
@@ -40,14 +40,14 @@ public class JwtProcessor implements IJwtProcessor {
         Instant now = Instant.now();
         header.setIssueTime(now.toEpochMilli());
         // 过期时间
-        Instant expiryTime = now.plus(configs.getEffectiveDuration(), ChronoUnit.MINUTES);
+        Instant expiryTime = now.plus(props.getEffectiveDuration(), ChronoUnit.MINUTES);
         header.setExpiryTime(expiryTime.toEpochMilli());
         // 拼接待签名内容
         Base64.Encoder encoder = Base64.getUrlEncoder();
         String content = encoder.encodeToString(header.toJson()).concat(".") + encoder.encodeToString(JsonKit.toJsonBytes(payloads));
         // 执行签名
         String signature = DigitalSigner.signature(ALGORITHM, content,
-                StrToBytes.of(configs.getPrivateKey()).fromBase64())
+                StrToBytes.of(props.getPrivateKey()).fromBase64())
                 .toBase64();
         // 合成令牌
         String token = content.concat(".").concat(signature);
@@ -70,7 +70,7 @@ public class JwtProcessor implements IJwtProcessor {
             String content = jwt.getHeaders().rawStr().concat(".") + jwt.getPayloads().rawStr();
             // 验签
             boolean verified = DigitalSigner.verify(ALGORITHM, content,
-                    StrToBytes.of(configs.getPublicKey()).fromBase64(),
+                    StrToBytes.of(props.getPublicKey()).fromBase64(),
                     StrToBytes.of(jwt.sign()).fromBase64());
             if (!verified) throw new SignatureException("token签名无效");
 
@@ -91,7 +91,7 @@ public class JwtProcessor implements IJwtProcessor {
 @Component
 @RefreshScope
 @ConfigurationProperties("jwt")
-class JwtConfigs {
+class JwtProps {
 
     /**
      * 公钥，验签用
