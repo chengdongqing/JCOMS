@@ -1,7 +1,8 @@
 package top.chengdongqing.common.pay.wxpay.v3.entity;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.kit.HttpKit;
 
@@ -13,7 +14,8 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author Luyao
  */
-@Data
+@Getter
+@Setter
 @Builder
 public class CallbackEntity {
 

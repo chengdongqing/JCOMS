@@ -22,7 +22,7 @@ public class SignatureController {
     @ApiOperation("获取密钥对")
     public Kv<String, String> keyPair(@ApiParam("签名算法") @RequestParam SignatureAlgorithm algorithm) {
         SecretKeyPair keyPair = SecretKeyGenerator.generateKeyPair(algorithm);
-        return Kv.of("publicKey", keyPair.publicKey()).add("privateKey", keyPair.privateKey());
+        return Kv.of("publicKey", keyPair.publicKey().toBase64()).add("privateKey", keyPair.privateKey().toBase64());
     }
 
     @GetMapping("/key")

@@ -1,6 +1,7 @@
 package top.chengdongqing.common.jwt;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import top.chengdongqing.common.kit.JsonKit;
 
 /**
@@ -8,7 +9,8 @@ import top.chengdongqing.common.kit.JsonKit;
  *
  * @author Luyao
  */
-@Data
+@Getter
+@Setter
 public class JwtHeader {
 
     /**

@@ -7,7 +7,6 @@ import javax.crypto.KeyGenerator;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
 /**
  * 密钥生成器
@@ -31,9 +30,8 @@ public class SecretKeyGenerator {
             // 生成密钥对
             KeyPair keyPair = generator.generateKeyPair();
             // 将私钥和公钥通过Base64编码
-            Base64.Encoder encoder = Base64.getEncoder();
-            String privateKey = encoder.encodeToString(keyPair.getPrivate().getEncoded());
-            String publicKey = encoder.encodeToString(keyPair.getPublic().getEncoded());
+            BytesToStr privateKey = BytesToStr.of(keyPair.getPrivate().getEncoded());
+            BytesToStr publicKey = BytesToStr.of(keyPair.getPublic().getEncoded());
             return new SecretKeyPair(privateKey, publicKey);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);

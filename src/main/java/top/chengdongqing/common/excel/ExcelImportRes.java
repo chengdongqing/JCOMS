@@ -1,6 +1,7 @@
 package top.chengdongqing.common.excel;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -11,7 +12,8 @@ import java.util.List;
  * @param <F> 失败的数据实体类型
  * @author Luyao
  */
-@Data
+@Getter
+@Setter
 public class ExcelImportRes<S, F> {
 
     /**

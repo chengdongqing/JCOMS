@@ -1,7 +1,8 @@
 package top.chengdongqing.common.pay.entity;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -11,7 +12,8 @@ import java.util.List;
  *
  * @author Luyao
  */
-@Data
+@Getter
+@Setter
 @Builder
 public class PayReqEntity {
 
@@ -40,7 +42,8 @@ public class PayReqEntity {
      */
     private String userId;
 
-    @Data
+    @Getter
+    @Setter
     @Builder
     public static class OrderItem {
 

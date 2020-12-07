@@ -1,5 +1,7 @@
 package top.chengdongqing.common.signature.secretkey;
 
+import top.chengdongqing.common.transformer.BytesToStr;
+
 import java.util.Objects;
 
 /**
@@ -7,7 +9,7 @@ import java.util.Objects;
  *
  * @author Luyao
  */
-public record SecretKeyPair(String privateKey, String publicKey) {
+public record SecretKeyPair(BytesToStr privateKey, BytesToStr publicKey) {
 
     /**
      * 校验参数是否为空

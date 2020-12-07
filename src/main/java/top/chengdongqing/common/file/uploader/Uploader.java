@@ -1,6 +1,7 @@
 package top.chengdongqing.common.file.uploader;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -49,7 +50,8 @@ public class Uploader {
     }
 }
 
-@Data
+@Getter
+@Setter
 @Component
 @RefreshScope
 @ConfigurationProperties("file")

@@ -43,10 +43,7 @@ public class MongoFileManager extends AbstractUploader {
         try {
             GridFSFile gridFSFile = gridFsTemplate.findOne(Query.query(Criteria.where(QUERY_KEY).is(fileKey)));
             InputStream content = gridFsTemplate.getResource(Objects.requireNonNull(gridFSFile)).getContent();
-            return DownloadFile.builder()
-                    .length(gridFSFile.getLength())
-                    .content(content)
-                    .build();
+            return new DownloadFile(content, gridFSFile.getLength());
         } catch (Exception e) {
             log.error("从GridFS下载文件异常", e);
             throw new FileException();

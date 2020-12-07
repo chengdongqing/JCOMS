@@ -72,11 +72,11 @@ public abstract class AbstractUploader implements FileManager {
      */
     private FileMetadata buildMetadata(MultipartFile file, String key, String format) {
         return FileMetadata.builder()
-                .key(key)
+                .id(key)
                 .format(format)
                 .length(file.getSize())
                 .uploadTime(LocalDateTime.now())
-                .originalName(file.getOriginalFilename())
+                .filename(file.getOriginalFilename())
                 .build();
     }
 

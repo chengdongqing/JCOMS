@@ -1,7 +1,8 @@
 package top.chengdongqing.common.pay.entity;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import top.chengdongqing.common.pay.enums.TradeChannel;
 import top.chengdongqing.common.pay.enums.TradeState;
 import top.chengdongqing.common.pay.enums.TradeType;
@@ -14,7 +15,8 @@ import java.time.LocalDateTime;
  *
  * @author Luyao
  */
-@Data
+@Getter
+@Setter
 @Builder
 public class TradeQueryEntity {
 

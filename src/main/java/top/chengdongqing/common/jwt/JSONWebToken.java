@@ -1,7 +1,8 @@
 package top.chengdongqing.common.jwt;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import top.chengdongqing.common.kit.Kv;
 
 /**
@@ -9,9 +10,10 @@ import top.chengdongqing.common.kit.Kv;
  *
  * @author Luyao
  */
-@Data
+@Getter
+@Setter
 @Builder
-public class JsonWebToken {
+public class JSONWebToken {
 
     /**
      * 访问令牌

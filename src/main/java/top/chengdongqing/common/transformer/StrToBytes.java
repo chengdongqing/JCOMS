@@ -1,5 +1,6 @@
 package top.chengdongqing.common.transformer;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 /**
@@ -35,5 +36,19 @@ public record StrToBytes(String str) {
      */
     public byte[] fromBase64() {
         return Base64.getDecoder().decode(str);
+    }
+
+    /**
+     * 从URL安全的base64字符串转字节数组
+     */
+    public byte[] fromURLBase64() {
+        return Base64.getUrlDecoder().decode(str);
+    }
+
+    /**
+     * 从普通文本转字节数组
+     */
+    public byte[] fromText() {
+        return str.getBytes(StandardCharsets.UTF_8);
     }
 }

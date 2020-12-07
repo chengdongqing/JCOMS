@@ -1,6 +1,7 @@
 package top.chengdongqing.common.pay.wxpay.v3.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import top.chengdongqing.common.pay.wxpay.WxpayStatus;
 
 /**
@@ -8,7 +9,8 @@ import top.chengdongqing.common.pay.wxpay.WxpayStatus;
  *
  * @author Luyao
  */
-@Data
+@Getter
+@Setter
 public class PayCallbackEntity {
 
     /**
@@ -36,7 +38,8 @@ public class PayCallbackEntity {
      */
     private Amount amount;
 
-    @Data
+    @Getter
+    @Setter
     public static class Amount {
         /**
          * 用户实际支付总金额

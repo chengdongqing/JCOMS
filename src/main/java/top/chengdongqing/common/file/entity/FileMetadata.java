@@ -1,9 +1,8 @@
 package top.chengdongqing.common.file.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -12,22 +11,21 @@ import java.time.LocalDateTime;
  *
  * @author Luyao
  */
-@Data
+@Getter
+@Setter
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class FileMetadata {
 
     /**
-     * 文件唯一键名
+     * 文件编号
      */
-    private String key;
+    private String id;
     /**
      * 原始文件名
      */
-    private String originalName;
+    private String filename;
     /**
-     * 文件大小（字节）
+     * 文件大小
      */
     private Long length;
     /**

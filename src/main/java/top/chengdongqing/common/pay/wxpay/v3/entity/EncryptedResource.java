@@ -1,6 +1,7 @@
 package top.chengdongqing.common.pay.wxpay.v3.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 回调加密相关数据
@@ -8,7 +9,8 @@ import lombok.Data;
  *
  * @author Luyao
  */
-@Data
+@Getter
+@Setter
 public class EncryptedResource {
 
     /**

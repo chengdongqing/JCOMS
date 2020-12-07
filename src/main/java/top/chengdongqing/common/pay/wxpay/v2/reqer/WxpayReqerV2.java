@@ -1,7 +1,8 @@
 package top.chengdongqing.common.pay.wxpay.v2.reqer;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.chengdongqing.common.kit.*;
@@ -72,7 +73,7 @@ public abstract class WxpayReqerV2 implements IRequestPay {
      * @param duration 下单后允许付款时长，单位：分钟
      * @return 指定格式的过期时间字符串
      */
-    private static String buildExpireTime(long duration) {
+    public String buildExpireTime(long duration) {
         return LocalDateTime.now().plusMinutes(duration).format(WxpayHelperV2.FORMATTER);
     }
 
@@ -84,7 +85,8 @@ public abstract class WxpayReqerV2 implements IRequestPay {
      */
     private String buildGoodsDetail(List<PayReqEntity.OrderItem> items) {
         // 商品详情
-        @Data
+        @Getter
+        @Setter
         @AllArgsConstructor
         class GoodsDetail {
             private String goodsId, goodsName, price;

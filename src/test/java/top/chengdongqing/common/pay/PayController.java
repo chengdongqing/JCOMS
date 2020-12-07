@@ -60,16 +60,16 @@ public class PayController {
     @PutMapping("/close/{orderNo}")
     @ApiOperation("关闭订单，如：7771d3b4477745349cfa07aea29c41f7")
     public Ret<Void> close(@ApiParam("订单号") @PathVariable String orderNo,
-                                       @ApiParam("交易通道") @RequestParam TradeChannel channel,
-                                       @ApiParam("交易类型") @RequestParam TradeType type) {
+                           @ApiParam("交易通道") @RequestParam TradeChannel channel,
+                           @ApiParam("交易类型") @RequestParam TradeType type) {
         return payerFactory.getPayer(channel).requestClose(orderNo, type);
     }
 
     @PostMapping("/refund/{orderNo}")
     @ApiOperation("订单退款，如：7771d3b4477745349cfa07aea29c41f7")
     public Ret<Void> refund(@ApiParam("订单号") @PathVariable String orderNo,
-                                       @ApiParam("交易通道") @RequestParam TradeChannel channel,
-                                       @ApiParam("交易类型") @RequestParam TradeType type) {
+                            @ApiParam("交易通道") @RequestParam TradeChannel channel,
+                            @ApiParam("交易类型") @RequestParam TradeType type) {
         RefundReqEntity entity = RefundReqEntity.builder()
                 .orderNo(orderNo)
                 .reason("不知道")

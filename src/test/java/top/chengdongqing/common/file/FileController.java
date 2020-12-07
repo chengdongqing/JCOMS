@@ -49,7 +49,7 @@ public class FileController {
             String originalName = "test.jpg";
             String fileKey = PathVariableKit.getPathVariable(request);
             DownloadFile file = managerFactory.getManager().download(fileKey);
-            StreamRenderer.of(file.getContent(), file.getLength(), originalName).render();
+            StreamRenderer.of(file.stream(), file.length(), originalName).render();
         } catch (FileException e) {
             response.sendError(404);
         }

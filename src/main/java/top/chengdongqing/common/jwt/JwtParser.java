@@ -3,8 +3,8 @@ package top.chengdongqing.common.jwt;
 import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
-
-import java.util.Base64;
+import top.chengdongqing.common.transformer.BytesToStr;
+import top.chengdongqing.common.transformer.StrToBytes;
 
 /**
  * Jwt解析器
@@ -76,7 +76,7 @@ public class JwtParser {
          * @return 头部信息JSON字符串
          */
         public String json() {
-            return new String(Base64.getUrlDecoder().decode(rawStr));
+            return BytesToStr.of(StrToBytes.of(rawStr).fromURLBase64()).toText();
         }
 
         /**
@@ -100,7 +100,7 @@ public class JwtParser {
          * @return 有效载荷JSON字符串
          */
         public String json() {
-            return new String(Base64.getUrlDecoder().decode(rawStr));
+            return BytesToStr.of(StrToBytes.of(rawStr).fromURLBase64()).toText();
         }
 
         /**

@@ -3,7 +3,8 @@ package top.chengdongqing.common.file.manager;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.OSSObject;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -50,10 +51,7 @@ public class OSSFileManager extends AbstractUploader {
     public DownloadFile download(String fileKey) throws FileException {
         try {
             OSSObject file = client.getObject(props.getBucket(), fileKey);
-            return DownloadFile.builder()
-                    .length(file.getObjectMetadata().getContentLength())
-                    .content(file.getObjectContent())
-                    .build();
+            return new DownloadFile(file.getObjectContent(), file.getObjectMetadata().getContentLength());
         } catch (Exception e) {
             log.error("从OSS下载文件异常", e);
             throw new FileException();
@@ -71,7 +69,8 @@ public class OSSFileManager extends AbstractUploader {
     }
 }
 
-@Data
+@Getter
+@Setter
 @Component
 @ConfigurationProperties("file.oss")
 class OSSProps {

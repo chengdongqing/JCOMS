@@ -1,6 +1,5 @@
 package top.chengdongqing.common.file;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.support.ApplicationObjectSupport;
@@ -25,9 +24,8 @@ public class FileManagerFactory extends ApplicationObjectSupport {
      *
      * @return 文件管理器实例
      */
-    public FileManager getManager() throws NoSuchBeanDefinitionException {
-        Objects.requireNonNull(active, "upload.active cannot be null.");
-        String beanName = active + "FileManager";
+    public FileManager getManager() {
+        String beanName = Objects.requireNonNull(active) + "FileManager";
         return super.getApplicationContext().getBean(beanName, FileManager.class);
     }
 }

@@ -23,17 +23,17 @@ public class JwtController {
 
     @GetMapping
     @ApiOperation("获取令牌")
-    public JsonWebToken generate(@ApiParam("用户id") @RequestParam String userId,
+    public JSONWebToken generate(@ApiParam("用户id") @RequestParam String userId,
                                  @ApiParam("用户名称") @RequestParam String username) {
         Kv<String, Object> payloads = Kv.ofAny("userId", userId).add("username", username);
         return jwtProcessor.generate(payloads);
     }
 
     @PostMapping
-    @ApiOperation("验证令牌")
-    public Ret<Kv<String, Object>> verify(@ApiParam("令牌") @RequestParam String token) {
+    @ApiOperation("解析令牌")
+    public Ret<Kv<String, Object>> parse(@ApiParam("令牌") @RequestParam String token) {
         try {
-            return Ret.ok(jwtProcessor.verify(token));
+            return Ret.ok(jwtProcessor.parse(token));
         } catch (SignatureException e) {
             return Ret.fail("token签名异常");
         } catch (TokenExpiredException e) {

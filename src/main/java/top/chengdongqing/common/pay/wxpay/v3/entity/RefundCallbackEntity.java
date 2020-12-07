@@ -1,13 +1,15 @@
 package top.chengdongqing.common.pay.wxpay.v3.entity;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 退款回调数据实体
  *
  * @author Luyao
  */
-@Data
+@Getter
+@Setter
 public class RefundCallbackEntity {
 
     /**
@@ -54,7 +56,8 @@ public class RefundCallbackEntity {
         ABNORMAL
     }
 
-    @Data
+    @Getter
+    @Setter
     public static class Amount {
         /**
          * 用户实际支付总金额

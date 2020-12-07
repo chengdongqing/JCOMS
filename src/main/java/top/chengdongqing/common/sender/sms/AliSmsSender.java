@@ -1,7 +1,7 @@
 package top.chengdongqing.common.sender.sms;
 
-import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -129,7 +129,8 @@ class AliSmsProps {
 /**
  * 发送结果
  */
-@Data
+@Getter
+@Setter
 class SendResult {
 
     /**

@@ -1,6 +1,5 @@
 package top.chengdongqing.common.pay.wxpay;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.support.ApplicationObjectSupport;
@@ -29,9 +28,8 @@ public class WxpayFactory extends ApplicationObjectSupport {
      *
      * @return 微信支付器实例
      */
-    public IPayment getPayer() throws NoSuchBeanDefinitionException {
-        Objects.requireNonNull(active, "pay.wx.active cannot be blank.");
-        String beanName = "wxpayV" + active;
+    public IPayment getPayer() {
+        String beanName = "wxpayV" + Objects.requireNonNull(active);
         return super.getApplicationContext().getBean(beanName, IPayment.class);
     }
 }

@@ -52,10 +52,7 @@ public class LocalFileManager extends AbstractUploader {
     public DownloadFile download(String fileKey) throws FileException {
         try {
             Path file = Path.of(basePath + fileKey);
-            return DownloadFile.builder()
-                    .length(Files.size(file))
-                    .content(Files.newInputStream(file))
-                    .build();
+            return new DownloadFile(Files.newInputStream(file), Files.size(file));
         } catch (Exception e) {
             log.error("从本地下载文件错误", e);
             throw new FileException();

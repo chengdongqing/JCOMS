@@ -1,7 +1,8 @@
 package top.chengdongqing.common.pay.entity;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,7 +12,8 @@ import java.time.LocalDateTime;
  *
  * @author Luyao
  */
-@Data
+@Getter
+@Setter
 @Builder
 public class RefundResEntity {
 

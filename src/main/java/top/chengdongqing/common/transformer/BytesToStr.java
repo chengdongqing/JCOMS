@@ -39,7 +39,7 @@ public record BytesToStr(byte[] bytes) {
      * @param md5 原始MD5
      * @return 固定长度的MD5值
      */
-    private static String fillMD5(String md5) {
+    public String fillMD5(String md5) {
         return md5.length() == 32 ? md5 : fillMD5("0" + md5);
     }
 
@@ -48,6 +48,13 @@ public record BytesToStr(byte[] bytes) {
      */
     public String toBase64() {
         return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    /**
+     * 转URL安全的base64字符串
+     */
+    public String toURLBase64() {
+        return Base64.getUrlEncoder().encodeToString(bytes);
     }
 
     /**

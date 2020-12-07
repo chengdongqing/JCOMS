@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 /**
@@ -24,13 +25,16 @@ public class ExcelController {
         String[][] titles = {{"name", "名字"}};
         JSONArray rows = new JSONArray();
         rows.addAll(Arrays.asList(usernames));
-        ExcelProcessor.getInstance().write(titles, rows).renderWithDate("用户姓名列表");
+        ExcelProcessor.getInstance().generate(titles, rows).renderWithDate("用户姓名列表");
     }
 
     @PostMapping("/read")
-    @ApiOperation("读取excel文件")
-    public String read(@ApiParam("excel文件") @RequestPart MultipartFile file) throws IOException {
-        ExcelRows rows = ExcelProcessor.getInstance().read(null, file.getOriginalFilename(), file.getBytes());
-        return rows.toJSON();
+    @ApiOperation("解析excel文件")
+    public String parse(@ApiParam("excel文件") @RequestPart MultipartFile file) throws IOException {
+        try (InputStream stream = file.getInputStream()) {
+            return ExcelProcessor.getInstance()
+                    .parse(null, file.getOriginalFilename(), stream)
+                    .toJSON();
+        }
     }
 }

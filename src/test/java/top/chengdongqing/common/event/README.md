@@ -1,10 +1,12 @@
 ### 事件机制
+
 - 支持在单个进程中发布和监听事件
 - 支持同步和异步
 
 #### 监听事件
-- 通过实现EventListener接口
-如：
+
+- 通过实现EventListener接口 如：
+
 ```
 @Component
 @Events("register")
@@ -18,8 +20,9 @@ public class RegisterListener implements EventListener {
     }
 }
 ```
-- 通过lambda表达式注册并监听
-如：
+
+- 通过lambda表达式注册并监听 如：
+
 ```
 EventManager.addListener("login", event -> {
     System.out.println(JSON.toJsonString(event));
@@ -31,6 +34,7 @@ EventManager.addListener("login", event -> {
 ```
 
 #### 发布事件
+
 ```
 User user = ...
 EventManager.sendEvent("register", user);

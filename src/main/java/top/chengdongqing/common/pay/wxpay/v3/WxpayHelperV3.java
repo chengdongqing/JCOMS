@@ -124,7 +124,7 @@ public class WxpayHelperV3 {
      * @param params 待签名字符数组
      * @return 待签名字符串
      */
-    private static String buildContent(String... params) {
+    public String buildContent(String... params) {
         if (StringUtils.isAnyBlank(params)) {
             throw new IllegalArgumentException("The params can not be null or empty.");
         }

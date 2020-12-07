@@ -26,13 +26,13 @@ public interface IJwtProcessor {
      * @param payloads 有效载荷
      * @return token详情
      */
-    JsonWebToken generate(Kv<String, Object> payloads);
+    JSONWebToken generate(Kv<String, Object> payloads);
 
     /**
-     * 验证token
+     * 解析token
      *
      * @param token 令牌
      * @return 有效载荷
      */
-    Kv<String, Object> verify(String token) throws SignatureException, TokenExpiredException;
+    Kv<String, Object> parse(String token) throws SignatureException, TokenExpiredException;
 }

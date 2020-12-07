@@ -1,14 +1,16 @@
 package top.chengdongqing.common.sender.sms;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * 短信参数实体
  *
  * @author Luyao
  */
-@Data
+@Getter
+@Setter
 @Builder
 public class SmsEntity {
 

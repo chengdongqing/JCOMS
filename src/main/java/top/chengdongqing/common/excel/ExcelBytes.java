@@ -17,10 +17,6 @@ public record ExcelBytes(byte[] data) {
      */
     private static final String EXCEL_SUFFIX = ".xlsx";
 
-    public static ExcelBytes of(byte[] data) {
-        return new ExcelBytes(data);
-    }
-
     /**
      * 渲染到客户端
      *

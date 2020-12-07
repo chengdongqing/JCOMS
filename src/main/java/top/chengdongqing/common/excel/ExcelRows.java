@@ -13,10 +13,6 @@ import java.util.stream.Collectors;
  */
 public record ExcelRows(JSONArray rows) {
 
-    public static ExcelRows of(JSONArray rows) {
-        return new ExcelRows(rows);
-    }
-
     /**
      * 转指定类型的集合
      *
