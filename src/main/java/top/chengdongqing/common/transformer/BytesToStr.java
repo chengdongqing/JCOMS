@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.Base64;
 
 /**
- * 字节数据转字符串
+ * 字节数组转字符串
  *
  * @author Luyao
  */

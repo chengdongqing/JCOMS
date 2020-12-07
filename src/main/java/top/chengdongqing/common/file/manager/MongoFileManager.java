@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.file.FileException;
-import top.chengdongqing.common.file.FileManager;
 import top.chengdongqing.common.file.entity.DownloadFile;
 import top.chengdongqing.common.file.uploader.AbstractUploader;
 
@@ -22,7 +21,7 @@ import java.util.Objects;
  */
 @Slf4j
 @Component
-public class MongoFileManager extends AbstractUploader implements FileManager {
+public class MongoFileManager extends AbstractUploader {
 
     @Autowired
     private GridFsTemplate gridFsTemplate;

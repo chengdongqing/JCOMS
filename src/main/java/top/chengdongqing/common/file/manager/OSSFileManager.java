@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.file.FileException;
-import top.chengdongqing.common.file.FileManager;
 import top.chengdongqing.common.file.entity.DownloadFile;
 import top.chengdongqing.common.file.uploader.AbstractUploader;
 
@@ -25,7 +24,7 @@ import java.io.InputStream;
 @Slf4j
 @Component
 @Configuration
-public class OSSFileManager extends AbstractUploader implements FileManager {
+public class OSSFileManager extends AbstractUploader {
 
     @Autowired
     private OSSProps props;
