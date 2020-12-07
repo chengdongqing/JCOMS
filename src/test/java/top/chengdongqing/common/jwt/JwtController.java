@@ -19,10 +19,10 @@ import java.security.SignatureException;
 public class JwtController {
 
     @Autowired
-    private JwtProcessor jwtProcessor;
+    private IJwtProcessor jwtProcessor;
 
     @GetMapping
-    @ApiOperation("获取令牌")
+    @ApiOperation("获取令牌（这里的参数仅为示例，实际上可以任意填充）")
     public JSONWebToken generate(@ApiParam("用户id") @RequestParam String userId,
                                  @ApiParam("用户名称") @RequestParam String username) {
         Kv<String, Object> payloads = Kv.ofAny("userId", userId).add("username", username);

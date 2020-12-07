@@ -83,6 +83,7 @@ public class AliSmsSender extends SmsSender {
 }
 
 @Getter
+@Setter
 @Component
 @RefreshScope
 @ConfigurationProperties("send.sms.ali")

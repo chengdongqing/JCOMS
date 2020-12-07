@@ -39,7 +39,7 @@ public record ExcelRows(JSONArray rows) {
      *
      * @return 值集合
      */
-    public List<String> toListForOneColumn() {
+    public List<String> toStringList() {
         return rows.stream().map(String::valueOf).collect(Collectors.toList());
     }
 

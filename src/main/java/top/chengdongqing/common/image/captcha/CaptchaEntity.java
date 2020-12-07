@@ -5,5 +5,13 @@ package top.chengdongqing.common.image.captcha;
  *
  * @author Luyao
  */
-public record CaptchaEntity(String key, String value) {
+public record CaptchaEntity(
+        /**
+         * 图片验证码内容
+         */
+        String key,
+        /**
+         * 验证码对应的值
+         */
+        String value) {
 }

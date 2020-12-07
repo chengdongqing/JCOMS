@@ -1,6 +1,7 @@
 package top.chengdongqing.common.sender.email;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -9,6 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
+import top.chengdongqing.common.kit.JsonKit;
 
 import javax.mail.SendFailedException;
 import java.nio.charset.StandardCharsets;
@@ -36,19 +38,21 @@ public class ApacheEmailSender extends EmailSender {
         he.setAuthentication(props.getAccount(), props.getPassword());
         he.setCharset(StandardCharsets.UTF_8.name());
         try {
-            he.setFrom(props.getAccount(), props.getApplicationName());
-            he.addTo(entity.getTo(), props.getApplicationName() + "用户");
-            he.setSubject(entity.getTitle() + " - " + props.getApplicationName());
+            he.setFrom(props.getAccount(), props.getSenderName());
+            he.addTo(entity.getTo(), props.getSenderName() + "用户");
+            he.setSubject(entity.getTitle().concat(" - ") + props.getSenderName());
             he.setMsg(entity.getContent());
             he.send();
-            log.info("发送邮件成功：{}", he);
+            log.info("发送邮件成功：{}", JsonKit.toJson(entity));
         } catch (EmailException e) {
+            log.error("邮件发送异常", e);
             throw new SendFailedException("邮件" + ErrorMsg.SEND_FAILED);
         }
     }
 }
 
 @Getter
+@Setter
 @Component
 @RefreshScope
 @ConfigurationProperties("send.email.apache")
@@ -73,5 +77,5 @@ class ApacheEmailProps {
     /**
      * 邮件中标识的发送方名称
      */
-    private String applicationName;
+    private String senderName;
 }

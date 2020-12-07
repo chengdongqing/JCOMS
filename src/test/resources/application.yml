@@ -3,10 +3,6 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
-  cloud:
-    nacos:
-      config:
-        enabled: false
 
 # 发送配置
 send:
@@ -14,6 +10,12 @@ send:
     active: ali
   email:
     active: apache
+    apache:
+      host: smtp.163.com
+      port: 465
+      account:
+      password:
+      sender-name:
 
 # 文件配置
 file:

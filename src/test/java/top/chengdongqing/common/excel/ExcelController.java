@@ -19,17 +19,17 @@ import java.util.Arrays;
 @Api(tags = "excel处理相关控制器")
 public class ExcelController {
 
-    @GetMapping("/render")
-    @ApiOperation("输出excel文件")
-    public void render(@ApiParam("用户姓名列表，逗号分隔") @RequestParam String[] usernames) {
+    @GetMapping("/generate")
+    @ApiOperation("生成excel")
+    public void generate(@ApiParam("用户姓名列表，英文逗号分隔") @RequestParam String[] usernames) {
         String[][] titles = {{"name", "名字"}};
         JSONArray rows = new JSONArray();
         rows.addAll(Arrays.asList(usernames));
         ExcelProcessor.getInstance().generate(titles, rows).renderWithDate("用户姓名列表");
     }
 
-    @PostMapping("/read")
-    @ApiOperation("解析excel文件")
+    @PostMapping("/parse")
+    @ApiOperation("解析excel")
     public String parse(@ApiParam("excel文件") @RequestPart MultipartFile file) throws IOException {
         try (InputStream stream = file.getInputStream()) {
             return ExcelProcessor.getInstance()
