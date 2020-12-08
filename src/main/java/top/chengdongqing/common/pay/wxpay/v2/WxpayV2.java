@@ -133,10 +133,10 @@ public class WxpayV2 extends ApplicationObjectSupport implements IPayment<String
         }
 
         // 验证签名
-        boolean isOk = DigitalSigner.verify(SignatureAlgorithm.HMAC_SHA256,
-                helperV2.buildQueryStr(params),
-                v2props.getKey().getBytes(),
-                StrToBytes.of(params.get("sign")).fromHex());
+        boolean isOk = DigitalSigner.newInstance(SignatureAlgorithm.HMAC_SHA256)
+                .verify(helperV2.buildQueryStr(params),
+                        StrToBytes.of(params.get("sign")).fromHex(),
+                        v2props.getKey().getBytes());
         if (!isOk) {
             log.warn("微信支付回调验签失败：{}", params);
             return buildFailCallback("验签失败");

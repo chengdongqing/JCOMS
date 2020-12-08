@@ -55,9 +55,9 @@ public class AliSmsSender extends SmsSender {
                 .add("SignName", props.getSignName())
                 .add("TemplateCode", entity.getTemplate())
                 .add("TemplateParam", entity.getContent());
-        String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA1,
-                StrKit.buildQueryStr(params, StrEncodingType.POP),
-                StrToBytes.of(props.getAccessSecret()).fromBase64())
+        String sign = DigitalSigner.newInstance(SignatureAlgorithm.HMAC_SHA1)
+                .signature(StrKit.buildQueryStr(params, StrEncodingType.POP),
+                        StrToBytes.of(props.getAccessSecret()).fromBase64())
                 .toBase64();
         params.add("Signature", sign);
 

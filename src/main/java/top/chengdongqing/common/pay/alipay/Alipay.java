@@ -112,10 +112,10 @@ public class Alipay extends ApplicationObjectSupport implements IPayment<Map<Str
         }
 
         // 验证签名
-        boolean isOk = DigitalSigner.verify(SignatureAlgorithm.RSA_SHA256,
-                helper.buildQueryStr(params),
-                CertKit.readPublicKey(props.getAlipayPublicKeyCertPath()).bytes(),
-                StrToBytes.of(params.get("sign")).fromBase64());
+        boolean isOk = DigitalSigner.newInstance(SignatureAlgorithm.RSA_SHA256)
+                .verify(helper.buildQueryStr(params),
+                        StrToBytes.of(params.get("sign")).fromBase64(),
+                        CertKit.readPublicKey(props.getAlipayPublicKeyCertPath()).bytes());
         if (!isOk) {
             log.warn("支付宝回调验签失败：{}", params);
             return Ret.fail(AlipayStatus.CALLBACK_CODE);

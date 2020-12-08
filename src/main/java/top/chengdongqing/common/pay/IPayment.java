@@ -10,10 +10,10 @@ import top.chengdongqing.common.pay.enums.TradeType;
 /**
  * 支付处理器顶层接口
  *
- * @param <T> 支付回调数据类型
+ * @param <C> 支付回调数据类型
  * @author Luyao
  */
-public interface IPayment<T> {
+public interface IPayment<C> {
 
     /**
      * 发起付款
@@ -57,5 +57,5 @@ public interface IPayment<T> {
      * @param data 回调数据
      * @return 处理结果
      */
-    Ret<PayResEntity> handlePayCallback(T data);
+    Ret<PayResEntity> handlePayCallback(C data);
 }

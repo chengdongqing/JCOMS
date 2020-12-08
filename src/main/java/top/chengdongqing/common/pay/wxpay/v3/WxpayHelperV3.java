@@ -91,8 +91,8 @@ public class WxpayHelperV3 {
         // 构建待签名字符串
         String content = buildContent(params);
         // 生成签名
-        return DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256, content,
-                StrToBytes.of(v3Props.getPrivateKey()).fromBase64()).toBase64();
+        return DigitalSigner.newInstance(SignatureAlgorithm.RSA_SHA256)
+                .signature(content, StrToBytes.of(v3Props.getPrivateKey()).fromBase64()).toBase64();
     }
 
     /**
@@ -111,8 +111,7 @@ public class WxpayHelperV3 {
         // 构建待签名字符串
         String content = buildContent(params);
         // 验证签名
-        return DigitalSigner.verify(SignatureAlgorithm.RSA_SHA256,
-                content,
+        return DigitalSigner.newInstance(SignatureAlgorithm.RSA_SHA256).verify(content,
                 CertKit.readPublicKey(v3Props.getWxpayCertPath()).bytes(),
                 StrToBytes.of(sign).fromBase64());
     }

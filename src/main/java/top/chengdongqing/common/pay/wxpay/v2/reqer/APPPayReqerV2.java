@@ -25,9 +25,8 @@ public class APPPayReqerV2 extends WxpayReqerV2 {
                 .add("package", "Sign=WXPay")
                 .add("noncestr", StrKit.getRandomUUID())
                 .add("timestamp", WxpayHelper.getTimestamp());
-        String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
-                StrKit.buildQueryStr(data),
-                StrToBytes.of(v2props.getKey()).fromHex()).toHex();
+        String sign = DigitalSigner.newInstance(SignatureAlgorithm.HMAC_SHA256)
+                .signature(StrKit.buildQueryStr(data), StrToBytes.of(v2props.getKey()).fromHex()).toHex();
         data.add("sign", sign);
         return Ret.ok(data);
     }

@@ -1,12 +1,10 @@
 package top.chengdongqing.common.signature.signer;
 
-import top.chengdongqing.common.signature.IDigitalSigner;
+import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.BytesToStr;
 
 import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -17,16 +15,15 @@ import java.security.spec.X509EncodedKeySpec;
  *
  * @author Luyao
  */
-public class AsymmetricSigner implements IDigitalSigner {
+public record AsymmetricSigner(SignatureAlgorithm algorithm) implements DigitalSigner {
 
     @Override
-    public BytesToStr signature(SignatureAlgorithm algorithm, String content, byte[] key) {
+    public BytesToStr signature(String content, byte[] privateKey) {
         try {
             Signature signature = Signature.getInstance(algorithm.getAlgorithm());
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamily());
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(key);
-            PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
-            signature.initSign(privateKey);
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKey);
+            signature.initSign(keyFactory.generatePrivate(keySpec));
             signature.update(content.getBytes());
             return BytesToStr.of(signature.sign());
         } catch (Exception e) {
@@ -35,13 +32,12 @@ public class AsymmetricSigner implements IDigitalSigner {
     }
 
     @Override
-    public boolean verify(SignatureAlgorithm algorithm, String content, byte[] key, byte[] sign) {
+    public boolean verify(String content, byte[] sign, byte[] publicKey) {
         try {
             Signature signature = Signature.getInstance(algorithm.getAlgorithm());
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamily());
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(key);
-            PublicKey publicKey = keyFactory.generatePublic(keySpec);
-            signature.initVerify(publicKey);
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKey);
+            signature.initVerify(keyFactory.generatePublic(keySpec));
             signature.update(content.getBytes());
             return signature.verify(sign);
         } catch (Exception e) {

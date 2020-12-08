@@ -1,6 +1,6 @@
 package top.chengdongqing.common.signature.signer;
 
-import top.chengdongqing.common.signature.IDigitalSigner;
+import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.BytesToStr;
 
@@ -13,10 +13,10 @@ import java.util.Arrays;
  *
  * @author Luyao
  */
-public class MessageDigestSigner implements IDigitalSigner {
+public record MessageDigestSigner(SignatureAlgorithm algorithm) implements DigitalSigner {
 
     @Override
-    public BytesToStr signature(SignatureAlgorithm algorithm, String content, byte[] key) {
+    public BytesToStr signature(String content, byte[] key) {
         try {
             MessageDigest md = MessageDigest.getInstance(algorithm.getAlgorithm());
             return BytesToStr.of(md.digest(content.getBytes()));
@@ -26,7 +26,7 @@ public class MessageDigestSigner implements IDigitalSigner {
     }
 
     @Override
-    public boolean verify(SignatureAlgorithm algorithm, String content, byte[] key, byte[] sign) {
-        return Arrays.equals(signature(algorithm, content, key).bytes(), sign);
+    public boolean verify(String content, byte[] sign, byte[] key) {
+        return Arrays.equals(signature(content, key).bytes(), sign);
     }
 }

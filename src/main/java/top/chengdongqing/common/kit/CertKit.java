@@ -38,7 +38,7 @@ public class CertKit {
             return readCerts(certPath).stream().map(item -> {
                 if (!alipayRoot || item.getSigAlgOID().startsWith("1.2.840.113549.1.1")) {
                     String signContent = item.getIssuerX500Principal().getName() + item.getSerialNumber();
-                    return DigitalSigner.signature(SignatureAlgorithm.MD5, signContent, null).toMD5Hex();
+                    return DigitalSigner.newInstance(SignatureAlgorithm.MD5).signature(signContent, null).toMD5Hex();
                 }
                 return null;
             }).filter(Objects::nonNull).collect(Collectors.joining("_"));

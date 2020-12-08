@@ -52,9 +52,8 @@ public class WxpayHelperV2 {
                 .add("nonce_str", StrKit.getRandomUUID())
                 .add("sign_type", v2props.getSignType());
         // 添加数字签名
-        String sign = DigitalSigner.signature(SignatureAlgorithm.HMAC_SHA256,
-                buildQueryStr(params),
-                StrToBytes.of(v2props.getKey()).fromHex()).toHex();
+        String sign = DigitalSigner.newInstance(SignatureAlgorithm.HMAC_SHA256)
+                .signature(buildQueryStr(params), StrToBytes.of(v2props.getKey()).fromHex()).toHex();
         params.add("sign", sign);
         // 转换数据类型
         return XmlKit.toXml(params);

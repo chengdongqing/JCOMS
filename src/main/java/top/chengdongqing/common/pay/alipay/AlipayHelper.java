@@ -46,9 +46,8 @@ public class AlipayHelper {
         if (bizContent != null) params.add("biz_content", bizContent);
 
         // 生成签名
-        String sign = DigitalSigner.signature(SignatureAlgorithm.RSA_SHA256,
-                buildQueryStr(params),
-                StrToBytes.of(props.getPrivateKey()).fromBase64()).toBase64();
+        String sign = DigitalSigner.newInstance(SignatureAlgorithm.RSA_SHA256)
+                .signature(buildQueryStr(params), StrToBytes.of(props.getPrivateKey()).fromBase64()).toBase64();
         params.add("sign", sign);
     }
 

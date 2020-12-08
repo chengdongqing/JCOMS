@@ -1,6 +1,6 @@
 package top.chengdongqing.common.signature.signer;
 
-import top.chengdongqing.common.signature.IDigitalSigner;
+import top.chengdongqing.common.signature.DigitalSigner;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.transformer.BytesToStr;
 
@@ -14,10 +14,10 @@ import java.util.Arrays;
  *
  * @author Luyao
  */
-public class HMacSigner implements IDigitalSigner {
+public record MacSigner(SignatureAlgorithm algorithm) implements DigitalSigner {
 
     @Override
-    public BytesToStr signature(SignatureAlgorithm algorithm, String content, byte[] key) {
+    public BytesToStr signature(String content, byte[] key) {
         try {
             Mac mac = Mac.getInstance(algorithm.getAlgorithm());
             mac.init(new SecretKeySpec(key, algorithm.getAlgorithm()));
@@ -28,7 +28,7 @@ public class HMacSigner implements IDigitalSigner {
     }
 
     @Override
-    public boolean verify(SignatureAlgorithm algorithm, String content, byte[] key, byte[] sign) {
-        return Arrays.equals(signature(algorithm, content, key).bytes(), sign);
+    public boolean verify(String content, byte[] sign, byte[] key) {
+        return Arrays.equals(signature(content, key).bytes(), sign);
     }
 }

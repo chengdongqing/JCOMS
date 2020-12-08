@@ -54,7 +54,7 @@ public class JwtProcessorImpl implements JwtProcessor {
         // 拼接待签名内容
         String content = BytesToStr.of(header.toJson()).toURLBase64().concat(".") + BytesToStr.of(JsonKit.toJsonBytes(payloads)).toURLBase64();
         // 执行签名
-        String signature = DigitalSigner.signature(ALGORITHM, content,
+        String signature = DigitalSigner.newInstance(ALGORITHM).signature(content,
                 StrToBytes.of(props.getPrivateKey()).fromBase64())
                 .toURLBase64();
         // 合成令牌
@@ -77,9 +77,9 @@ public class JwtProcessorImpl implements JwtProcessor {
             // 获取被签名的数据
             String content = jwt.getHeaders().rawStr().concat(".") + jwt.getPayloads().rawStr();
             // 验签
-            boolean verified = DigitalSigner.verify(ALGORITHM, content,
-                    StrToBytes.of(props.getPublicKey()).fromBase64(),
-                    StrToBytes.of(jwt.sign()).fromURLBase64());
+            boolean verified = DigitalSigner.newInstance(ALGORITHM).verify(content,
+                    StrToBytes.of(jwt.sign()).fromURLBase64(),
+                    StrToBytes.of(props.getPublicKey()).fromBase64());
             if (!verified) throw new SignatureException("token签名无效");
 
             // 判断是否过期
