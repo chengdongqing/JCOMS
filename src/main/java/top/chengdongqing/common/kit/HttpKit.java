@@ -142,7 +142,7 @@ public class HttpKit {
             HttpRequest httpRequest = requestBuilder.build();
 
             // 发送请求
-            return client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofString()).join();
+            return client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -193,7 +193,7 @@ public class HttpKit {
      */
     public static String readData(HttpServletRequest request) {
         try {
-            return request.getReader().lines().collect(Collectors.joining("\\n"));
+            return request.getReader().lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

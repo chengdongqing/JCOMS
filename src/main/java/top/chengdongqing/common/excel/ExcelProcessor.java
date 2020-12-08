@@ -18,7 +18,7 @@ public interface ExcelProcessor {
      *
      * @return ExcelProcessor
      */
-    static ExcelProcessor getInstance() {
+    static ExcelProcessor newInstance() {
         return new POIExcelProcessor();
     }
 

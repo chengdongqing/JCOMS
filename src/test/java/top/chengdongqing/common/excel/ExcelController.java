@@ -25,16 +25,14 @@ public class ExcelController {
         String[][] titles = {{"name", "名字"}};
         JSONArray rows = new JSONArray();
         rows.addAll(Arrays.asList(usernames));
-        ExcelProcessor.getInstance().generate(titles, rows).renderWithDate("用户姓名列表");
+        ExcelProcessor.newInstance().generate(titles, rows).renderWithDate("用户姓名列表");
     }
 
     @PostMapping("/parse")
     @ApiOperation("解析excel")
     public String parse(@ApiParam("excel文件") @RequestPart MultipartFile file) throws IOException {
         try (InputStream stream = file.getInputStream()) {
-            return ExcelProcessor.getInstance()
-                    .parse(null, file.getOriginalFilename(), stream)
-                    .toJSON();
+            return ExcelProcessor.newInstance().parse(null, file.getOriginalFilename(), stream).toJSON();
         }
     }
 }

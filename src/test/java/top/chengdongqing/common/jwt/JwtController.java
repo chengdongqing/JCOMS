@@ -19,7 +19,7 @@ import java.security.SignatureException;
 public class JwtController {
 
     @Autowired
-    private IJwtProcessor jwtProcessor;
+    private JwtProcessor jwtProcessor;
 
     @GetMapping
     @ApiOperation("获取令牌（这里的参数仅为示例，实际上可以任意填充）")
