@@ -1,6 +1,5 @@
 package top.chengdongqing.common.image.captcha;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Objects;
@@ -12,7 +11,6 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author Luyao
  */
-@AllArgsConstructor
 public class CaptchaRandom {
 
     // 验证码类型
@@ -24,7 +22,16 @@ public class CaptchaRandom {
     private static final char[] NUMBERS = getNumbers();
     private static final char[] OPERATORS = {'+', '-', '*'};
     private final Random random = ThreadLocalRandom.current();
-    
+
+    public CaptchaRandom(CaptchaMode captchaMode, int length) {
+        if (length < 4) {
+            throw new IllegalArgumentException("The captcha char length should greater than or equal to 4");
+        }
+
+        this.captchaMode = captchaMode;
+        this.length = length;
+    }
+
     public static CaptchaRandom of(CaptchaMode mode) {
         return new CaptchaRandom(mode, 6);
     }
@@ -112,5 +119,21 @@ public class CaptchaRandom {
             letters[i] = Character.toUpperCase((char) (97 + i));
         }
         return letters;
+    }
+
+    /**
+     * 图片验证码实体
+     *
+     * @author Luyao
+     */
+    public static record CaptchaEntity(
+            /**
+             * 图片验证码内容
+             */
+            String key,
+            /**
+             * 验证码对应的值
+             */
+            String value) {
     }
 }

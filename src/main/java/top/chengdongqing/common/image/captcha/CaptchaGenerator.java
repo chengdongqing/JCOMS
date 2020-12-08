@@ -9,7 +9,6 @@ import java.awt.*;
 import java.awt.geom.QuadCurve2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -24,31 +23,41 @@ public class CaptchaGenerator implements ImageGenerator {
     private final String content;
     // 验证码宽
     private final int width, height;
+    // 干扰线数量
+    private final int curveLength;
 
     // 随机数生成器
     private final Random random = ThreadLocalRandom.current();
 
     // 字体颜色
-    private static final Color fontColor = new Color(8, 4, 242);
+    private static final Color FONT_COLOR = new Color(8, 4, 242);
     // 曲线颜色
-    private static final Color curveColor = new Color(255, 255, 255);
+    private static final Color CURVE_COLOR = new Color(255, 255, 255);
     // 背景颜色
-    private static final Color[] bgColors = new Color[]{
+    private static final Color[] BG_COLORS = new Color[]{
             new Color(198, 198, 198),
             new Color(247, 247, 247)
     };
 
-    public CaptchaGenerator(String content, int width) {
+    public CaptchaGenerator(String content, int width, int curveLength) {
         if (StringUtils.isBlank(content)) {
             throw new IllegalArgumentException("The captcha content cannot be blank");
         }
         if (width < 50) {
             throw new IllegalArgumentException("The captcha width must be greater than or equal to 50");
         }
+        if (curveLength < 0) {
+            throw new IllegalArgumentException("The captcha curve length should greater than 0");
+        }
 
         this.content = content;
         this.width = width;
         this.height = width / 3;
+        this.curveLength = curveLength;
+    }
+
+    public static CaptchaGenerator of(String content) {
+        return new CaptchaGenerator(content, 150, 2);
     }
 
     @Override
@@ -78,39 +87,40 @@ public class CaptchaGenerator implements ImageGenerator {
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         // 填充渐变背景
-        GradientPaint gt = new GradientPaint(0, 0, bgColors[0], width, height, bgColors[1]);
-        g.setPaint(gt);
+        GradientPaint paint = new GradientPaint(0, 0, BG_COLORS[0], width, height, BG_COLORS[1]);
+        g.setPaint(paint);
         g.fillRect(0, 0, width, height);
 
         // 设定字体
-        g.setFont(new Font(Font.DIALOG, Font.CENTER_BASELINE, width / 6));
+        g.setFont(new Font(Font.DIALOG, Font.BOLD, width / content.length()));
         // 绘制验证码
         for (int i = 0; i < content.length(); i++) {
             // 计算旋转角度
             int degree = random.nextInt(28);
+            // 相邻的两个字符旋转方向相反，避免一边倒
             if (i % 2 == 0) degree = -degree;
             // 定义字符坐标
-            int x = i * (width / content.length()) + g.getFont().getSize() / 3;
+            int x = i * g.getFont().getSize() + width / content.length() / 4;
             int y = (int) (height / 1.4);
             // 旋转指定区域
             g.rotate(Math.toRadians(degree), x, y);
             // 设置字体颜色
-            g.setColor(fontColor);
+            g.setColor(FONT_COLOR);
             // 绘制字符
             g.drawString(content.charAt(i) + "", x, y);
             // 复位旋转角度
             g.rotate(-Math.toRadians(degree), x, y);
         }
         // 设置曲线颜色
-        g.setColor(curveColor);
+        g.setColor(CURVE_COLOR);
         // 设置曲线宽度
-        g.setStroke(new BasicStroke(height / 16));
+        g.setStroke(new BasicStroke(height / 16f));
         // 绘制曲线
-        for (int i = 0; i < 2; i++) {
-            int x = random.nextInt(width / content.length());
+        for (int i = 0; i < curveLength; i++) {
+            int x = random.nextInt(width / 2);
             QuadCurve2D.Float curve = new QuadCurve2D.Float(x, random.nextInt(height),
-                    width / 2, height / 2,
-                    x * random.nextInt(width / content.length()),
+                    width / 2f, height / 2f,
+                    x + random.nextInt(width),
                     random.nextInt(height));
             g.draw(curve);
         }
