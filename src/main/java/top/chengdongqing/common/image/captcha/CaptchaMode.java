@@ -1,11 +1,11 @@
 package top.chengdongqing.common.image.captcha;
 
 /**
- * 图片验证码类型
+ * 图片验证码模式
  *
  * @author Luyao
  */
-public enum CaptchaType {
+public enum CaptchaMode {
 
     /**
      * 数字验证码

@@ -1,5 +1,6 @@
 package top.chengdongqing.common.image.captcha;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Objects;
@@ -11,42 +12,42 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author Luyao
  */
+@AllArgsConstructor
 public class CaptchaRandom {
 
     // 验证码类型
-    private final CaptchaType captchaType;
+    private final CaptchaMode captchaMode;
     // 随机数长度
-    private final int randomLength;
+    private final int length;
 
     private static final char[] LETTERS = getLetters();
     private static final char[] NUMBERS = getNumbers();
     private static final char[] OPERATORS = {'+', '-', '*'};
     private final Random random = ThreadLocalRandom.current();
-
-    public CaptchaRandom(CaptchaType captchaType, int randomLength) {
-        this.captchaType = captchaType;
-        this.randomLength = randomLength;
+    
+    public static CaptchaRandom of(CaptchaMode mode) {
+        return new CaptchaRandom(mode, 6);
     }
 
     /**
-     * 获取随机数
+     * 生成随机数
      *
      * @return 随机数键值对实体
      */
-    public CaptchaEntity get() {
+    public CaptchaEntity generate() {
         char[] chars;
-        if (captchaType == CaptchaType.LETTER) {
+        if (captchaMode == CaptchaMode.LETTER) {
             chars = LETTERS;
-        } else if (captchaType == CaptchaType.NUMBER) {
+        } else if (captchaMode == CaptchaMode.NUMBER) {
             chars = NUMBERS;
-        } else if (captchaType == CaptchaType.NUMBER_LETTER) {
+        } else if (captchaMode == CaptchaMode.NUMBER_LETTER) {
             chars = ArrayUtils.addAll(LETTERS, NUMBERS);
         } else {
-            return getFormula();
+            return generateFormula();
         }
 
-        char[] randomChars = new char[randomLength];
-        for (int i = 0; i < randomLength; i++) {
+        char[] randomChars = new char[length];
+        for (int i = 0; i < length; i++) {
             int index = random.nextInt(chars.length);
             randomChars[i] = chars[index];
         }
@@ -55,11 +56,11 @@ public class CaptchaRandom {
     }
 
     /**
-     * 获取算术随机数
+     * 生成随机算术公式
      *
-     * @return 随机数
+     * @return 验证码实体
      */
-    private CaptchaEntity getFormula() {
+    private CaptchaEntity generateFormula() {
         String key, value;
 
         String a1 = NUMBERS[random.nextInt(NUMBERS.length)] + "";

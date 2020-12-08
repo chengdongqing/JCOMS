@@ -1,5 +1,7 @@
 package top.chengdongqing.common.image;
 
+import top.chengdongqing.common.renderer.ImageRenderer;
+
 /**
  * 图像生成器顶层接口
  *
@@ -17,5 +19,7 @@ public interface ImageGenerator {
     /**
      * 渲染到客户端
      */
-    void render();
+    default void render(){
+        ImageRenderer.ofPNG(generate(), false).render();
+    }
 }

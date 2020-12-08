@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.constant.media.ImageFormat;
 import top.chengdongqing.common.image.ImageGenerator;
 import top.chengdongqing.common.kit.Kv;
-import top.chengdongqing.common.renderer.ImageRenderer;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -66,13 +65,5 @@ public class QRCodeGenerator implements ImageGenerator {
             log.error("二维码生成异常", e);
             throw new QRCodeException("二维码生成失败");
         }
-    }
-
-    /**
-     * 渲染到客户端
-     */
-    @Override
-    public void render() {
-        ImageRenderer.ofPNG(generate(), false).render();
     }
 }
