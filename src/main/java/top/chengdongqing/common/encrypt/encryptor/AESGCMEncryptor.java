@@ -2,7 +2,7 @@ package top.chengdongqing.common.encrypt.encryptor;
 
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 import top.chengdongqing.common.encrypt.EncryptAlgorithm;
-import top.chengdongqing.common.encrypt.IEncryptor;
+import top.chengdongqing.common.encrypt.Encryptor;
 import top.chengdongqing.common.transformer.BytesToStr;
 
 import javax.crypto.Cipher;
@@ -16,13 +16,13 @@ import java.security.SecureRandom;
  *
  * @author Luyao
  */
-public class AESGCMEncryptor implements IEncryptor {
+public record AESGCMEncryptor(EncryptAlgorithm algorithm) implements Encryptor {
 
     private static final int NONCE_LENGTH_BIT = 12;
     private static final int TAG_LENGTH_BIT = 128;
 
     @Override
-    public BytesToStr encrypt(EncryptAlgorithm algorithm, byte[] data, String key, String associatedData) {
+    public BytesToStr encrypt(byte[] data, String key, String associatedData) {
         try {
             // 加密
             Cipher cipher = Cipher.getInstance(algorithm.getAlgorithm());
@@ -39,7 +39,7 @@ public class AESGCMEncryptor implements IEncryptor {
     }
 
     @Override
-    public BytesToStr decrypt(EncryptAlgorithm algorithm, byte[] data, String key, String associatedData) {
+    public BytesToStr decrypt(byte[] data, String key, String associatedData) {
         try {
             // 分割初始向量和密文
             byte[][] bytes = ByteUtils.split(data, NONCE_LENGTH_BIT);

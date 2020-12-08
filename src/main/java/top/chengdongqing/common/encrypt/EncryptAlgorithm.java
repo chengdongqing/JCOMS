@@ -24,5 +24,5 @@ public enum EncryptAlgorithm {
 
     private final String family;
     private final String algorithm;
-    private final Class<? extends IEncryptor> encryptor;
+    private final Class<? extends Encryptor> encryptor;
 }

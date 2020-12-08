@@ -3,7 +3,7 @@ package top.chengdongqing.common.encrypt.encryptor;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 import top.chengdongqing.common.encrypt.EncryptAlgorithm;
-import top.chengdongqing.common.encrypt.IEncryptor;
+import top.chengdongqing.common.encrypt.Encryptor;
 import top.chengdongqing.common.transformer.BytesToStr;
 
 import javax.crypto.Cipher;
@@ -20,7 +20,7 @@ import java.security.Security;
  *
  * @author Luyao
  */
-public class AESCBCEncryptor implements IEncryptor {
+public record AESCBCEncryptor(EncryptAlgorithm algorithm) implements Encryptor {
 
     private static final int IV_LENGTH_BIT = 16;
 
@@ -29,7 +29,7 @@ public class AESCBCEncryptor implements IEncryptor {
     }
 
     @Override
-    public BytesToStr encrypt(EncryptAlgorithm algorithm, byte[] data, String key, String password) {
+    public BytesToStr encrypt(byte[] data, String key, String password) {
         try {
             // 加密
             Cipher cipher = Cipher.getInstance(algorithm.getAlgorithm());
@@ -45,7 +45,7 @@ public class AESCBCEncryptor implements IEncryptor {
     }
 
     @Override
-    public BytesToStr decrypt(EncryptAlgorithm algorithm, byte[] data, String key, String password) {
+    public BytesToStr decrypt(byte[] data, String key, String password) {
         try {
             // 分割初始向量和密文
             byte[][] bytes = ByteUtils.split(data, IV_LENGTH_BIT);

@@ -2,7 +2,7 @@ package top.chengdongqing.common.encrypt.encryptor;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import top.chengdongqing.common.encrypt.EncryptAlgorithm;
-import top.chengdongqing.common.encrypt.IEncryptor;
+import top.chengdongqing.common.encrypt.Encryptor;
 import top.chengdongqing.common.transformer.BytesToStr;
 
 import javax.crypto.Cipher;
@@ -19,14 +19,14 @@ import java.security.Security;
  *
  * @author Luyao
  */
-public class AESPBEEncryptor implements IEncryptor {
+public record AESPBEEncryptor(EncryptAlgorithm algorithm) implements Encryptor {
 
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
 
     @Override
-    public BytesToStr encrypt(EncryptAlgorithm algorithm, byte[] data, String key, String password) {
+    public BytesToStr encrypt(byte[] data, String key, String password) {
         try {
             PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algorithm.getAlgorithm());
@@ -41,7 +41,7 @@ public class AESPBEEncryptor implements IEncryptor {
     }
 
     @Override
-    public BytesToStr decrypt(EncryptAlgorithm algorithm, byte[] data, String key, String password) {
+    public BytesToStr decrypt(byte[] data, String key, String password) {
         try {
             PBEKeySpec keySpec = new PBEKeySpec(password.toCharArray());
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algorithm.getAlgorithm());

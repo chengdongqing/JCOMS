@@ -1,7 +1,7 @@
 package top.chengdongqing.common.encrypt.encryptor;
 
 import top.chengdongqing.common.encrypt.EncryptAlgorithm;
-import top.chengdongqing.common.encrypt.IEncryptor;
+import top.chengdongqing.common.encrypt.Encryptor;
 import top.chengdongqing.common.transformer.BytesToStr;
 import top.chengdongqing.common.transformer.StrToBytes;
 
@@ -19,10 +19,10 @@ import java.security.spec.X509EncodedKeySpec;
  *
  * @author Luyao
  */
-public class RSAEncryptor implements IEncryptor {
+public record RSAEncryptor(EncryptAlgorithm algorithm) implements Encryptor {
 
     @Override
-    public BytesToStr encrypt(EncryptAlgorithm algorithm, byte[] data, String key, String password) {
+    public BytesToStr encrypt(byte[] data, String key, String password) {
         try {
             Cipher cipher = Cipher.getInstance(algorithm.getAlgorithm());
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamily());
@@ -36,7 +36,7 @@ public class RSAEncryptor implements IEncryptor {
     }
 
     @Override
-    public BytesToStr decrypt(EncryptAlgorithm algorithm, byte[] data, String key, String password) {
+    public BytesToStr decrypt(byte[] data, String key, String password) {
         try {
             Cipher cipher = Cipher.getInstance(algorithm.getAlgorithm());
             KeyFactory keyFactory = KeyFactory.getInstance(algorithm.getFamily());

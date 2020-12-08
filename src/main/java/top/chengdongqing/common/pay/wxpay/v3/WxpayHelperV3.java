@@ -166,9 +166,9 @@ public class WxpayHelperV3 {
         byte[] iv = encryptedResource.getNonce().getBytes();
         String associatedData = encryptedResource.getAssociatedData();
         // 解密数据
-        String resourceJson = Encryptor.decrypt(EncryptAlgorithm.AES_GCM_NoPadding,
-                ByteUtils.concatenate(iv, ciphertext),
-                secretKey, associatedData)
+        String resourceJson = Encryptor.newInstance(EncryptAlgorithm.AES_GCM_NoPadding)
+                .decrypt(ByteUtils.concatenate(iv, ciphertext),
+                        secretKey, associatedData)
                 .toText();
         return JsonKit.parseObject(resourceJson, clazz);
     }
