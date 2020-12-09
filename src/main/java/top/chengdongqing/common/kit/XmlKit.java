@@ -1,6 +1,5 @@
 package top.chengdongqing.common.kit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -33,7 +32,7 @@ public class XmlKit {
      * @return map键值对
      */
     public static Kv<String, String> parseXml(String xml) {
-        if (StringUtils.isBlank(xml)) throw new IllegalArgumentException("The xml can not be blank");
+        if (StrKit.isBlank(xml)) throw new IllegalArgumentException("The xml can not be blank");
 
         Kv<String, String> params = new Kv<>();
         try (InputStream is = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))) {
@@ -65,7 +64,7 @@ public class XmlKit {
             Document document = newDocumentBuilder().newDocument();
             Element root = document.createElement("xml");
             map.forEach((key, value) -> {
-                if (StringUtils.isNotBlank(value)) {
+                if (StrKit.isNotBlank(value)) {
                     Element element = document.createElement(key);
                     element.appendChild(document.createTextNode(value));
                     root.appendChild(element);

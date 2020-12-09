@@ -1,7 +1,5 @@
 package top.chengdongqing.common.image.captcha;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -20,6 +18,14 @@ public class CaptchaRandom {
 
     private static final char[] LETTERS = letters();
     private static final char[] NUMBERS = numbers();
+    private static final char[] LETTERS_NUMBERS;
+
+    static {
+        LETTERS_NUMBERS = new char[LETTERS.length + NUMBERS.length];
+        System.arraycopy(LETTERS, 0, LETTERS_NUMBERS, 0, LETTERS.length);
+        System.arraycopy(NUMBERS, 0, LETTERS_NUMBERS, LETTERS.length, NUMBERS.length);
+    }
+
     private static final char[] OPERATORS = {'+', '-', '*'};
     private final Random random = ThreadLocalRandom.current();
 
@@ -42,16 +48,13 @@ public class CaptchaRandom {
      * @return 随机数键值对实体
      */
     public CaptchaEntity generate() {
-        char[] chars;
-        if (captchaMode == CaptchaMode.LETTER) {
-            chars = LETTERS;
-        } else if (captchaMode == CaptchaMode.NUMBER) {
-            chars = NUMBERS;
-        } else if (captchaMode == CaptchaMode.NUMBER_LETTER) {
-            chars = ArrayUtils.addAll(LETTERS, NUMBERS);
-        } else {
-            return generateFormula();
-        }
+        if (captchaMode == CaptchaMode.FORMULA) return generateFormula();
+        char[] chars = switch (captchaMode) {
+            case LETTER -> LETTERS;
+            case NUMBER -> NUMBERS;
+            case NUMBER_LETTER -> LETTERS_NUMBERS;
+            default -> null;
+        };
 
         char[] randomChars = new char[length];
         for (int i = 0; i < length; i++) {

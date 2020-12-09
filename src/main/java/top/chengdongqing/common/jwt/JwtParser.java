@@ -1,8 +1,8 @@
 package top.chengdongqing.common.jwt;
 
-import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.kit.JsonKit;
 import top.chengdongqing.common.kit.Kv;
+import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.transformer.BytesToStr;
 import top.chengdongqing.common.transformer.StrToBytes;
 
@@ -32,7 +32,7 @@ public class JwtParser {
      * @return token的每部分
      */
     private String[] parts(String token) {
-        if (StringUtils.isBlank(token)) throw new IllegalArgumentException();
+        if (StrKit.isBlank(token)) throw new IllegalArgumentException();
         String[] parts = token.split("\\.");
         if (parts.length != 3) throw new IllegalArgumentException();
         return parts;

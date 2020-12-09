@@ -1,7 +1,6 @@
 package top.chengdongqing.common.pay.wxpay.v3;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -124,7 +123,7 @@ public class WxpayHelperV3 {
      * @return 待签名字符串
      */
     public String buildContent(String... params) {
-        if (StringUtils.isAnyBlank(params)) {
+        if (StrKit.isAnyBlank(params)) {
             throw new IllegalArgumentException("The params can not be null or empty.");
         }
         // 换行符

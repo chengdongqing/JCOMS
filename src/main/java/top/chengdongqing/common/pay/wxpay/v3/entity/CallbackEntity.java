@@ -3,8 +3,8 @@ package top.chengdongqing.common.pay.wxpay.v3.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.kit.HttpKit;
+import top.chengdongqing.common.kit.StrKit;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,7 +59,7 @@ public class CallbackEntity {
         String body = HttpKit.readData(request);
 
         // 判断是否为空
-        if (StringUtils.isAnyBlank(timestamp, nonceStr, serialNo, sign, body)) {
+        if (StrKit.isAnyBlank(timestamp, nonceStr, serialNo, sign, body)) {
             throw new IllegalArgumentException("wx callback args cannot be blank");
         }
 

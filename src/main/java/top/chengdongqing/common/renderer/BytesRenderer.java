@@ -1,6 +1,6 @@
 package top.chengdongqing.common.renderer;
 
-import org.apache.commons.lang3.StringUtils;
+import top.chengdongqing.common.kit.StrKit;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -19,7 +19,7 @@ public class BytesRenderer extends Renderer {
     private final String filename;
 
     public BytesRenderer(byte[] data, String filename) {
-        if (StringUtils.isBlank(filename)) {
+        if (StrKit.isBlank(filename)) {
             throw new IllegalArgumentException("The filename cannot be blank.");
         }
 

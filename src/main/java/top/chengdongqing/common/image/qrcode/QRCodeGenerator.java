@@ -7,10 +7,10 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.constant.media.ImageFormat;
 import top.chengdongqing.common.image.ImageGenerator;
 import top.chengdongqing.common.kit.Kv;
+import top.chengdongqing.common.kit.StrKit;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +33,7 @@ public class QRCodeGenerator implements ImageGenerator {
     private final int size;
 
     public QRCodeGenerator(String content, int size) {
-        if (StringUtils.isBlank(content)) throw new IllegalArgumentException("qrcode content cannot be blank");
+        if (StrKit.isBlank(content)) throw new IllegalArgumentException("qrcode content cannot be blank");
         if (size < 10 || size > 1000) throw new IllegalArgumentException("qrcode size is wrong");
 
         this.content = content;

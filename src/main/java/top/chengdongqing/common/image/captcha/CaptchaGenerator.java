@@ -1,8 +1,8 @@
 package top.chengdongqing.common.image.captcha;
 
-import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.constant.media.ImageFormat;
 import top.chengdongqing.common.image.ImageGenerator;
+import top.chengdongqing.common.kit.StrKit;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -40,7 +40,7 @@ public class CaptchaGenerator implements ImageGenerator {
     };
 
     public CaptchaGenerator(String content, int width, int curveLength) {
-        if (StringUtils.isBlank(content)) {
+        if (StrKit.isBlank(content)) {
             throw new IllegalArgumentException("The captcha content cannot be blank");
         }
         if (width < 50) {

@@ -1,7 +1,7 @@
 package top.chengdongqing.common.sender.email;
 
-import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.constant.Regexp;
+import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.sender.ISender;
 
 import javax.mail.SendFailedException;
@@ -22,7 +22,7 @@ public abstract class EmailSender implements ISender<EmailEntity> {
 
     @Override
     public void send(EmailEntity entity) throws SendFailedException {
-        if (StringUtils.isAnyBlank(entity.getTo(), entity.getTitle(), entity.getContent())) {
+        if (StrKit.isAnyBlank(entity.getTo(), entity.getTitle(), entity.getContent())) {
             throw new IllegalArgumentException("The args can not be blank.");
         }
         if (!PATTERN.matcher(entity.getTo()).matches()) {

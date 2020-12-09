@@ -2,11 +2,11 @@ package top.chengdongqing.common.excel;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import top.chengdongqing.common.kit.Kv;
+import top.chengdongqing.common.kit.StrKit;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -144,7 +144,7 @@ public class POIExcelProcessor implements ExcelProcessor {
      * @return workbook
      */
     private Workbook getWorkbook(String filename, InputStream stream) throws Exception {
-        if (StringUtils.isBlank(filename) || !filename.contains(".xls")) {
+        if (StrKit.isBlank(filename) || !filename.contains(".xls")) {
             throw new IllegalArgumentException("The file name is wrong.");
         }
         return filename.endsWith(".xlsx") ? new XSSFWorkbook(stream) : new HSSFWorkbook(stream);

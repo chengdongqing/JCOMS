@@ -1,6 +1,5 @@
 package top.chengdongqing.common.kit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
 import top.chengdongqing.common.string.StrEncodingType;
 
@@ -126,7 +125,7 @@ public class HttpKit {
         try {
             // 构建HTTP客户端
             HttpClient.Builder clientBuilder = HttpClient.newBuilder();
-            if (certStream != null && StringUtils.isNotBlank(certPwd)) {
+            if (certStream != null && StrKit.isNotBlank(certPwd)) {
                 clientBuilder.sslContext(buildSSLContext(certStream, certPwd));
             }
             HttpClient client = clientBuilder.build();

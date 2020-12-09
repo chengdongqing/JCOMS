@@ -1,11 +1,11 @@
 package top.chengdongqing.common.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+import top.chengdongqing.common.kit.StrKit;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,7 +66,7 @@ public class EventManager implements ApplicationContextAware {
      * @param async    是否异步
      */
     public static void addListener(String name, EventListener listener, boolean async) {
-        if (StringUtils.isBlank(name) || listener == null) {
+        if (StrKit.isBlank(name) || listener == null) {
             throw new IllegalArgumentException("The args are wrong!");
         }
 

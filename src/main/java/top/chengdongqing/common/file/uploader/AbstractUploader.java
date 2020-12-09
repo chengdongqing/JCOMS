@@ -1,7 +1,6 @@
 package top.chengdongqing.common.file.uploader;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import top.chengdongqing.common.constant.ErrorMsg;
@@ -111,7 +110,7 @@ public abstract class AbstractUploader implements FileManager {
      * @return 文件格式
      */
     private String getFormat(String fileName) {
-        if (StringUtils.isBlank(fileName) || !fileName.contains(".")) {
+        if (StrKit.isBlank(fileName) || !fileName.contains(".")) {
             throw new IllegalArgumentException("The file name is wrong.");
         }
         return fileName.substring(fileName.lastIndexOf(".") + 1);

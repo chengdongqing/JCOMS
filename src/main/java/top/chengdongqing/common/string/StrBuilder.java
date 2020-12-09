@@ -1,7 +1,7 @@
 package top.chengdongqing.common.string;
 
-import org.apache.commons.lang3.StringUtils;
 import top.chengdongqing.common.kit.Kv;
+import top.chengdongqing.common.kit.StrKit;
 
 import java.util.TreeMap;
 import java.util.function.BiFunction;
@@ -37,7 +37,7 @@ public class StrBuilder extends StrEncoder {
     public static String buildQueryStr(Kv<String, String> params, StrEncodingType type, BiFunction<String, String, Boolean> joinLogic) {
         StringBuilder str = new StringBuilder();
         new TreeMap<>(params).forEach((k, v) -> {
-            if (StringUtils.isNoneBlank(k, v) && joinLogic.apply(k, v)) {
+            if (StrKit.isNoneBlank(k, v) && joinLogic.apply(k, v)) {
                 str.append(k).append("=").append(type == null ? v : encode(v, type)).append("&");
             }
         });

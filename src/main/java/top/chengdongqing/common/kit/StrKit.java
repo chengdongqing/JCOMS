@@ -69,6 +69,10 @@ public class StrKit extends StrBuilder {
         return true;
     }
 
+    public static boolean isNotBlank(CharSequence cs) {
+        return !isBlank(cs);
+    }
+
     /**
      * Checks if any of the CharSequences {@code isBlank}
      *
