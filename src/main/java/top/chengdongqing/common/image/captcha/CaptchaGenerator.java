@@ -120,8 +120,7 @@ public class CaptchaGenerator implements ImageGenerator {
             int x = random.nextInt(width / 2);
             QuadCurve2D.Float curve = new QuadCurve2D.Float(x, random.nextInt(height),
                     width / 2f, height / 2f,
-                    x + random.nextInt(width),
-                    random.nextInt(height));
+                    x + random.nextInt(width), random.nextInt(height));
             g.draw(curve);
         }
         // 销毁图像

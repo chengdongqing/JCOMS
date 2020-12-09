@@ -5,17 +5,17 @@ import top.chengdongqing.common.transformer.BytesToStr;
 import java.util.Objects;
 
 /**
- * 密钥对
+ * Key pair model
  *
  * @author Luyao
  */
 public record SecretKeyPair(BytesToStr privateKey, BytesToStr publicKey) {
 
     /**
-     * 校验参数是否为空
+     * Checks the key pair non null
      *
-     * @param privateKey 私钥
-     * @param publicKey  公钥
+     * @param privateKey the private key
+     * @param publicKey  the public key
      */
     public SecretKeyPair {
         Objects.requireNonNull(privateKey);

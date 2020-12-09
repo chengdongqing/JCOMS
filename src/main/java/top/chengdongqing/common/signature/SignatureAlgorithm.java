@@ -7,7 +7,7 @@ import top.chengdongqing.common.signature.signer.MacSigner;
 import top.chengdongqing.common.signature.signer.MessageDigestSigner;
 
 /**
- * 签名算法枚举
+ * The enums of signature algorithm
  *
  * @author Luyao
  */

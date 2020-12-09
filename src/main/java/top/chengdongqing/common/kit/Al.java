@@ -3,39 +3,39 @@ package top.chengdongqing.common.kit;
 import java.util.ArrayList;
 
 /**
- * 链式ArrayList
+ * A min {@link ArrayList}
  *
  * @author Luyao
  */
 public class Al<E> extends ArrayList<E> {
 
     /**
-     * 创建实例
+     * Creates a instance of current class, and add the first element
      *
-     * @param element 元素
-     * @return Al实例
+     * @param element the element to put
+     * @return a new instance with the element
      */
     public static Al<Object> ofAny(Object element) {
         return new Al<>().append(element);
     }
 
     /**
-     * 创建实例
-     * 自动根据第一个元素的类型决定整体的类型
+     * <p>Creates a new instance</p>
+     * <p>Init the type of current instance by the first element</p>
      *
-     * @param element 元素
-     * @param <E>     元素类型
-     * @return Al实例
+     * @param element the element to put
+     * @param <E>     the type of current instance
+     * @return the typed {@link Al} width a element
      */
     public static <E> Al<E> of(E element) {
         return new Al<E>().append(element);
     }
 
     /**
-     * 追加元素
+     * Appends a element to current instance
      *
-     * @param element 元素
-     * @return 当前实例
+     * @param element the element to put
+     * @return current instance
      */
     public Al<E> append(E element) {
         add(element);
@@ -43,21 +43,21 @@ public class Al<E> extends ArrayList<E> {
     }
 
     /**
-     * 获取元素
-     * 自动根据接收该元素的变量定义的类型对该元素进行强转
+     * <p>Gets a item from current instance by index</p>
+     * <p>Will auto convert the type by the var to get value</p>
      *
-     * @param index 索引
-     * @param <T>   元素类型
-     * @return 元素
+     * @param index the index to get item
+     * @param <T>   the type to convert
+     * @return the item of the index
      */
     public <T> T getAs(int index) {
         return (T) get(index);
     }
 
     /**
-     * 将当前实例转为JSON字符串
+     * Transforms current instance to JSON string
      *
-     * @return 当前实例JSON
+     * @return the transformed JSON string of this instance
      */
     public String toJson() {
         return JsonKit.toJson(this);

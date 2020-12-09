@@ -9,27 +9,23 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * 密钥生成器
+ * The secret key generator
  *
  * @author Luyao
  */
 public class SecretKeyGenerator {
 
     /**
-     * 生成密钥对
+     * Generates key pair by the signature algorithm
      *
-     * @param algorithm 签名算法
-     * @return 密钥对
+     * @param algorithm the signature algorithm
+     * @return the generated key pair
      */
     public static SecretKeyPair generateKeyPair(SignatureAlgorithm algorithm) {
         try {
-            // 获取指定算法的密钥对生成器
             KeyPairGenerator generator = KeyPairGenerator.getInstance(algorithm.getFamily());
-            // 如果是RSA1则指定生成的密钥长度，否则用默认的长度
             if (algorithm == SignatureAlgorithm.RSA_SHA1) generator.initialize(1024);
-            // 生成密钥对
             KeyPair keyPair = generator.generateKeyPair();
-            // 将私钥和公钥通过Base64编码
             BytesToStr privateKey = BytesToStr.of(keyPair.getPrivate().getEncoded());
             BytesToStr publicKey = BytesToStr.of(keyPair.getPublic().getEncoded());
             return new SecretKeyPair(privateKey, publicKey);
@@ -39,10 +35,10 @@ public class SecretKeyGenerator {
     }
 
     /**
-     * 生成密钥
+     * Generates key by the signature algorithm
      *
-     * @param algorithm 签名算法
-     * @return 密钥
+     * @param algorithm the signature algorithm
+     * @return the generated key
      */
     public static BytesToStr generateKey(SignatureAlgorithm algorithm) {
         try {

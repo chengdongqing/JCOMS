@@ -43,7 +43,7 @@ public class VerificationCodeSender {
      * 发送短信验证码
      */
     public void send(String to, SmsTemplate template) throws SendFailedException {
-        String code = StrKit.generate6Digits();
+        String code = StrKit.randomNumbers(6);
         // 生成短信内容
         String content = Kv.of("code", code).toJson();
         senderFactory.getSmsSender().send(SmsEntity.builder()
@@ -59,7 +59,7 @@ public class VerificationCodeSender {
      * 发送邮件验证码
      */
     public void send(String to, EmailTemplate template) throws SendFailedException {
-        String code = StrKit.generate6Digits();
+        String code = StrKit.randomNumbers(6);
         // 生成邮件内容
         String content = template.getContent().formatted(code);
         senderFactory.getEmailSender().send(EmailEntity.builder()

@@ -7,52 +7,32 @@ import java.util.TreeMap;
 import java.util.function.BiFunction;
 
 /**
- * 字符串构建器
+ * A string build utils
  *
  * @author Luyao
  */
-public abstract class StrBuilder extends StrEncoder {
+public class StrBuilder extends StrEncoder {
 
-    /**
-     * 构建查询字符串
-     *
-     * @param params 键值对
-     * @return 查询字符串
-     */
     public static String buildQueryStr(Kv<String, String> params) {
         return buildQueryStr(params, (StrEncodingType) null);
     }
 
-    /**
-     * 构建查询字符串
-     *
-     * @param params 键值对
-     * @param type   编码类型
-     * @return 查询字符串
-     */
     public static String buildQueryStr(Kv<String, String> params, StrEncodingType type) {
         return buildQueryStr(params, type, (k, v) -> true);
     }
 
-    /**
-     * 构建查询字符串
-     *
-     * @param params    键值对
-     * @param joinLogic 是否加入到查询字符串的判断逻辑
-     * @return 查询字符串
-     */
     public static String buildQueryStr(Kv<String, String> params, BiFunction<String, String, Boolean> joinLogic) {
         return buildQueryStr(params, null, joinLogic);
     }
 
 
     /**
-     * 构建键值对形式的查询字符串
+     * Builds key-value URL query string
      *
-     * @param params    键值对
-     * @param type      编码类型
-     * @param joinLogic 是否加入到查询字符串的判断逻辑
-     * @return 查询字符串
+     * @param params    the key-value mappings to build
+     * @param type      the encoding type for value of key-value
+     * @param joinLogic the logic for join to the query string
+     * @return the built URL query string
      */
     public static String buildQueryStr(Kv<String, String> params, StrEncodingType type, BiFunction<String, String, Boolean> joinLogic) {
         StringBuilder str = new StringBuilder();

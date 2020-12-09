@@ -1,31 +1,31 @@
 package top.chengdongqing.common.string;
 
 /**
- * 字符串编解码器
+ * A string encode and decode utils
  *
  * @author Luyao
  */
-public abstract class StrEncoder {
+public class StrEncoder {
 
     /**
-     * 字符串编码
+     * Encode for string
      *
-     * @param value 待编码的字符串
-     * @param type  编码类型
-     * @return 编码后的字符串
+     * @param value the string to encode
+     * @param type  the encoding type for the string
+     * @return the encoded string by the encoding type
      */
     public static String encode(String value, StrEncodingType type) {
-        return type.getEncodeLogic().apply(value);
+        return type.getEncodingLogic().apply(value);
     }
 
     /**
-     * 字符串解码
+     * Decode for string
      *
-     * @param value 待解码的字符串
-     * @param type  编码类型
-     * @return 解码后的字符串
+     * @param value the string to decode
+     * @param type  the decoding type for the string
+     * @return the decoded string by the decoding type
      */
     public static String decode(String value, StrEncodingType type) {
-        return type.getDecodeLogic().apply(value);
+        return type.getDecodingLogic().apply(value);
     }
 }

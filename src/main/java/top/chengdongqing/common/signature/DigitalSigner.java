@@ -1,10 +1,12 @@
 package top.chengdongqing.common.signature;
 
-import top.chengdongqing.common.signature.signer.*;
+import top.chengdongqing.common.signature.signer.AsymmetricSigner;
+import top.chengdongqing.common.signature.signer.MacSigner;
+import top.chengdongqing.common.signature.signer.MessageDigestSigner;
 import top.chengdongqing.common.transformer.BytesToStr;
 
 /**
- * 数字签名器
+ * The Digital signer
  *
  * @author Luyao
  * @see AsymmetricSigner
@@ -14,10 +16,10 @@ import top.chengdongqing.common.transformer.BytesToStr;
 public interface DigitalSigner {
 
     /**
-     * 获取数字签名器实例
+     * Creates a new signer instance by the signature algorithm
      *
-     * @param algorithm 签名算法
-     * @return 数字签名器
+     * @param algorithm the signature algorithm
+     * @return the signer instance
      */
     static DigitalSigner newInstance(SignatureAlgorithm algorithm) {
         try {
@@ -28,21 +30,21 @@ public interface DigitalSigner {
     }
 
     /**
-     * 执行签名
+     * Executes signature
      *
-     * @param content 签名的内容
-     * @param key     签名密钥
-     * @return 数字签名
+     * @param content the content to signature
+     * @param key     the key for signature
+     * @return the digital signature of the content
      */
     BytesToStr signature(String content, byte[] key);
 
     /**
-     * 验证签名
+     * Verifies signature
      *
-     * @param content 签名的内容
-     * @param sign    要验证的签名
-     * @param key     验签密钥
-     * @return 是否有效
+     * @param content the signed content of the {@code sign}
+     * @param sign    the signature to verify
+     * @param key     the key for verify
+     * @return {@code true} if the {@code sign} is true
      */
     boolean verify(String content, byte[] sign, byte[] key);
 }

@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
 /**
- * 字符串编码类型
+ * The enums of string encoding and decoding type
  *
  * @author Luyao
  */
@@ -18,24 +18,20 @@ import java.util.function.Function;
 public enum StrEncodingType {
 
     /**
-     * 地址栏参数规则编解码
+     * The URL encoding and decoding rule
      */
-    URL(value -> URLEncoder.encode(value, StandardCharsets.UTF_8),
-            value -> URLDecoder.decode(value, StandardCharsets.UTF_8)),
+    URL(value -> URLEncoder.encode(value, StandardCharsets.UTF_8), value -> URLDecoder.decode(value, StandardCharsets.UTF_8)),
     /**
-     * POP规则编解码
+     * The POP encoding and decoding rule
      */
-    POP(value -> URL.getEncodeLogic().apply(value).replace("+", "%20")
-            .replace("*", "%2A").replace("%7E", "~"),
-            value -> URL.getDecodeLogic().apply(value).replace("%20", "+")
-                    .replace("%2A", "*").replace("%7E", "~"));
+    POP(value -> URL.getEncodingLogic().apply(value).replace("+", "%20").replace("*", "%2A").replace("%7E", "~"), value -> URL.getDecodingLogic().apply(value).replace("%20", "+").replace("%2A", "*").replace("%7E", "~"));
 
     /**
-     * 编码逻辑
+     * The encoding logic
      */
-    private final Function<String, String> encodeLogic;
+    private final Function<String, String> encodingLogic;
     /**
-     * 解码逻辑
+     * The decoding logic
      */
-    private final Function<String, String> decodeLogic;
+    private final Function<String, String> decodingLogic;
 }

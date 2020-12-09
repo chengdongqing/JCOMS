@@ -18,8 +18,8 @@ public class CaptchaRandom {
     // 随机数长度
     private final int length;
 
-    private static final char[] LETTERS = getLetters();
-    private static final char[] NUMBERS = getNumbers();
+    private static final char[] LETTERS = letters();
+    private static final char[] NUMBERS = numbers();
     private static final char[] OPERATORS = {'+', '-', '*'};
     private final Random random = ThreadLocalRandom.current();
 
@@ -96,11 +96,11 @@ public class CaptchaRandom {
     }
 
     /**
-     * 获取所有数字
+     * 构建数字列表
      *
      * @return 数字列表
      */
-    private static char[] getNumbers() {
+    private static char[] numbers() {
         char[] numbers = new char[10];
         for (int i = 0; i < numbers.length; i++) {
             numbers[i] = (char) (48 + i);
@@ -109,11 +109,11 @@ public class CaptchaRandom {
     }
 
     /**
-     * 获取所有字母
+     * 构建字母列表
      *
      * @return 字母列表
      */
-    private static char[] getLetters() {
+    private static char[] letters() {
         char[] letters = new char[26];
         for (int i = 0; i < letters.length; i++) {
             letters[i] = Character.toUpperCase((char) (97 + i));
@@ -123,17 +123,7 @@ public class CaptchaRandom {
 
     /**
      * 图片验证码实体
-     *
-     * @author Luyao
      */
-    public static record CaptchaEntity(
-            /**
-             * 图片验证码内容
-             */
-            String key,
-            /**
-             * 验证码对应的值
-             */
-            String value) {
+    public static record CaptchaEntity(String key, String value) {
     }
 }
