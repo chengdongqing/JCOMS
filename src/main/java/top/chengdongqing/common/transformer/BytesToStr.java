@@ -37,9 +37,9 @@ public record BytesToStr(byte[] bytes) {
      * 填充MD5的长度到32
      *
      * @param md5 原始MD5
-     * @return 固定长度的MD5值
+     * @return 标准格式的MD5值
      */
-    public String fillMD5(String md5) {
+    private String fillMD5(String md5) {
         return md5.length() == 32 ? md5 : fillMD5("0" + md5);
     }
 

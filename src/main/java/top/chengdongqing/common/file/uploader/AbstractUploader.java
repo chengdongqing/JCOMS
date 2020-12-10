@@ -12,6 +12,8 @@ import top.chengdongqing.common.file.manager.LocalFileManager;
 import top.chengdongqing.common.file.manager.MongoFileManager;
 import top.chengdongqing.common.file.manager.OSSFileManager;
 import top.chengdongqing.common.kit.StrKit;
+import top.chengdongqing.common.signature.SignatureAlgorithm;
+import top.chengdongqing.common.signature.signer.MessageDigestSigner;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,13 +40,12 @@ public abstract class AbstractUploader implements FileManager {
         String id = StrKit.getRandomUUID();
         // 完整键名
         String key = type.getPathname().concat("/").concat(id);
-        // 构建元数据
-        FileMetadata metadata = buildMetadata(file, key, format);
 
-        // 执行上传
         try (InputStream fileStream = file.getInputStream()) {
+            // 保存文件
             upload(fileStream, key);
-            return metadata;
+            // 构建元数据
+            return buildMetadata(file, key, format);
         } catch (IOException e) {
             log.error("文件上传异常", e);
             throw new FileException("文件读取错误");
@@ -69,13 +70,14 @@ public abstract class AbstractUploader implements FileManager {
      * @param format 文件格式
      * @return 文件元数据
      */
-    private FileMetadata buildMetadata(MultipartFile file, String key, String format) {
+    private FileMetadata buildMetadata(MultipartFile file, String key, String format) throws IOException {
         return FileMetadata.builder()
-                .id(key)
+                .fileKey(key)
                 .format(format)
                 .length(file.getSize())
                 .uploadTime(LocalDateTime.now())
                 .filename(file.getOriginalFilename())
+                .md5(MessageDigestSigner.signature(SignatureAlgorithm.SHA256, file.getBytes()).toHex())
                 .build();
     }
 
@@ -91,7 +93,7 @@ public abstract class AbstractUploader implements FileManager {
         if (file.isEmpty()) throw new FileException("文件内容为空");
 
         // 检查文件格式
-        String format = getFormat(file.getOriginalFilename());
+        String format = format(file.getOriginalFilename());
         if (Arrays.stream(formats).noneMatch(item -> item.equals(format))) {
             throw new FileException("仅支持%s格式".formatted(String.join("、", formats)));
         }
@@ -109,7 +111,7 @@ public abstract class AbstractUploader implements FileManager {
      * @param fileName 文件名
      * @return 文件格式
      */
-    private String getFormat(String fileName) {
+    private String format(String fileName) {
         if (StrKit.isBlank(fileName) || !fileName.contains(".")) {
             throw new IllegalArgumentException("The file name is wrong.");
         }

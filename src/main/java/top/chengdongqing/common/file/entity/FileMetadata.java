@@ -17,13 +17,17 @@ import java.time.LocalDateTime;
 public class FileMetadata {
 
     /**
-     * 文件编号
+     * 文件键名
      */
-    private String id;
+    private String fileKey;
     /**
      * 原始文件名
      */
     private String filename;
+    /**
+     * 文件哈希值
+     */
+    private String md5;
     /**
      * 文件大小
      */

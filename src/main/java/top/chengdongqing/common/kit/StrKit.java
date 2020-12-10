@@ -97,7 +97,7 @@ public class StrKit extends StrBuilder {
      * @return {@code true} if no any CharSequence {@code isBlank}
      */
     public static boolean isNoneBlank(CharSequence... css) {
-        return isAnyBlank(css);
+        return !isAnyBlank(css);
     }
 
     /**

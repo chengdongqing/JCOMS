@@ -35,6 +35,10 @@ public class StrBuilder extends StrEncoder {
      * @return the built URL query string
      */
     public static String buildQueryStr(Kv<String, String> params, StrEncodingType type, BiFunction<String, String, Boolean> joinLogic) {
+        if (params == null || params.isEmpty()) {
+            throw new IllegalArgumentException("The params must not blank");
+        }
+
         StringBuilder str = new StringBuilder();
         new TreeMap<>(params).forEach((k, v) -> {
             if (StrKit.isNoneBlank(k, v) && joinLogic.apply(k, v)) {
