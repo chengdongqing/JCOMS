@@ -77,7 +77,7 @@ public abstract class AbstractUploader implements FileManager {
                 .length(file.getSize())
                 .uploadTime(LocalDateTime.now())
                 .filename(file.getOriginalFilename())
-                .md5(MessageDigestSigner.signature(SignatureAlgorithm.SHA256, file.getBytes()).toHex())
+                .hash(MessageDigestSigner.signature(SignatureAlgorithm.SHA256, file.getBytes()).toHex())
                 .build();
     }
 
