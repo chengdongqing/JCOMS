@@ -131,7 +131,7 @@ public class Alipay extends ApplicationObjectSupport implements IPayment<Map<Str
                 .orderNo(params.get("out_trade_no"))
                 .paymentNo(params.get("trade_no"))
                 .paymentAmount(new BigDecimal(params.get("total_amount")))
-                .paymentTime(helper.convertTime(params.get("gmt_payment")))
+                .paymentTime(AlipayHelper.convertTime(params.get("gmt_payment")))
                 .build();
         // 返回回调结果
         return Ret.ok(payResEntity, AlipayStatus.CALLBACK_CODE);

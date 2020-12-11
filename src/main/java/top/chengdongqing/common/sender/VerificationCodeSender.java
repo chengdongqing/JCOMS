@@ -3,7 +3,6 @@ package top.chengdongqing.common.sender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.cache.CacheKeys;
 import top.chengdongqing.common.cache.CacheTemplate;
@@ -25,7 +24,6 @@ import java.util.Objects;
  */
 @Slf4j
 @Component
-@RefreshScope
 public class VerificationCodeSender {
 
     @Autowired

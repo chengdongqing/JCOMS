@@ -21,7 +21,7 @@ public class CaptchaGenerator implements ImageGenerator {
 
     // 验证码内容
     private final String content;
-    // 验证码宽
+    // 验证码宽、高
     private final int width, height;
     // 干扰线数量
     private final int curveLength;

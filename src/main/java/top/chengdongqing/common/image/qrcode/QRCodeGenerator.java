@@ -21,23 +21,15 @@ import java.nio.charset.StandardCharsets;
  * @author Luyao
  */
 @Slf4j
-public class QRCodeGenerator implements ImageGenerator {
+public record QRCodeGenerator(String content, int size) implements ImageGenerator {
 
-    /**
-     * 二维码内容
-     */
-    private final String content;
-    /**
-     * 图片大小
-     */
-    private final int size;
-
-    public QRCodeGenerator(String content, int size) {
-        if (StrKit.isBlank(content)) throw new IllegalArgumentException("qrcode content cannot be blank");
-        if (size < 10 || size > 1000) throw new IllegalArgumentException("qrcode size is wrong");
-
-        this.content = content;
-        this.size = size;
+    public QRCodeGenerator {
+        if (StrKit.isBlank(content)) {
+            throw new IllegalArgumentException("qrcode content cannot be blank");
+        }
+        if (size < 10 || size > 1000) {
+            throw new IllegalArgumentException("qrcode size is wrong");
+        }
     }
 
     public static QRCodeGenerator of(String content) {

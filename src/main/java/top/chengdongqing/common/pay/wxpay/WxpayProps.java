@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @Component
-@RefreshScope
 @ConfigurationProperties("pay.wx")
 public class WxpayProps {
 
@@ -37,7 +35,6 @@ public class WxpayProps {
     @Getter
     @Setter
     @Component
-    @RefreshScope
     @ConfigurationProperties("pay.wx.app-id")
     public static class AppId {
 

@@ -13,11 +13,9 @@ import top.chengdongqing.common.transformer.StrToBytes;
  */
 public class JwtParser {
 
-    private final String token;
     private final String[] parts;
 
     public JwtParser(String token) {
-        this.token = token;
         this.parts = parts(token);
     }
 

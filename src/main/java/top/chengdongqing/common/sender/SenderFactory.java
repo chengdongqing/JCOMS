@@ -1,7 +1,6 @@
 package top.chengdongqing.common.sender;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.sender.email.EmailSender;
@@ -15,7 +14,6 @@ import java.util.Objects;
  * @author Luyao
  */
 @Component
-@RefreshScope
 public class SenderFactory extends ApplicationObjectSupport {
 
     /**

@@ -15,7 +15,7 @@ public class PathVariableKit {
     /**
      * 获取路径变量
      *
-     * @PathVariable修饰的变量值不能包含斜杠 此方法可获取包含斜杠的值
+     * {@code @PathVariable}修饰的变量值不能包含斜杠 此方法可获取包含斜杠的值
      * 适用于如文件路径类的接口使用
      * 如访问文件：/file/user/avatar/123.png
      * /file为接口名，后面的为动态值
