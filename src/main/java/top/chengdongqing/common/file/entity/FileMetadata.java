@@ -27,7 +27,7 @@ public class FileMetadata {
     /**
      * 文件哈希值
      */
-    private String md5;
+    private String hash;
     /**
      * 文件大小
      */
