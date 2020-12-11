@@ -28,6 +28,6 @@ public class WxpayFactory extends ApplicationObjectSupport {
      */
     public IPayment getPayer() {
         String beanName = "wxpayV" + Objects.requireNonNull(active);
-        return super.getApplicationContext().getBean(beanName, IPayment.class);
+        return Objects.requireNonNull(super.getApplicationContext()).getBean(beanName, IPayment.class);
     }
 }

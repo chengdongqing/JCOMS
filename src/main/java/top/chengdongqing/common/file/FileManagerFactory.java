@@ -1,7 +1,8 @@
 package top.chengdongqing.common.file;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -12,10 +13,13 @@ import java.util.Objects;
  * @author Luyao
  */
 @Component
-public class FileManagerFactory extends ApplicationObjectSupport {
+public class FileManagerFactory {
 
     @Value("${file.active}")
     private String active;
+
+    @Autowired
+    private ApplicationContext appContext;
 
     /**
      * 获取文件管理器实例
@@ -24,6 +28,6 @@ public class FileManagerFactory extends ApplicationObjectSupport {
      */
     public FileManager getManager() {
         String beanName = Objects.requireNonNull(active) + "FileManager";
-        return super.getApplicationContext().getBean(beanName, FileManager.class);
+        return appContext.getBean(beanName, FileManager.class);
     }
 }

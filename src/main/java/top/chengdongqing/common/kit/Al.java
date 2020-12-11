@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Al<E> extends ArrayList<E> {
 
     /**
-     * Creates a instance of current class, and add the first element
+     * Creates an instance of current class, and add the first element
      *
      * @param element the element to put
      * @return a new instance with the element
@@ -20,19 +20,19 @@ public class Al<E> extends ArrayList<E> {
     }
 
     /**
-     * <p>Creates a new instance</p>
+     * <p>Creates an new instance</p>
      * <p>Init the type of current instance by the first element</p>
      *
      * @param element the element to put
      * @param <E>     the type of current instance
-     * @return the typed {@link Al} width a element
+     * @return the typed {@link Al} instance width a element
      */
     public static <E> Al<E> of(E element) {
         return new Al<E>().append(element);
     }
 
     /**
-     * Appends a element to current instance
+     * Appends an element to current instance
      *
      * @param element the element to put
      * @return current instance
@@ -43,7 +43,7 @@ public class Al<E> extends ArrayList<E> {
     }
 
     /**
-     * <p>Gets a item from current instance by index</p>
+     * <p>Gets one item from current instance by index</p>
      * <p>Will auto convert the type by the var to get value</p>
      *
      * @param index the index to get item

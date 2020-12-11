@@ -27,7 +27,8 @@ public abstract class CallbackHandler extends ApplicationObjectSupport implement
     protected WxpayHelperV3 v3Helper;
 
     @Override
-    public Ret<PayResEntity> handlePayCallback(CallbackEntity callback) {
+    public Ret<PayResEntity> handlePayCallback(Object data) {
+        CallbackEntity callback = (CallbackEntity) data;
         // 验证签名
         boolean verify = v3Helper.verify(callback.getSerialNo(),
                 callback.getSign(),

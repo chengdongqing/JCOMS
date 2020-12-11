@@ -2,7 +2,7 @@ package top.chengdongqing.common.pay.alipay;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.CertKit;
 import top.chengdongqing.common.kit.Kv;
@@ -30,12 +30,14 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-public class Alipay extends ApplicationObjectSupport implements IPayment<Map<String, String[]>> {
+public class Alipay implements IPayment {
 
     @Autowired
     private AlipayProps props;
     @Autowired
     private AlipayHelper helper;
+    @Autowired
+    private ApplicationContext appContext;
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
@@ -45,7 +47,7 @@ public class Alipay extends ApplicationObjectSupport implements IPayment<Map<Str
             case MB -> MBPayReqer.class;
             case APP -> APPPayReqer.class;
         };
-        return super.getApplicationContext().getBean(clazz).requestPayment(entity, tradeType);
+        return appContext.getBean(clazz).requestPayment(entity, tradeType);
     }
 
     @Override
@@ -104,9 +106,9 @@ public class Alipay extends ApplicationObjectSupport implements IPayment<Map<Str
     }
 
     @Override
-    public Ret<PayResEntity> handlePayCallback(Map<String, String[]> paraMap) {
+    public Ret<PayResEntity> handlePayCallback(Object data) {
         // 转换数据类型
-        Kv<String, String> params = Kv.of(paraMap);
+        Kv<String, String> params = Kv.of((Map<String, String[]>) data);
         if (params.isEmpty() || !params.containsKey("sign")) {
             throw new IllegalArgumentException("alipay callback params is error");
         }

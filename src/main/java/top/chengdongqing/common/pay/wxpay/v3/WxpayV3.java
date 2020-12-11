@@ -2,6 +2,7 @@ package top.chengdongqing.common.pay.wxpay.v3;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
@@ -35,6 +36,8 @@ public class WxpayV3 extends CallbackHandler {
     private WxpayProps props;
     @Autowired
     private WxpayHelper helper;
+    @Autowired
+    private ApplicationContext appContext;
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
@@ -44,7 +47,7 @@ public class WxpayV3 extends CallbackHandler {
             case MP -> MPPayReqerV3.class;
             case PC -> PCPayReqerV3.class;
         };
-        return super.getApplicationContext().getBean(clazz).requestPayment(entity, tradeType);
+        return appContext.getBean(clazz).requestPayment(entity, tradeType);
     }
 
     @Override
