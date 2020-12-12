@@ -20,7 +20,7 @@ public class Al<E> extends ArrayList<E> {
     }
 
     /**
-     * <p>Creates a new instance</p>
+     * <p>Creates an new instance</p>
      * <p>Init the type of current instance by the first element</p>
      *
      * @param element the element to put
