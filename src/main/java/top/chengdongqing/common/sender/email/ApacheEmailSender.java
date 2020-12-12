@@ -7,7 +7,6 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.JsonKit;
@@ -54,7 +53,6 @@ public class ApacheEmailSender extends EmailSender {
 @Getter
 @Setter
 @Component
-@RefreshScope
 @ConfigurationProperties("send.email.apache")
 class ApacheEmailProps {
 

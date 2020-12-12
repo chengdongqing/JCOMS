@@ -32,7 +32,7 @@ public class SwaggerConfiguration {
     private ApiInfo buildApiInfo() {
         return new ApiInfoBuilder()
                 .description("接口文档 - 测试")
-                .contact(new Contact("路遥", "https://zwmall.chengdongqing.top", "1912525497@qq.com"))
+                .contact(new Contact("路遥", "https://gitee.com/chengdongqing", "1912525497@qq.com"))
                 .version("1.0")
                 .build();
     }

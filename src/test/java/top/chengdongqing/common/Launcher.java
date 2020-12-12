@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * 启动后可打开接口文档进行部分接口测试
- * Swagger默认访问地址：http://localhost:8080/swagger-ui/
+ * <p>启动后可访问接口文档进行部分接口测试</p>
+ * <p>默认访问地址: http://localhost:8080/swagger-ui/</p>
  *
  * @author Luyao
  */

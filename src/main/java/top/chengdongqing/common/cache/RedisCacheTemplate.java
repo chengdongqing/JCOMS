@@ -37,7 +37,7 @@ public class RedisCacheTemplate implements CacheTemplate {
     }
 
     @Override
-    public List getList(String key) {
+    public <T> List<T> getList(String key) {
         Object values = redisTemplate.opsForValue().get(key);
         return values != null ? (List) values : null;
     }
@@ -49,7 +49,7 @@ public class RedisCacheTemplate implements CacheTemplate {
     }
 
     @Override
-    public Map getHash(String key) {
+    public <K, V> Map<K, V> getHash(String key) {
         Object values = redisTemplate.opsForValue().get(key);
         return values != null ? (Map) values : null;
     }

@@ -1,7 +1,6 @@
 package top.chengdongqing.common.pay.wxpay;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.pay.IPayment;
@@ -14,7 +13,6 @@ import java.util.Objects;
  * @author Luyao
  */
 @Component
-@RefreshScope
 public class WxpayFactory extends ApplicationObjectSupport {
 
     /**
@@ -30,6 +28,6 @@ public class WxpayFactory extends ApplicationObjectSupport {
      */
     public IPayment getPayer() {
         String beanName = "wxpayV" + Objects.requireNonNull(active);
-        return super.getApplicationContext().getBean(beanName, IPayment.class);
+        return Objects.requireNonNull(super.getApplicationContext()).getBean(beanName, IPayment.class);
     }
 }

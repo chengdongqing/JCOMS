@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * 渲染器
@@ -25,6 +26,7 @@ public abstract class Renderer {
 
     public Renderer() {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        Objects.requireNonNull(attributes);
         request = attributes.getRequest();
         response = attributes.getResponse();
     }

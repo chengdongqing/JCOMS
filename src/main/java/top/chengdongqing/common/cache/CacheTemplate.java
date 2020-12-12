@@ -35,7 +35,7 @@ public interface CacheTemplate {
     /**
      * 从缓存中取列表
      */
-    List getList(String key);
+    <T> List<T> getList(String key);
 
     /**
      * 从缓存中取指定map的指定键名的值
@@ -45,7 +45,7 @@ public interface CacheTemplate {
     /**
      * 从缓存中取map
      */
-    Map getHash(String key);
+    <K, V> Map<K, V> getHash(String key);
 
     /**
      * 从缓存中取对象

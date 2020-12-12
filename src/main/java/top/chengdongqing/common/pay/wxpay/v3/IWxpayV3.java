@@ -11,7 +11,7 @@ import top.chengdongqing.common.pay.wxpay.v3.entity.CallbackEntity;
  *
  * @author Luyao
  */
-public interface IWxpayV3 extends IPayment<CallbackEntity> {
+public interface IWxpayV3 extends IPayment {
 
     /**
      * 处理退款回调

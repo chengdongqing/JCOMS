@@ -13,13 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 public class PathVariableKit {
 
     /**
-     * 获取路径变量
-     *
-     * @PathVariable修饰的变量值不能包含斜杠 此方法可获取包含斜杠的值
-     * 适用于如文件路径类的接口使用
-     * 如访问文件：/file/user/avatar/123.png
-     * /file为接口名，后面的为动态值
-     * 符合restful风格
+     * <p>获取路径变量</p>
+     * <p>{@code @PathVariable}修饰的变量值不能包含斜杠 此方法可获取包含斜杠的值</p>
+     * <p>适用于如文件路径类的接口使用</p>
+     * <p>如访问文件：/file/user/avatar/123.png</p>
+     * <p>/file为接口名，后面的为动态值</p>
+     * <p>符合restful风格</p>
      */
     public static String getPathVariable(HttpServletRequest request) {
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);

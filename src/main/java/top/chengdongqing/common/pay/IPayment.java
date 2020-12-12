@@ -1,19 +1,24 @@
 package top.chengdongqing.common.pay;
 
 import top.chengdongqing.common.kit.Ret;
+import top.chengdongqing.common.pay.alipay.Alipay;
 import top.chengdongqing.common.pay.entity.PayReqEntity;
 import top.chengdongqing.common.pay.entity.PayResEntity;
 import top.chengdongqing.common.pay.entity.RefundReqEntity;
 import top.chengdongqing.common.pay.entity.TradeQueryEntity;
 import top.chengdongqing.common.pay.enums.TradeType;
+import top.chengdongqing.common.pay.wxpay.v2.WxpayV2;
+import top.chengdongqing.common.pay.wxpay.v3.WxpayV3;
 
 /**
  * 支付处理器顶层接口
  *
- * @param <C> 支付回调数据类型
  * @author Luyao
+ * @see Alipay
+ * @see WxpayV2
+ * @see WxpayV3
  */
-public interface IPayment<C> {
+public interface IPayment {
 
     /**
      * 发起付款
@@ -57,5 +62,5 @@ public interface IPayment<C> {
      * @param data 回调数据
      * @return 处理结果
      */
-    Ret<PayResEntity> handlePayCallback(C data);
+    Ret<PayResEntity> handlePayCallback(Object data);
 }

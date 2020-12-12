@@ -2,7 +2,7 @@ package top.chengdongqing.common.pay.wxpay.v2;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.kit.HttpKit;
 import top.chengdongqing.common.kit.Kv;
@@ -36,7 +36,7 @@ import java.nio.file.Paths;
  */
 @Slf4j
 @Component
-public class WxpayV2 extends ApplicationObjectSupport implements IPayment<String> {
+public class WxpayV2 implements IPayment {
 
     @Autowired
     private WxpayProps props;
@@ -46,6 +46,8 @@ public class WxpayV2 extends ApplicationObjectSupport implements IPayment<String
     private WxpayHelper helper;
     @Autowired
     private WxpayHelperV2 helperV2;
+    @Autowired
+    private ApplicationContext appContext;
 
     @Override
     public Ret<Object> requestPayment(PayReqEntity entity, TradeType tradeType) {
@@ -55,7 +57,7 @@ public class WxpayV2 extends ApplicationObjectSupport implements IPayment<String
             case MP -> MPPayReqerV2.class;
             case PC -> PCPayReqerV2.class;
         };
-        return super.getApplicationContext().getBean(clazz).requestPayment(entity, tradeType);
+        return appContext.getBean(clazz).requestPayment(entity, tradeType);
     }
 
     @Override
@@ -124,9 +126,9 @@ public class WxpayV2 extends ApplicationObjectSupport implements IPayment<String
     }
 
     @Override
-    public Ret<PayResEntity> handlePayCallback(String xml) {
+    public Ret<PayResEntity> handlePayCallback(Object xml) {
         // 将xml转为map
-        Kv<String, String> params = XmlKit.parseXml(xml);
+        Kv<String, String> params = XmlKit.parseXml((String) xml);
         // 判断参数是否为空
         if (params.isEmpty() || !params.containsKey("sign")) {
             throw new IllegalArgumentException("wxpay callback params is error");

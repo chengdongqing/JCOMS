@@ -1,6 +1,6 @@
 package top.chengdongqing.common.encrypt;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import top.chengdongqing.common.kit.StrKit;
 import top.chengdongqing.common.signature.SignatureAlgorithm;
 import top.chengdongqing.common.signature.secretkey.SecretKeyGenerator;

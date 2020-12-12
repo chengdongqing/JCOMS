@@ -2,7 +2,6 @@ package top.chengdongqing.common.pay.wxpay.v3;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ApplicationObjectSupport;
 import top.chengdongqing.common.kit.Ret;
 import top.chengdongqing.common.pay.entity.PayResEntity;
 import top.chengdongqing.common.pay.entity.RefundResEntity;
@@ -19,7 +18,7 @@ import top.chengdongqing.common.pay.wxpay.v3.entity.RefundCallbackEntity;
  * @author Luyao
  */
 @Slf4j
-public abstract class CallbackHandler extends ApplicationObjectSupport implements IWxpayV3 {
+public abstract class CallbackHandler implements IWxpayV3 {
 
     @Autowired
     protected WxpayPropsV3 v3Props;
@@ -27,7 +26,8 @@ public abstract class CallbackHandler extends ApplicationObjectSupport implement
     protected WxpayHelperV3 v3Helper;
 
     @Override
-    public Ret<PayResEntity> handlePayCallback(CallbackEntity callback) {
+    public Ret<PayResEntity> handlePayCallback(Object data) {
+        CallbackEntity callback = (CallbackEntity) data;
         // 验证签名
         boolean verify = v3Helper.verify(callback.getSerialNo(),
                 callback.getSign(),

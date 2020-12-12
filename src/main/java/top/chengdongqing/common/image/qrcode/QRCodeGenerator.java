@@ -6,7 +6,6 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import lombok.extern.slf4j.Slf4j;
 import top.chengdongqing.common.constant.media.ImageFormat;
 import top.chengdongqing.common.image.ImageGenerator;
 import top.chengdongqing.common.kit.Kv;
@@ -20,24 +19,15 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Luyao
  */
-@Slf4j
-public class QRCodeGenerator implements ImageGenerator {
+public record QRCodeGenerator(String content, int size) implements ImageGenerator {
 
-    /**
-     * 二维码内容
-     */
-    private final String content;
-    /**
-     * 图片大小
-     */
-    private final int size;
-
-    public QRCodeGenerator(String content, int size) {
-        if (StrKit.isBlank(content)) throw new IllegalArgumentException("qrcode content cannot be blank");
-        if (size < 10 || size > 1000) throw new IllegalArgumentException("qrcode size is wrong");
-
-        this.content = content;
-        this.size = size;
+    public QRCodeGenerator {
+        if (StrKit.isBlank(content)) {
+            throw new IllegalArgumentException("qrcode content cannot be blank");
+        }
+        if (size < 10 || size > 1000) {
+            throw new IllegalArgumentException("qrcode size is wrong");
+        }
     }
 
     public static QRCodeGenerator of(String content) {
@@ -62,7 +52,6 @@ public class QRCodeGenerator implements ImageGenerator {
             MatrixToImageWriter.writeToStream(bitMatrix, ImageFormat.PNG.toString(), os);
             return os.toByteArray();
         } catch (Exception e) {
-            log.error("二维码生成异常", e);
             throw new QRCodeException("二维码生成失败");
         }
     }

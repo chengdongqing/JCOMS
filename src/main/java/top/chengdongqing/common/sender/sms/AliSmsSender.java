@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.chengdongqing.common.constant.ErrorMsg;
 import top.chengdongqing.common.kit.HttpKit;
@@ -85,7 +84,6 @@ public class AliSmsSender extends SmsSender {
 @Getter
 @Setter
 @Component
-@RefreshScope
 @ConfigurationProperties("send.sms.ali")
 class AliSmsProps {
 

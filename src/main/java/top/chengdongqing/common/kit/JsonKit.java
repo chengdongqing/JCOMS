@@ -7,39 +7,39 @@ import com.alibaba.fastjson.serializer.SerializeConfig;
 import java.util.List;
 
 /**
- * JSON处理工具类
+ * JSON utility methods
  *
  * @author Luyao
  */
 public class JsonKit {
 
     /**
-     * 对象转JSON字符串
+     * Transforms the object to JSON string
      *
-     * @param data 需要转换的数据
-     * @return JSON字符串
+     * @param data the object to transform
+     * @return the JSON string
      */
     public static String toJson(Object data) {
         return JSON.toJSONString(data);
     }
 
     /**
-     * 对象转JSON字节数组
+     * Transforms the object to JSON byte array
      *
-     * @param data 需要转换的数据
-     * @return JSON字节数组
+     * @param data the object to transform
+     * @return the JSON byte array
      */
     public static byte[] toJsonBytes(Object data) {
         return JSON.toJSONBytes(data);
     }
 
     /**
-     * 对象转JSON字符串
-     * 属性名由驼峰转下划线形式
-     * 仅支持对象属性名，不支持Map键名
+     * <p>Transforms the object to JSON string</p>
+     * <p>The object field name will be auto underscored</p>
+     * <p>Not support {@code Map} field name</p>
      *
-     * @param data 需要转换的数据
-     * @return JSON字符串
+     * @param data the object to transform
+     * @return the JSON string
      */
     public static String toJsonWithUnderscore(Object data) {
         SerializeConfig serializeConfig = new SerializeConfig();
@@ -48,57 +48,57 @@ public class JsonKit {
     }
 
     /**
-     * 解析JSON对象
+     * Parses the JSON string into an object of a given type
      *
-     * @param json  JSON字符串
-     * @param clazz 对象类型
-     * @return Java对象
+     * @param json  the JSON string to transform
+     * @param clazz the class of the object
+     * @return the Java object
      */
     public static <T> T parseObject(String json, Class<T> clazz) {
         return JSON.parseObject(json, clazz);
     }
 
     /**
-     * 解析JSON数组
+     * Parses the JSON string to a JAVA list of a given type
      *
-     * @param json  JSON字符串
-     * @param clazz 集合类型
-     * @return Java集合
+     * @param json  the JSON string to transform
+     * @param clazz the class of item of the list
+     * @return the Java list
      */
     public static <T> List<T> parseArray(String json, Class<T> clazz) {
         return JSON.parseArray(json, clazz);
     }
 
     /**
-     * 解析JSON对象
+     * Parses the JSON byte array to a JAVA object of a given type
      *
-     * @param json  JSON字节数组
-     * @param clazz 对象类型
-     * @return Java对象
+     * @param json  the JSON byte array
+     * @param clazz the class of the object
+     * @return the Java object
      */
     public static <T> T parseObject(byte[] json, Class<T> clazz) {
         return JSON.parseObject(json, clazz);
     }
 
     /**
-     * 解析JSON为Kv
+     * Parses the JSON string to {@link Kv} object
      *
-     * @param json JSON字符串
-     * @param <K>  键类型
-     * @param <V>  值类型
-     * @return Kv对象
+     * @param json the JSON string
+     * @param <K>  the type of the key
+     * @param <V>  the type of the value
+     * @return the {@code Kv} object
      */
     public static <K, V> Kv<K, V> parseKv(String json) {
         return JSON.parseObject(json, Kv.class);
     }
 
     /**
-     * 解析JSON为Kv
+     * Parses the JSON byte array to {@link Kv} object
      *
-     * @param json JSON字节数组
-     * @param <K>  键类型
-     * @param <V>  值类型
-     * @return Kv对象
+     * @param json the JSON byte array
+     * @param <K>  the type of the key
+     * @param <V>  the type of the value
+     * @return the {@code Kv} object
      */
     public static <K, V> Kv<K, V> parseKv(byte[] json) {
         return JSON.parseObject(json, Kv.class);

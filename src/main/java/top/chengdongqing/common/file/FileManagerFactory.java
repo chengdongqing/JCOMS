@@ -1,7 +1,6 @@
 package top.chengdongqing.common.file;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,6 @@ import java.util.Objects;
  * @author Luyao
  */
 @Component
-@RefreshScope
 public class FileManagerFactory extends ApplicationObjectSupport {
 
     @Value("${file.active}")
@@ -26,6 +24,6 @@ public class FileManagerFactory extends ApplicationObjectSupport {
      */
     public FileManager getManager() {
         String beanName = Objects.requireNonNull(active) + "FileManager";
-        return super.getApplicationContext().getBean(beanName, FileManager.class);
+        return Objects.requireNonNull(super.getApplicationContext()).getBean(beanName, FileManager.class);
     }
 }
