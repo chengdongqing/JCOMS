@@ -18,10 +18,10 @@ import java.security.SecureRandom;
 import java.util.stream.Collectors;
 
 /**
- * HTTP工具类
- * 默认支持GET、POST、PUT、DELETE请求
- * 支持本地证书构建SSL上下文
- * 支持自定义请求头、地址栏参数、请求体等
+ * <p>HTTP utility functions</p>
+ * <p>By default request method, {@code GET}, {@code POST}, {@code PUT}, {@code DELETE} are supported</p>
+ * <p>Support custom SSL certificate</p>
+ * <p>Support custom request header, URL query string, request body</p>
  *
  * @author Luyao
  */
@@ -36,12 +36,12 @@ public class HttpKit {
     }
 
     /**
-     * 发送GET请求
+     * Sends a {@code GET} request
      *
-     * @param url     请求地址
-     * @param params  参数键值对
-     * @param headers 请求头
-     * @return 响应结果
+     * @param url     the URL to send
+     * @param params  the query string key-value mappings
+     * @param headers the request header key-value mappings
+     * @return the response entity of this request
      */
     public static HttpResponse<String> get(String url, Kv<String, String> params, Kv<String, String> headers) {
         return send(HttpMethod.GET, url, params, headers, null, null, null);
@@ -64,15 +64,15 @@ public class HttpKit {
     }
 
     /**
-     * 发送POST请求
+     * Sends a {@code POST} request
      *
-     * @param url        请求地址
-     * @param params     参数键值对
-     * @param headers    请求头
-     * @param data       请求体
-     * @param certStream 证书数据
-     * @param certPwd    证书密码
-     * @return 响应结果
+     * @param url        the URL to send
+     * @param params     the query string key-value mappings
+     * @param headers    the request header key-value mappings
+     * @param data       the request body
+     * @param certStream the custom SSL certificate file stream
+     * @param certPwd    the password of the SSL certificate
+     * @return the response entity of this request
      */
     public static HttpResponse<String> post(String url, Kv<String, String> params, Kv<String, String> headers,
                                             String data, InputStream certStream, String certPwd) {
@@ -80,13 +80,12 @@ public class HttpKit {
     }
 
     /**
-     * 发送DELETE请求
+     * Sends a {@code DELETE} request
      *
-     * @param url     请求地址
-     * @param params  参数键值对
-     * @param headers 请求头
-     * @param data    请求体
-     * @return 响应结果
+     * @param url     the URL to send
+     * @param params  the query string key-value mappings
+     * @param headers the request header key-value mappings
+     * @return the response entity of this request
      */
     public static HttpResponse<String> delete(String url, Kv<String, String> params, Kv<String, String> headers,
                                               String data) {
@@ -94,13 +93,12 @@ public class HttpKit {
     }
 
     /**
-     * 发送PUT请求
+     * Sends a {@code PUT} request
      *
-     * @param url     请求地址
-     * @param params  参数键值对
-     * @param headers 请求头
-     * @param data    请求体
-     * @return 响应结果
+     * @param url     the URL to send
+     * @param params  the query string key-value mappings
+     * @param headers the request header key-value mappings
+     * @return the response entity of this request
      */
     public static HttpResponse<String> put(String url, Kv<String, String> params, Kv<String, String> headers,
                                            String data) {
@@ -108,16 +106,16 @@ public class HttpKit {
     }
 
     /**
-     * 发送HTTP请求
+     * Sends HTTP request
      *
-     * @param method     请求方式
-     * @param url        请求地址
-     * @param params     参数键值对
-     * @param headers    请求头
-     * @param data       请求体
-     * @param certStream 证书数据
-     * @param certPwd    证书密码
-     * @return 响应结果
+     * @param method     the method for send
+     * @param url        the URL to send
+     * @param params     the query string key-value mappings
+     * @param headers    the request header key-value mappings
+     * @param data       the request body
+     * @param certStream the custom SSL certificate file stream
+     * @param certPwd    the password of the SSL certificate
+     * @return the response entity of this request
      */
     public static HttpResponse<String> send(HttpMethod method, String url, Kv<String, String> params,
                                             Kv<String, String> headers, String data,
@@ -148,11 +146,11 @@ public class HttpKit {
     }
 
     /**
-     * 构建SSL上下文
+     * Builds SSL context
      *
-     * @param certStream 证书数据
-     * @param certPwd    证书密码
-     * @return SSL上下文
+     * @param certStream the SSL certificate file stream
+     * @param certPwd    the password of the SSL certificate
+     * @return the SSL context
      */
     private static SSLContext buildSSLContext(InputStream certStream, String certPwd) throws Exception {
         // 将证书密码字符串转为字符数组
@@ -169,11 +167,11 @@ public class HttpKit {
     }
 
     /**
-     * 构建带参数的请求地址
+     * Builds complete url string by the base url and the query string
      *
-     * @param url    请求地址
-     * @param params 参数键值对
-     * @return 带参数的请求地址
+     * @param url    the base url
+     * @param params the key-value mappings for query string
+     * @return the complete url string
      */
     public static String buildUrlWithParams(String url, Kv<String, String> params) {
         // 没有参数则直接返回请求路径
@@ -185,10 +183,10 @@ public class HttpKit {
     }
 
     /**
-     * 读取请求体数据
+     * Reads request body as string from {@link HttpServletRequest}
      *
-     * @param request 请求对象
-     * @return 请求体数据
+     * @param request the request context
+     * @return the request body string
      */
     public static String readData(HttpServletRequest request) {
         try {
@@ -199,9 +197,10 @@ public class HttpKit {
     }
 
     /**
-     * 构建发送和接受内容均为JSON的请求头
+     * <p>Builds header with JSON</p>
+     * <p>For request body and response body, the format both are {@code JSON}</p>
      *
-     * @return 包含Content-Type和Accept的请求头
+     * @return the header with JSON
      */
     public static Kv<String, String> buildHeaderWithJSON() {
         String type = "application/json";

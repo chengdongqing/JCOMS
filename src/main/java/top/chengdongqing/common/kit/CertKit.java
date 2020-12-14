@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * 证书工具类
+ * Certificate utility methods
  *
  * @author Luyao
  */
@@ -27,11 +27,11 @@ public class CertKit {
     }
 
     /**
-     * 计算支付宝证书SN
+     * Calculates the certificate {@code SN} for ALIPAY
      *
-     * @param certPath   证书路径
-     * @param alipayRoot 是否为支付宝根证书
-     * @return 证书SN
+     * @param certPath   the path of the cert
+     * @param alipayRoot {@code true} if for ALIPAY root cert
+     * @return the {@code SN} of the cert
      */
     public static String calcAlipayCertSN(String certPath, boolean alipayRoot) {
         try {
@@ -48,32 +48,32 @@ public class CertKit {
     }
 
     /**
-     * 读取证书文件里的公钥
+     * Reads the public key of the certificate
      *
-     * @param certPath 证书文件路径
-     * @return 公钥
+     * @param certPath the path of the certificate
+     * @return the public key of the cert
      */
     public static BytesToStr readPublicKey(String certPath) {
-        return BytesToStr.of(readCert(certPath).getPublicKey().getEncoded());
+        return BytesToStr.of(readFirstCert(certPath).getPublicKey().getEncoded());
     }
 
     /**
-     * 读取证书序列号
+     * Reads the serial no of the certificate
      *
-     * @param certPath 证书路径
-     * @return 序列号
+     * @param certPath the path of the cert
+     * @return the hex string of the serial no of the cert
      */
     public static String readSerialNo(String certPath) {
-        return readCert(certPath).getSerialNumber().toString(16);
+        return readFirstCert(certPath).getSerialNumber().toString(16);
     }
 
     /**
-     * 读取证书
+     * Reads the first certificate from the cert file
      *
-     * @param certPath 证书路径
-     * @return X.509证书
+     * @param certPath the path of the cert file
+     * @return the first cert with X.509
      */
-    public static X509Certificate readCert(String certPath) {
+    public static X509Certificate readFirstCert(String certPath) {
         try {
             return Objects.requireNonNull(readCerts(certPath).get(0));
         } catch (Exception e) {
@@ -82,21 +82,27 @@ public class CertKit {
     }
 
     /**
-     * 读取证书文件里的所有证书
-     * 一个证书文件可包含多个证书，像YAML文件一样，可以有多段
-     * 每个证书有特殊的开始和结束标识符
+     * <p>Reads all certificate with X.509 from the cert file</p>
+     * <p>It maybe have many X.509 certs in one cert file, just like a {@code YAML} file</p>
+     * <p>For example of the certificate content:</p>
+     * <pre>
      * -----BEGIN CERTIFICATE-----
-     * BASE64编码后的证书内容
+     * The first cert main content with BASE64 encoded
      * -----END CERTIFICATE-----
      *
-     * @param certPath 证书文件路径
-     * @return X.509证书集合
+     * -----BEGIN CERTIFICATE-----
+     * The other cert main content with BASE64 encoded
+     * -----END CERTIFICATE-----
+     * </pre>
+     *
+     * @param certPath the path of the cert file
+     * @return the list of the certificate with X.509 from the cert file
      */
     public static List<X509Certificate> readCerts(String certPath) throws Exception {
-        // 读取证书内容
+        // reads the cert file
         Path path = Path.of(CertKit.class.getResource(certPath).toURI());
         try (InputStream stream = Files.newInputStream(path)) {
-            // 生成X.509证书集合
+            // generates certificates
             CertificateFactory certFactory = CertificateFactory.getInstance("X.509", "BC");
             return (List<X509Certificate>) certFactory.generateCertificates(stream);
         }

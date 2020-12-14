@@ -1,6 +1,6 @@
 package top.chengdongqing.common.renderer;
 
-import top.chengdongqing.common.constant.media.ImageFormat;
+import top.chengdongqing.common.constant.ImageFormat;
 
 import java.io.IOException;
 import java.io.OutputStream;

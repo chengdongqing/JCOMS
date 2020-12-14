@@ -1,4 +1,4 @@
-package top.chengdongqing.common.excel;
+package top.chengdongqing.common.excel.entity;
 
 import java.util.Collection;
 

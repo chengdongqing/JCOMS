@@ -1,15 +1,10 @@
-package top.chengdongqing.common.constant.media;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+package top.chengdongqing.common.constant;
 
 /**
  * 图片格式枚举
  *
  * @author Luyao
  */
-@Getter
-@AllArgsConstructor
 public enum ImageFormat {
 
     PNG,

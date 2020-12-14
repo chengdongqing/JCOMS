@@ -1,6 +1,6 @@
 package top.chengdongqing.common.image.captcha;
 
-import top.chengdongqing.common.constant.media.ImageFormat;
+import top.chengdongqing.common.constant.ImageFormat;
 import top.chengdongqing.common.image.ImageGenerator;
 import top.chengdongqing.common.kit.StrKit;
 

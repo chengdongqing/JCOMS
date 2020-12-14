@@ -17,19 +17,20 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
- * XML处理工具类
+ * XML utility functions
  *
  * @author Luyao
  */
 public class XmlKit {
 
     /**
-     * xml转map
+     * Parses the xml to {@link Kv}
      *
-     * @param xml xml字符串
-     * @return map键值对
+     * @param xml the xml string to parse
+     * @return the {@link Kv} instance with the key-value mappings from the xml string
      */
     public static Kv<String, String> parseXml(String xml) {
         if (StrKit.isBlank(xml)) throw new IllegalArgumentException("The xml can not be blank");
@@ -52,12 +53,12 @@ public class XmlKit {
     }
 
     /**
-     * map转xml
+     * Transforms the {@link Map} instance to xml string
      *
-     * @param map map键值对
-     * @return xml字符串
+     * @param map the map to transform
+     * @return the xml string
      */
-    public static String toXml(Kv<String, String> map) {
+    public static String toXml(Map<String, String> map) {
         if (map == null || map.isEmpty()) throw new IllegalArgumentException("The map can not be null or empty");
 
         try (StringWriter writer = new StringWriter()) {
@@ -85,9 +86,9 @@ public class XmlKit {
     }
 
     /**
-     * 构建xml文档
+     * Builds the xml document builder
      *
-     * @return DocumentBuilder
+     * @return the built DocumentBuilder
      */
     private static DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
