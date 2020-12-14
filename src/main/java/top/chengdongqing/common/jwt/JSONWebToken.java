@@ -6,7 +6,7 @@ import lombok.Setter;
 import top.chengdongqing.common.kit.Kv;
 
 /**
- * json web token info
+ * JSON web token model
  *
  * @author Luyao
  */
@@ -26,7 +26,7 @@ public class JSONWebToken {
     /**
      * 有效载荷
      */
-    private Kv<String, Object> payloads;
+    private Kv<String, Object> payload;
     /**
      * 数字签名
      */

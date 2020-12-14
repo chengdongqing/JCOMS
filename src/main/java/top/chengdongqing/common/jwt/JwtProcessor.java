@@ -5,7 +5,7 @@ import top.chengdongqing.common.kit.Kv;
 import java.security.SignatureException;
 
 /**
- * JWT处理器
+ * JSON web token processor
  *
  * @author Luyao
  * @see JwtProcessorImpl
@@ -13,20 +13,24 @@ import java.security.SignatureException;
 public interface JwtProcessor {
 
     /**
-     * 生成token
-     * token结构：base64(headers).base64(payloads).base64(signature)
-     * 待签名内容：signature(base64(headers.toJson()).base64(payloads.toJson()))
+     * <p>Generates token</p>
+     * <p>the structure of the token:</p>
+     * {@code base64(header).base64(payload).base64(signature)}
+     * <p>the structure of the content of to be signed:</p>
+     * {@code base64(header.toJson()).base64(payload.toJson())}
      *
-     * @param payloads 有效载荷
-     * @return token详情
+     * @param payload the payload to signature
+     * @return the complete token entity
      */
-    JSONWebToken generate(Kv<String, Object> payloads);
+    JSONWebToken generate(Kv<String, Object> payload);
 
     /**
-     * 解析token
+     * Parses token
      *
-     * @param token 令牌
-     * @return 有效载荷
+     * @param token the token to parse
+     * @return the payload of the token
+     * @throws SignatureException    if the signature of the token is illegal
+     * @throws TokenExpiredException if the token expired
      */
     Kv<String, Object> parse(String token) throws SignatureException, TokenExpiredException;
 }

@@ -3,7 +3,7 @@ package top.chengdongqing.common.jwt;
 import java.security.GeneralSecurityException;
 
 /**
- * token过期异常
+ * The exception for token expired
  *
  * @author Luyao
  */

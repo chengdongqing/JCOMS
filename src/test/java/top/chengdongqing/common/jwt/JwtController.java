@@ -25,8 +25,8 @@ public class JwtController {
     @ApiOperation("获取令牌（这里的参数仅为示例，实际上可以任意填充）")
     public JSONWebToken generate(@ApiParam("用户id") @RequestParam String userId,
                                  @ApiParam("用户名称") @RequestParam String username) {
-        Kv<String, Object> payloads = Kv.ofAny("userId", userId).add("username", username);
-        return jwtProcessor.generate(payloads);
+        Kv<String, Object> payload = Kv.ofAny("userId", userId).add("username", username);
+        return jwtProcessor.generate(payload);
     }
 
     @PostMapping

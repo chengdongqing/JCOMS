@@ -6,7 +6,7 @@ import top.chengdongqing.common.constant.Status;
 import java.io.Serializable;
 
 /**
- * Generic response entity
+ * General response model
  *
  * @author Luyao
  */

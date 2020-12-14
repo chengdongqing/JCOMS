@@ -7,7 +7,7 @@ import top.chengdongqing.common.transformer.BytesToStr;
 import top.chengdongqing.common.transformer.StrToBytes;
 
 /**
- * Jwt解析器
+ * A parser for JWT
  *
  * @author Luyao
  */
@@ -24,10 +24,10 @@ public class JwtParser {
     }
 
     /**
-     * 将token根据点分成3部分
+     * Splits the token to 3 parts by point symbol
      *
-     * @param token 令牌
-     * @return token的每部分
+     * @param token the token to split
+     * @return the all parts of the token
      */
     private String[] parts(String token) {
         if (StrKit.isBlank(token)) throw new IllegalArgumentException();
@@ -37,77 +37,47 @@ public class JwtParser {
     }
 
     /**
-     * 获取头部信息对象
+     * Gets the header entity by the token part 1
      *
-     * @return 头部信息
+     * @return the header entity
      */
-    public ToJwtHeader getHeaders() {
+    public ToJwtHeader getHeader() {
         return new ToJwtHeader(parts[0]);
     }
 
     /**
-     * 获取有效载荷对象
+     * Gets the payload entity by the token part 2
      *
-     * @return 有效载荷
+     * @return the payload entity
      */
-    public ToPayloads getPayloads() {
-        return new ToPayloads(parts[1]);
+    public ToPayload getPayload() {
+        return new ToPayload(parts[1]);
     }
 
     /**
-     * 获取签名
+     * Gets the signature of the token
      *
-     * @return 数字签名
+     * @return the signature
      */
     public String sign() {
         return parts[2];
     }
 
-    /**
-     * token头部信息对象
-     */
     public static record ToJwtHeader(String rawStr) {
 
-        /**
-         * 将原始数据解码为JSON字符串
-         *
-         * @return 头部信息JSON字符串
-         */
-        public String json() {
-            return BytesToStr.of(StrToBytes.of(rawStr).fromURLBase64()).toText();
-        }
-
-        /**
-         * 将原始数据转为头部信息对象
-         *
-         * @return 头部信息
-         */
         public JwtHeader header() {
-            return JsonKit.parseObject(json(), JwtHeader.class);
+            return JsonKit.parseObject(JwtParser.toJson(rawStr), JwtHeader.class);
         }
     }
 
-    /**
-     * token有效载荷对象
-     */
-    public static record ToPayloads(String rawStr) {
+    public static record ToPayload(String rawStr) {
 
-        /**
-         * 将原始数据解码
-         *
-         * @return 有效载荷JSON字符串
-         */
-        public String json() {
-            return BytesToStr.of(StrToBytes.of(rawStr).fromURLBase64()).toText();
+        public Kv<String, Object> payload() {
+            return JsonKit.parseKv(JwtParser.toJson(rawStr));
         }
+    }
 
-        /**
-         * 将原始数据转为有效载荷对象
-         *
-         * @return 有效载荷
-         */
-        public Kv<String, Object> payloads() {
-            return JsonKit.parseKv(json());
-        }
+    static String toJson(String rawStr) {
+        return BytesToStr.of(StrToBytes.of(rawStr).fromURLBase64()).toText();
     }
 }

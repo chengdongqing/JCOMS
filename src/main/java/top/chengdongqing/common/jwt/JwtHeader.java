@@ -5,7 +5,7 @@ import lombok.Setter;
 import top.chengdongqing.common.kit.JsonKit;
 
 /**
- * Jwt头部信息
+ * The header model of Jwt
  *
  * @author Luyao
  */

@@ -18,7 +18,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 /**
- * JWT处理器
+ * The implement of {@link JwtProcessor}
  *
  * @author Luyao
  */
@@ -30,39 +30,37 @@ public class JwtProcessorImpl implements JwtProcessor {
     private JwtProps props;
 
     /**
-     * 签名算法
+     * The signature algorithm
      */
     private static final SignatureAlgorithm ALGORITHM = SignatureAlgorithm.EdDSA_ED25519;
 
     @Override
-    public JSONWebToken generate(Kv<String, Object> payloads) {
-        if (payloads == null || payloads.isEmpty()) {
-            throw new IllegalArgumentException("The jwt payloads cannot be empty.");
+    public JSONWebToken generate(Kv<String, Object> payload) {
+        if (payload == null || payload.isEmpty()) {
+            throw new IllegalArgumentException("The jwt payload cannot be empty.");
         }
 
-        // 头部信息
+        // header of the token
         JwtHeader header = new JwtHeader();
-        // 签名算法
         header.setAlgorithm(ALGORITHM.getAlgorithm());
-        // 签发时间
+        // issue time of the token
         Instant now = Instant.now();
         header.setIssueTime(now.toEpochMilli());
-        // 过期时间
+        // expiry time of the token
         Instant expiryTime = now.plus(props.getEffectiveDuration(), ChronoUnit.MINUTES);
         header.setExpiryTime(expiryTime.toEpochMilli());
-        // 拼接待签名内容
-        String content = BytesToStr.of(header.toJson()).toURLBase64().concat(".") + BytesToStr.of(JsonKit.toJsonBytes(payloads)).toURLBase64();
-        // 执行签名
+        // content for signature
+        String content = BytesToStr.of(header.toJson()).toURLBase64().concat(".") + BytesToStr.of(JsonKit.toJsonBytes(payload)).toURLBase64();
+        // executes signature
         String signature = DigitalSigner.newInstance(ALGORITHM).signature(content,
-                StrToBytes.of(props.getPrivateKey()).fromBase64())
-                .toURLBase64();
-        // 合成令牌
+                StrToBytes.of(props.getPrivateKey()).fromBase64()).toURLBase64();
+        // concatenates the header, the payload and the signature to be a complete token
         String token = content.concat(".").concat(signature);
-        // 返回token详情
+        // returns the complete token entity
         return JSONWebToken.builder()
                 .token(token)
                 .header(header)
-                .payloads(payloads)
+                .payload(payload)
                 .signature(signature)
                 .build();
     }
@@ -70,24 +68,24 @@ public class JwtProcessorImpl implements JwtProcessor {
     @Override
     public Kv<String, Object> parse(String token) throws SignatureException, TokenExpiredException {
         try {
-            // 解析token
+            // gets the parser of the token
             JwtParser jwt = JwtParser.of(token);
 
-            // 获取被签名的数据
-            String content = jwt.getHeaders().rawStr().concat(".") + jwt.getPayloads().rawStr();
-            // 验签
+            // builds the content to verify signature
+            String content = jwt.getHeader().rawStr().concat(".") + jwt.getPayload().rawStr();
+            // verifies the token
             boolean verified = DigitalSigner.newInstance(ALGORITHM).verify(content,
                     StrToBytes.of(jwt.sign()).fromURLBase64(),
                     StrToBytes.of(props.getPublicKey()).fromBase64());
             if (!verified) throw new SignatureException("token签名无效");
 
-            // 判断是否过期
-            if (Instant.ofEpochMilli(jwt.getHeaders().header().getExpiryTime()).isBefore(Instant.now())) {
+            // determines the token was expired or not
+            if (Instant.ofEpochMilli(jwt.getHeader().header().getExpiryTime()).isBefore(Instant.now())) {
                 throw new TokenExpiredException("token已过期");
             }
 
-            // 返回有效载荷
-            return jwt.getPayloads().payloads();
+            // returns the payload of the token;
+            return jwt.getPayload().payload();
         } catch (IllegalArgumentException e) {
             log.error("token异常", e);
             throw new IllegalArgumentException("token无效");

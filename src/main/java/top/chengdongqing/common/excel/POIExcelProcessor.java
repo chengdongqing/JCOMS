@@ -14,8 +14,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 /**
- * excel处理器
- * 基于apache poi
+ * The implement of the {@link ExcelProcessor}
+ * Based on Apache POI
  *
  * @author Luyao
  */
