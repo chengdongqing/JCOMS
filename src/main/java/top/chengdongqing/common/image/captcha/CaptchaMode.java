@@ -16,9 +16,9 @@ public enum CaptchaMode {
      */
     LETTER,
     /**
-     * 数字+字母验证码
+     * 字母+数字验证码
      */
-    NUMBER_LETTER,
+    LETTER_NUMBER,
     /**
      * 算术验证码
      */

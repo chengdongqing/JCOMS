@@ -2,6 +2,8 @@ package top.chengdongqing.common.image;
 
 import top.chengdongqing.common.transformer.BytesToStr;
 
+import java.io.InputStream;
+
 /**
  * 图片识别器
  *
@@ -12,8 +14,8 @@ public interface ImageReader {
     /**
      * 读取图片内容
      *
-     * @param image 图片二进制数据
+     * @param stream 图片数据流
      * @return 图片内容
      */
-    BytesToStr read(byte[] image);
+    BytesToStr read(InputStream stream);
 }

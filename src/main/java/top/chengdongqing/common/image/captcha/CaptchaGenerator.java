@@ -17,17 +17,10 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author Luyao
  */
-public class CaptchaGenerator implements ImageGenerator {
-
-    // 验证码内容
-    private final String content;
-    // 验证码宽、高
-    private final int width, height;
-    // 干扰线数量
-    private final int curveLength;
+public record CaptchaGenerator(String content, int width, int height, int curves) implements ImageGenerator {
 
     // 随机数生成器
-    private final Random random = ThreadLocalRandom.current();
+    private static final Random random = ThreadLocalRandom.current();
 
     // 字体颜色
     private static final Color FONT_COLOR = new Color(8, 4, 242);
@@ -39,25 +32,31 @@ public class CaptchaGenerator implements ImageGenerator {
             new Color(247, 247, 247)
     };
 
-    public CaptchaGenerator(String content, int width, int curveLength) {
+    public CaptchaGenerator {
         if (StrKit.isBlank(content)) {
             throw new IllegalArgumentException("The captcha content cannot be blank");
         }
         if (width < 50) {
             throw new IllegalArgumentException("The captcha width must be greater than or equal to 50");
         }
-        if (curveLength < 0) {
+        if (height < width / 4) {
+            throw new IllegalArgumentException("The captcha height was wrong");
+        }
+        if (curves < 0) {
             throw new IllegalArgumentException("The captcha curve length should greater than 0");
         }
-
-        this.content = content;
-        this.width = width;
-        this.height = width / 3;
-        this.curveLength = curveLength;
     }
 
     public static CaptchaGenerator of(String content) {
-        return new CaptchaGenerator(content, 150, 2);
+        return of(content, 150);
+    }
+
+    public static CaptchaGenerator of(String content, int width) {
+        return of(content, width, 2);
+    }
+
+    public static CaptchaGenerator of(String content, int width, int curveLength) {
+        return new CaptchaGenerator(content, width, width / 3, curveLength);
     }
 
     @Override
@@ -116,7 +115,7 @@ public class CaptchaGenerator implements ImageGenerator {
         // 设置曲线宽度
         g.setStroke(new BasicStroke(height / 16f));
         // 绘制曲线
-        for (int i = 0; i < curveLength; i++) {
+        for (int i = 0; i < curves; i++) {
             int x = random.nextInt(width / 2);
             QuadCurve2D.Float curve = new QuadCurve2D.Float(x, random.nextInt(height),
                     width / 2f, height / 2f,

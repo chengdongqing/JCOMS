@@ -5,15 +5,13 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 图片验证码随机数
+ * 图片验证码随机数生成器
  *
  * @author Luyao
  */
-public class CaptchaRandom {
+public class RandomGenerator {
 
-    // 验证码类型
-    private final CaptchaMode captchaMode;
-    // 随机数长度
+    private final CaptchaMode mode;
     private final int length;
 
     private static final char[] LETTERS = letters();
@@ -29,37 +27,36 @@ public class CaptchaRandom {
     private static final char[] OPERATORS = {'+', '-', '*'};
     private final Random random = ThreadLocalRandom.current();
 
-    public CaptchaRandom(CaptchaMode captchaMode, int length) {
+    public RandomGenerator(CaptchaMode mode, int length) {
         if (length < 4) {
-            throw new IllegalArgumentException("The captcha char length should greater than or equal to 4");
+            throw new IllegalArgumentException("The captcha character length should greater than or equal to 4");
         }
-
-        this.captchaMode = captchaMode;
+        this.mode = mode;
         this.length = length;
     }
 
-    public static CaptchaRandom of(CaptchaMode mode) {
-        return new CaptchaRandom(mode, 6);
+    public static RandomGenerator of(CaptchaMode mode) {
+        return new RandomGenerator(mode, 6);
     }
 
     /**
      * 生成随机数
      *
-     * @return 随机数键值对实体
+     * @return 验证码键值对实体
      */
     public CaptchaEntity generate() {
-        if (captchaMode == CaptchaMode.FORMULA) return generateFormula();
-        char[] chars = switch (captchaMode) {
-            case LETTER -> LETTERS;
+        if (mode == CaptchaMode.FORMULA) return formula();
+        char[] charPool = switch (mode) {
             case NUMBER -> NUMBERS;
-            case NUMBER_LETTER -> LETTERS_NUMBERS;
+            case LETTER -> LETTERS;
+            case LETTER_NUMBER -> LETTERS_NUMBERS;
             default -> null;
         };
 
         char[] randomChars = new char[length];
         for (int i = 0; i < length; i++) {
-            int index = random.nextInt(chars.length);
-            randomChars[i] = chars[index];
+            int index = random.nextInt(charPool.length);
+            randomChars[i] = charPool[index];
         }
         String randomStr = String.valueOf(randomChars);
         return new CaptchaEntity(randomStr, randomStr);
@@ -68,9 +65,9 @@ public class CaptchaRandom {
     /**
      * 生成随机算术公式
      *
-     * @return 验证码实体
+     * @return 验证码键值对实体
      */
-    private CaptchaEntity generateFormula() {
+    private CaptchaEntity formula() {
         String key, value;
 
         String a1 = NUMBERS[random.nextInt(NUMBERS.length)] + "";
@@ -95,13 +92,13 @@ public class CaptchaRandom {
             key = a + "*" + b;
             value = String.valueOf(a * b);
         }
-        return new CaptchaEntity(key + "=?", value);
+        return new CaptchaEntity(key.concat("=?"), value);
     }
 
     /**
-     * 构建数字列表
+     * 构建数字集合
      *
-     * @return 数字列表
+     * @return 数字集合
      */
     private static char[] numbers() {
         char[] numbers = new char[10];
@@ -112,9 +109,9 @@ public class CaptchaRandom {
     }
 
     /**
-     * 构建字母列表
+     * 构建字母集合
      *
-     * @return 字母列表
+     * @return 字母集合
      */
     private static char[] letters() {
         char[] letters = new char[26];
